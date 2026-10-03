@@ -1,2 +1,30 @@
-import Header from '../components/Header'; import Hero from '../components/Hero'; import {Categories,Verified,SellerCTA} from '../components/Sections'; import Logo from '../components/Logo';
-export default function HomePage(){return <><Header/><main><Hero/><Categories/><Verified/><SellerCTA/></main><footer className="border-t border-orange-100 bg-white"><div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between"><Logo/><p className="text-sm text-gray-500">© 2026 MartBaobab. Shop · Deliver · Connect · Earn.</p></div></footer></>}
+import Hero from "../components/Hero";
+import {
+  Categories,
+  SellerCTA,
+  Verified,
+} from "../components/Sections";
+import Logo from "../components/Logo";
+
+export default function HomePage() {
+  return (
+    <>
+      <main>
+        <Hero />
+        <Categories />
+        <Verified />
+        <SellerCTA />
+      </main>
+
+      <footer className="border-t border-orange-100 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <Logo />
+
+          <p className="text-sm text-gray-500">
+            © 2026 MartBaobab. Shop · Deliver · Connect · Earn.
+          </p>
+        </div>
+      </footer>
+    </>
+  );
+}
