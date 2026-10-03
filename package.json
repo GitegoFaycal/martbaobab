@@ -14,6 +14,10 @@
     "db:seed": "npm run db:seed --workspace backend"
   },
   "devDependencies": {
-    "concurrently": "latest"
+    "concurrently": "latest",
+    "prisma": "^6.19.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0"
   }
 }
