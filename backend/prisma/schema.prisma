@@ -37,15 +37,19 @@ enum PaymentStatus {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  phone        String?
-  passwordHash String
-  role         Role     @default(CUSTOMER)
-  avatarUrl    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  name                String
+  email               String    @unique
+  phone               String?   @unique
+  passwordHash        String
+  role                Role      @default(CUSTOMER)
+  avatarUrl           String?
+  active              Boolean   @default(true)
+  emailVerified       Boolean   @default(false)
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   shops     Shop[]
   orders    Order[]
