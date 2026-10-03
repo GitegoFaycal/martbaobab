@@ -1,9 +1,21 @@
-import 'dotenv/config';
-import express from 'express'; import cors from 'cors'; import helmet from 'helmet'; import morgan from 'morgan';
-const app=express(); const PORT=process.env.PORT || 5000;
-app.use(helmet()); app.use(cors({origin:process.env.CLIENT_URL || 'http://localhost:5173'})); app.use(express.json()); app.use(morgan('dev'));
-app.get('/api/health',(req,res)=>res.json({status:'ok',service:'MartBaobab API'}));
-app.get('/api/categories',(req,res)=>res.json({data:['Food','Construction','Training','Delivery','Beauty','Electronics','Home Services']}));
-app.use((req,res)=>res.status(404).json({message:'Route not found'}));
-app.use((err,req,res,next)=>{console.error(err);res.status(500).json({message:'Unexpected server error'});});
-app.listen(PORT,()=>console.log(`MartBaobab API running at http://localhost:${PORT}`));
+import "dotenv/config";
+import app from "./app.js";
+import prisma from "./config/prisma.js";
+
+const port = process.env.PORT || 5000;
+
+const server = app.listen(port, () => {
+  console.log(`MartBaobab API running at http://localhost:${port}`);
+});
+
+async function shutdown(signal) {
+  console.log(`${signal} received. Closing MartBaobab API.`);
+
+  server.close(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+}
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
