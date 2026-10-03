@@ -54,6 +54,28 @@ export function AuthProvider({ children }) {
     setUser(response.user);
     return response;
   }
+  async function updateProfile(profileData) {
+  const response = await apiRequest(
+    "/account/profile",
+    {
+      method: "PATCH",
+      body: profileData,
+    }
+  );
+
+  setUser(response.user);
+  return response;
+}
+
+async function changePassword(passwordData) {
+  return apiRequest(
+    "/account/change-password",
+    {
+      method: "PATCH",
+      body: passwordData,
+    }
+  );
+}
 
   async function logout() {
     try {
@@ -74,6 +96,8 @@ export function AuthProvider({ children }) {
       login,
       logout,
       refreshUser,
+      updateProfile,
+      changePassword,
     }),
     [user, authLoading, refreshUser]
   );

@@ -4,6 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
+import accountRoutes from "./routes/account.routes.js";
 import {
   errorHandler,
   notFoundHandler,
@@ -33,6 +34,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/accounts", accountRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

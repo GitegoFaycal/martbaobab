@@ -6,6 +6,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -27,24 +28,21 @@ export default function ProfilePage() {
               {user.name.charAt(0).toUpperCase()}
             </div>
 
-            <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h1 className="text-3xl font-black text-baobab-wine">
-                  {user.name}
-                </h1>
+            <div className="flex flex-wrap gap-3">
+  <Link
+    to="/profile/edit"
+    className="rounded-full bg-baobab-wine px-6 py-3 font-bold text-white hover:bg-baobab-wine-dark"
+  >
+    Edit profile
+  </Link>
 
-                <p className="mt-1 text-gray-500">
-                  MartBaobab {formatRole(user.role)}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                className="rounded-full bg-baobab-wine px-6 py-3 font-bold text-white hover:bg-baobab-wine-dark"
-              >
-                Edit profile
-              </button>
-            </div>
+  <Link
+    to="/profile/change-password"
+    className="rounded-full border border-baobab-wine px-6 py-3 font-bold text-baobab-wine hover:bg-baobab-cream"
+  >
+    Change password
+  </Link>
+</div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <ProfileItem

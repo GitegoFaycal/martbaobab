@@ -12,6 +12,10 @@ import PlaceholderPage from "./pages/PlaceholderPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import SellerDashboardPage from "./pages/seller/SellerDashboardPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import ChangePasswordPage from "./pages/profile/ChangePasswordPage";
+import EditProfilePage from "./pages/profile/EditProfilePage";
 
 function MainLayout({ children }) {
   return (
@@ -35,22 +39,57 @@ export default function App() {
       />
 
       <Route element={<PublicOnlyRoute />}>
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Route>
-      </Route>
+  <Route element={<AuthLayout />}>
+    <Route
+      path="/login"
+      element={<LoginPage />}
+    />
+
+    <Route
+      path="/register"
+      element={<RegisterPage />}
+    />
+
+    <Route
+      path="/forgot-password"
+      element={<ForgotPasswordPage />}
+    />
+
+    <Route
+      path="/reset-password"
+      element={<ResetPasswordPage />}
+    />
+  </Route>
+</Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route
-          path="/profile"
-          element={
-            <MainLayout>
-              <ProfilePage />
-            </MainLayout>
-          }
-        />
+     
+  <Route
+    path="/profile"
+    element={
+      <MainLayout>
+        <ProfilePage />
+      </MainLayout>
+    }
+  />
 
+  <Route
+    path="/profile/edit"
+    element={
+      <MainLayout>
+        <EditProfilePage />
+      </MainLayout>
+    }
+  />
+
+  <Route
+    path="/profile/change-password"
+    element={
+      <MainLayout>
+        <ChangePasswordPage />
+      </MainLayout>
+    }
+  />
         <Route
           path="/orders"
           element={

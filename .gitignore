@@ -6,3 +6,5 @@ coverage/
 *.log
 .DS_Store
 server/generated/
+backend/.env 
+frontend/.env
