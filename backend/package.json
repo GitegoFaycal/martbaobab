@@ -1,0 +1,9 @@
+{
+  "name": "martbaobab-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {"dev": "nodemon src/index.js", "start": "node src/index.js", "db:migrate": "prisma migrate dev", "db:generate": "prisma generate", "db:seed": "node prisma/seed.js"},
+  "dependencies": {"@prisma/client": "latest", "bcryptjs": "latest", "cors": "latest", "dotenv": "latest", "express": "latest", "helmet": "latest", "jsonwebtoken": "latest", "morgan": "latest", "zod": "latest"},
+  "devDependencies": {"nodemon": "latest", "prisma": "latest"}
+}

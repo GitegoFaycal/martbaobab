@@ -1,0 +1,2 @@
+import { Sprout, ShoppingCart } from 'lucide-react';
+export default function Logo(){return <a href="/" className="flex items-center gap-2" aria-label="MartBaobab home"><span className="relative grid h-10 w-10 place-items-center rounded-full bg-baobab-wine text-white"><ShoppingCart size={22}/><Sprout size={15} className="absolute -top-1 right-0 text-baobab-mint"/></span><span><strong className="block text-xl leading-5 text-baobab-wine">MartBaobab</strong><small className="tracking-wide text-baobab-orange">Shop · Connect · Earn</small></span></a>}

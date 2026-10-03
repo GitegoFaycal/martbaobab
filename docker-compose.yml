@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: martbaobab-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: martbaobab
+      POSTGRES_PASSWORD: martbaobab
+      POSTGRES_DB: martbaobab
+    ports:
+      - "5432:5432"
+    volumes:
+      - martbaobab_data:/var/lib/postgresql/data
+volumes:
+  martbaobab_data:

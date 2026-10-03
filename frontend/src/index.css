@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@theme {
+  --color-baobab-wine: #7a0019;
+  --color-baobab-wine-dark: #530012;
+  --color-baobab-orange: #f36b21;
+  --color-baobab-mint: #19d3a2;
+  --color-baobab-cream: #fff8ef;
+  --color-baobab-ink: #24171a;
+}
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #24171a; background: #fffdfa; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, a { transition: all .2s ease; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #19d3a2; outline-offset: 2px; }
