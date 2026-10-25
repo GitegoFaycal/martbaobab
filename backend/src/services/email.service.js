@@ -26,6 +26,12 @@ export async function sendPasswordResetEmail({
   resetUrl,
 }) {
   if (!hasSmtpConfiguration()) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "SMTP is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASSWORD."
+      );
+    }
+
     console.log("");
     console.log("========== MARTBAOBAB RESET LINK ==========");
     console.log(`User: ${recipientName}`);
@@ -79,9 +85,17 @@ export async function sendPasswordResetEmail({
           </p>
 
           <p style="margin:28px 0">
-            ${resetUrl}
+            <a
+              href="${resetUrl}"
+              style="display:inline-block;background:#f36b21;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px"
+            >
               Reset password
             </a>
+          </p>
+
+          <p style="font-size:13px;color:#6b6b6b">
+            If the button does not work, copy this link into your browser:<br />
+            <a href="${resetUrl}" style="color:#7a0019">${resetUrl}</a>
           </p>
 
           <p>This link expires in 30 minutes.</p>

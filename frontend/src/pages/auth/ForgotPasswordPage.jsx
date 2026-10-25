@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
 
     try {
       const response = await apiRequest(
-        "/account/forgot-password",
+        "/accounts/forgot-password",
         {
           method: "POST",
           body: {

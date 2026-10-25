@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
   }
   async function updateProfile(profileData) {
   const response = await apiRequest(
-    "/account/profile",
+    "/accounts/profile",
     {
       method: "PATCH",
       body: profileData,
@@ -69,7 +69,7 @@ export function AuthProvider({ children }) {
 
 async function changePassword(passwordData) {
   return apiRequest(
-    "/account/change-password",
+    "/accounts/change-password",
     {
       method: "PATCH",
       body: passwordData,

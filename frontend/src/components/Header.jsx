@@ -9,7 +9,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -35,6 +35,36 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const accountMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!accountOpen) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(event.target)
+      ) {
+        setAccountOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setAccountOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [accountOpen]);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -143,9 +173,11 @@ export default function Header() {
         )}
 
         {!authLoading && isAuthenticated && (
-          <div className="relative hidden sm:block">
+          <div ref={accountMenuRef} className="relative hidden sm:block">
             <button
               type="button"
+              aria-haspopup="menu"
+              aria-expanded={accountOpen}
               onClick={() => setAccountOpen((current) => !current)}
               className="flex items-center gap-3 rounded-full border border-orange-100 bg-white py-1.5 pl-1.5 pr-3 shadow-sm hover:border-baobab-orange"
             >
@@ -255,6 +287,14 @@ export default function Header() {
                   My profile
                 </Link>
 
+                <Link
+                  to="/orders"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-xl px-4 py-3 font-semibold hover:bg-baobab-cream"
+                >
+                  My orders
+                </Link>
+
                 {user.role === "SELLER" && (
                   <Link
                     to="/seller"
@@ -278,7 +318,8 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="rounded-xl px-4 py-3 text-left font-semibold text-red-600 hover:bg-red-50"
+                  disabled={loggingOut}
+                  className="rounded-xl px-4 py-3 text-left font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
                 >
                   Log out
                 </button>

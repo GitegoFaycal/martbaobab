@@ -29,7 +29,7 @@ export default function EditProfilePage() {
 
     setForm((current) => ({
       ...current,
-      value,
+      [name]: value,
     }));
 
     setError("");
