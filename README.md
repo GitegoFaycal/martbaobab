@@ -91,7 +91,8 @@ Create two Vercel projects from the same repository.
 
 - Root directory: `backend`
 - Build command: `npm run build` (runs `prisma generate`)
-- Environment variables: `DATABASE_URL`, `JWT_SECRET`, `CLIENT_URL` (the frontend URL, comma-separated if several), `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`
+- Environment variables: `DATABASE_URL`, `JWT_SECRET`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`
+- `CLIENT_URL` is optional. `https://martbaobab-frontend.vercel.app` and its preview deployments are allowed by default; add other origins comma-separated
 - Optional: `VERCEL_PREVIEW_PATTERN` as a regex such as `^https://martbaobab-[a-z0-9-]+\.vercel\.app$` to allow preview deployments
 - Run migrations against the production database once: `npx prisma migrate deploy` from the `backend` folder with `DATABASE_URL` set
 
@@ -99,7 +100,7 @@ Create two Vercel projects from the same repository.
 
 - Root directory: `frontend`
 - Framework preset: Vite
-- Environment variable: `VITE_API_URL` set to the backend URL followed by `/api`
+- `VITE_API_URL` is optional. `frontend/.env.production` already points at `https://martbaobab-backend.vercel.app/api`; set the variable in Vercel only to override it
 
 Authentication uses a `SameSite=None; Secure` cookie in production, so both projects must be served over HTTPS and `CLIENT_URL` must match the frontend origin exactly.
 

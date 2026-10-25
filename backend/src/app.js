@@ -16,14 +16,27 @@ const app = express();
 // Running behind a proxy (Vercel, Render, Nginx) so req.ip and secure cookies work.
 app.set("trust proxy", 1);
 
-const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+// Origins that may always call the API: local development and the production
+// frontend. CLIENT_URL (comma-separated) adds more without a code change.
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://martbaobab-frontend.vercel.app",
+];
 
-const vercelPreviewPattern = process.env.VERCEL_PREVIEW_PATTERN
-  ? new RegExp(process.env.VERCEL_PREVIEW_PATTERN)
-  : null;
+const allowedOrigins = [
+  ...defaultOrigins,
+  ...(process.env.CLIENT_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
+
+// Vercel preview deployments of the frontend, e.g.
+// https://martbaobab-frontend-git-feature-x-user.vercel.app
+const vercelPreviewPattern = new RegExp(
+  process.env.VERCEL_PREVIEW_PATTERN ||
+    "^https://martbaobab-frontend-[a-z0-9-]+\.vercel\.app$"
+);
 
 function isAllowedOrigin(origin) {
   if (!origin) {
@@ -34,7 +47,7 @@ function isAllowedOrigin(origin) {
     return true;
   }
 
-  return Boolean(vercelPreviewPattern && vercelPreviewPattern.test(origin));
+  return vercelPreviewPattern.test(origin);
 }
 
 app.use(
