@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import {
   changePassword,
   forgotPassword,
@@ -16,6 +17,17 @@ import {
 
 const router = Router();
 
+const recoveryRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many attempts. Please try again in a few minutes.",
+  },
+});
+
 router.patch(
   "/profile",
   authenticate,
@@ -32,12 +44,14 @@ router.patch(
 
 router.post(
   "/forgot-password",
+  recoveryRateLimit,
   validate(forgotPasswordSchema),
   forgotPassword
 );
 
 router.post(
   "/reset-password",
+  recoveryRateLimit,
   validate(resetPasswordSchema),
   resetPassword
 );

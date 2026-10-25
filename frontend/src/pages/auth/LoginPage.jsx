@@ -41,7 +41,7 @@ export default function LoginPage() {
 
     setForm((current) => ({
       ...current,
-      value,
+      [name]: value,
     }));
 
     if (error) {

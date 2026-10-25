@@ -6,6 +6,13 @@ export function notFoundHandler(req, res) {
 }
 
 export function errorHandler(error, req, res, next) {
+  if (error.message?.includes("not allowed by CORS")) {
+    return res.status(403).json({
+      success: false,
+      message: "This origin is not allowed to access the MartBaobab API",
+    });
+  }
+
   console.error(error);
 
   if (error.code === "P2002") {

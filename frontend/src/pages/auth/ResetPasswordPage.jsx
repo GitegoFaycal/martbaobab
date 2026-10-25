@@ -35,7 +35,7 @@ export default function ResetPasswordPage() {
 
     setForm((current) => ({
       ...current,
-      value,
+      [name]: value,
     }));
 
     setError("");
@@ -64,7 +64,7 @@ export default function ResetPasswordPage() {
 
     try {
       const response = await apiRequest(
-        "/account/reset-password",
+        "/accounts/reset-password",
         {
           method: "POST",
           body: {

@@ -33,7 +33,7 @@ export default function ChangePasswordPage() {
 
     setForm((current) => ({
       ...current,
-      value,
+      [name]: value,
     }));
 
     setError("");
