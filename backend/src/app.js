@@ -6,6 +6,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth.routes.js";
 import accountRoutes from "./routes/account.routes.js";
+import prisma from "./config/prisma.js";
 import {
   errorHandler,
   notFoundHandler,
@@ -80,11 +81,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-    status: "ok",
+app.get("/api/health", async (req, res) => {
+  let database = "ok";
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (error) {
+    console.error("Database health check failed:", error.message);
+    database = "unavailable";
+  }
+
+  res.status(database === "ok" ? 200 : 503).json({
+    success: database === "ok",
+    status: database === "ok" ? "ok" : "degraded",
     service: "MartBaobab API",
+    database,
   });
 });
 

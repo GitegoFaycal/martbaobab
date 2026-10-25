@@ -15,6 +15,18 @@ export function errorHandler(error, req, res, next) {
 
   console.error(error);
 
+  const isDatabaseConnectionError =
+    error.name === "PrismaClientInitializationError" ||
+    (typeof error.code === "string" && /^P10dd$/.test(error.code));
+
+  if (isDatabaseConnectionError) {
+    return res.status(503).json({
+      success: false,
+      message:
+        "The database is currently unavailable. Please try again shortly.",
+    });
+  }
+
   if (error.code === "P2002") {
     return res.status(409).json({
       success: false,
