@@ -29,6 +29,13 @@ export function errorHandler(error, req, res, next) {
     });
   }
 
+  if (error.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      success: false,
+      message: "The photo is too large. Maximum size is 3 MB.",
+    });
+  }
+
   if (error.code === "P2002") {
     return res.status(409).json({
       success: false,

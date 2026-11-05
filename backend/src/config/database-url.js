@@ -38,8 +38,35 @@ export function describeDatabaseUrl(url) {
   }
 }
 
+// Serverless functions open fresh connections often; give the pool a little
+// more room and patience than Prisma's defaults unless the URL sets its own.
+export function withPoolParams(url) {
+  if (!isDirect(url)) {
+    return url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const defaults = {
+      connection_limit: "5",
+      pool_timeout: "20",
+      connect_timeout: "20",
+    };
+
+    Object.entries(defaults).forEach(([key, value]) => {
+      if (!parsed.searchParams.has(key)) {
+        parsed.searchParams.set(key, value);
+      }
+    });
+
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 export function applyDatabaseUrl(env = process.env) {
-  const url = resolveDatabaseUrl(env);
+  const url = withPoolParams(resolveDatabaseUrl(env));
 
   if (url) {
     env.DATABASE_URL = url;

@@ -294,6 +294,23 @@ model Payment {
   order Order @relation(fields: [orderId], references: [id])
 }
 
+// Uploaded photos. Stored in PostgreSQL when no object storage is
+// configured; when BLOB_READ_WRITE_TOKEN is set, files go to Vercel Blob and
+// only the metadata is kept here.
+model Image {
+  id        String   @id @default(cuid())
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  data      Bytes?
+  url       String?
+  ownerId   String?
+  createdAt DateTime @default(now())
+
+  @@index([ownerId])
+}
+
 model Review {
   id        String   @id @default(cuid())
   rating    Int

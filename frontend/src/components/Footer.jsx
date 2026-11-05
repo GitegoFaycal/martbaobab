@@ -1,50 +1,49 @@
 import { Link } from "react-router-dom";
+import { useT } from "../i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
 import Logo from "./Logo";
 
-const columns = [
-  {
-    title: "Buy",
-    links: [
-      { label: "Shop nearby", to: "/shop" },
-      { label: "Second-hand deals", to: "/second-hand" },
-      { label: "Local services", to: "/services" },
-      { label: "Shops", to: "/shops" },
-    ],
-  },
-  {
-    title: "Work",
-    links: [
-      { label: "Find local jobs", to: "/jobs" },
-      { label: "Post a job", to: "/jobs/new" },
-      { label: "My applications", to: "/applications" },
-      { label: "People I'm hiring", to: "/hiring" },
-    ],
-  },
-  {
-    title: "Sell",
-    links: [
-      { label: "Become a seller", to: "/register?role=SELLER" },
-      { label: "Seller dashboard", to: "/seller" },
-      { label: "My orders", to: "/orders" },
-      { label: "My profile", to: "/profile" },
-    ],
-  },
-];
-
 export default function Footer() {
+  const t = useT();
+
+  const columns = [
+    {
+      title: t("footer.buy"),
+      links: [
+        { label: t("nav.shop"), to: "/shop" },
+        { label: t("home.secondHandDeals"), to: "/second-hand" },
+        { label: t("home.localServices"), to: "/services" },
+        { label: t("footer.shops"), to: "/shops" },
+      ],
+    },
+    {
+      title: t("footer.work"),
+      links: [
+        { label: t("footer.findJobs"), to: "/jobs" },
+        { label: t("nav.postJob"), to: "/jobs/new" },
+        { label: t("nav.myApplications"), to: "/applications" },
+        { label: t("nav.hiring"), to: "/hiring" },
+      ],
+    },
+    {
+      title: t("footer.sell"),
+      links: [
+        { label: t("home.becomeSeller"), to: "/register?role=SELLER" },
+        { label: t("nav.sellerDashboard"), to: "/seller" },
+        { label: t("nav.myOrders"), to: "/orders" },
+        { label: t("nav.myProfile"), to: "/profile" },
+      ],
+    },
+  ];
+
   return (
     <footer className="border-t border-orange-100 bg-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Logo />
-          <p className="mt-4 max-w-sm text-sm leading-6 text-gray-500">
-            LOCO connects buyers, sellers, workers and employers in every
-            district of Rwanda. Shop from the kiosk next door, find a good
-            second-hand deal, or get hired for local work.
-          </p>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-loco-orange">
-            Pay with MTN MoMo · Airtel Money · Cash on delivery
-          </p>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-gray-500">{t("footer.tagline")}</p>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-loco-orange">{t("footer.pay")}</p>
+          <div className="mt-4"><LanguageSwitcher /></div>
         </div>
 
         {columns.map((column) => (
@@ -53,12 +52,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-2.5 text-sm">
               {column.links.map((link) => (
                 <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="text-gray-600 hover:text-loco-wine"
-                  >
-                    {link.label}
-                  </Link>
+                  <Link to={link.to} className="text-gray-600 hover:text-loco-wine">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -68,8 +62,8 @@ export default function Footer() {
 
       <div className="border-t border-orange-100">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} LOCO · Local Connect, Kigali, Rwanda.</p>
-          <p>Turi kumwe. Shop local, hire local, grow local.</p>
+          <p>© {new Date().getFullYear()} {t("footer.rights")}</p>
+          <p>{t("footer.motto")}</p>
         </div>
       </div>
     </footer>

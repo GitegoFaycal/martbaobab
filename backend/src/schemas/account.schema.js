@@ -20,6 +20,14 @@ export const updateProfileSchema = z.object({
     phone: phoneSchema,
 
     district: districtSchema,
+
+    avatarUrl: z
+      .string()
+      .trim()
+      .url("Avatar must be a valid URL")
+      .max(500)
+      .optional()
+      .or(z.literal("")),
   }),
 });
 

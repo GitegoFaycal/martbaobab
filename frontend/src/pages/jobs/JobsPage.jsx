@@ -2,22 +2,15 @@ import { Briefcase, MapPin, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
-import {
-  Button,
-  Container,
-  DistrictSelect,
-  EmptyState,
-  PageHeader,
-  Pagination,
-  Select,
-  Spinner,
-} from "../../components/ui";
+import { Button, Container, DistrictSelect, EmptyState, PageHeader, Pagination, Select, Spinner } from "../../components/ui";
 import useFetch from "../../hooks/useFetch";
+import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
 import { JOB_TYPES } from "../../lib/format";
 import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
 
 export default function JobsPage() {
+  const t = useT();
   const [params, setParams] = useSearchParams();
 
   const filters = {
@@ -50,72 +43,53 @@ export default function JobsPage() {
   return (
     <main className="min-h-[75vh] bg-loco-cream py-10">
       <Container>
-        <PageHeader
-          eyebrow="Local jobs"
-          title="Work in your district"
-          description="Daily and contract work on building sites, in factories, farms, shops and homes. Apply with your phone number and the employer calls you."
-          action={<Button as={Link} to="/jobs/new" variant="orange"><Briefcase size={18} /> Post a job</Button>}
-        />
+        <PageHeader eyebrow={t("jobs.eyebrow")} title={t("jobs.title")} description={t("jobs.text")} action={<Button as={Link} to="/jobs/new" variant="orange"><Briefcase size={18} /> {t("jobs.postJob")}</Button>} />
 
-        <form
-          onSubmit={(event) => { event.preventDefault(); update({ search: text.trim() }); }}
-          className="grid gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_200px_180px_auto]"
-        >
+        <form onSubmit={(event) => { event.preventDefault(); update({ search: text.trim() }); }} className="grid gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_200px_180px_auto]">
           <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3">
             <Search size={18} className="text-loco-wine" />
-            <input type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder="Mason, driver, factory, house help..." aria-label="Search jobs" className="w-full bg-transparent py-3 outline-none" />
+            <input type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder={t("jobs.searchPh")} aria-label={t("common.search")} className="w-full bg-transparent py-3 outline-none" />
           </label>
           <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3">
             <MapPin size={18} className="text-loco-orange" />
-            <DistrictSelect aria-label="District" value={filters.district} onChange={(e) => update({ district: e.target.value })} placeholder="All districts" className="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
+            <DistrictSelect aria-label={t("common.district")} value={filters.district} onChange={(e) => update({ district: e.target.value })} placeholder={t("common.allDistricts")} className="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
           </label>
-          <Select aria-label="Job type" value={filters.jobType} onChange={(e) => update({ jobType: e.target.value })} className="bg-loco-cream! border-0!">
-            <option value="">All job types</option>
-            {Object.entries(JOB_TYPES).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+          <Select aria-label={t("jobs.type")} value={filters.jobType} onChange={(e) => update({ jobType: e.target.value })} className="bg-loco-cream! border-0!">
+            <option value="">{t("jobs.allTypes")}</option>
+            {Object.keys(JOB_TYPES).map((key) => <option key={key} value={key}>{t(`labels.jobTypes.${key}`)}</option>)}
           </Select>
-          <Button type="submit" variant="orange">Search</Button>
+          <Button type="submit" variant="orange">{t("common.search")}</Button>
         </form>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
           <aside className="rounded-2xl border border-orange-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:self-start">
-            <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">Type of work</h2>
+            <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{t("jobs.typeOfWork")}</h2>
             <ul className="space-y-1 text-sm">
-              <li>
-                <button type="button" onClick={() => update({ category: "" })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${!filters.category ? "bg-loco-cream text-loco-wine" : "hover:bg-loco-cream"}`}>All work</button>
-              </li>
+              <li><button type="button" onClick={() => update({ category: "" })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${!filters.category ? "bg-loco-cream text-loco-wine" : "hover:bg-loco-cream"}`}>{t("jobs.allWork")}</button></li>
               {categories.map((category) => (
-                <li key={category.id}>
-                  <button type="button" onClick={() => update({ category: category.slug })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${filters.category === category.slug ? "bg-loco-cream text-loco-wine" : "hover:bg-loco-cream"}`}>{category.name}</button>
-                </li>
+                <li key={category.id}><button type="button" onClick={() => update({ category: category.slug })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${filters.category === category.slug ? "bg-loco-cream text-loco-wine" : "hover:bg-loco-cream"}`}>{category.name}</button></li>
               ))}
             </ul>
           </aside>
 
           <section>
             <p className="mb-4 text-sm text-gray-600">
-              {loading ? "Searching..." : `${data?.pagination?.total ?? 0} open jobs`}{filters.district ? ` in ${filters.district}` : " across Rwanda"}
+              {loading ? t("common.searching") : t("jobs.openJobs", { count: data?.pagination?.total ?? 0 })} {filters.district ? t("common.in", { district: filters.district }) : t("common.acrossRwanda")}
             </p>
 
             {loading ? (
-              <Spinner />
+              <Spinner label={t("common.loading")} />
             ) : data?.jobs?.length ? (
               <>
-                <div className="grid gap-4">
-                  {data.jobs.map((job) => <JobCard key={job.id} job={job} />)}
-                </div>
+                <div className="grid gap-4">{data.jobs.map((job) => <JobCard key={job.id} job={job} />)}</div>
                 <Pagination pagination={data.pagination} onPage={(page) => update({ page })} />
               </>
             ) : (
               <EmptyState
                 icon={Briefcase}
-                title="No open jobs match"
-                description={filters.district ? `Nothing in ${filters.district} right now. Try all districts, or post the job you are hiring for.` : "Try another search, or post a job."}
-                action={
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {filters.district && <Button variant="outline" onClick={() => update({ district: "" })}>All districts</Button>}
-                    <Button as={Link} to="/jobs/new" variant="orange">Post a job</Button>
-                  </div>
-                }
+                title={t("jobs.none")}
+                description={filters.district ? t("jobs.noneDistrict", { district: filters.district }) : t("jobs.noneText")}
+                action={<div className="flex flex-wrap justify-center gap-2">{filters.district && <Button variant="outline" onClick={() => update({ district: "" })}>{t("common.allDistricts")}</Button>}<Button as={Link} to="/jobs/new" variant="orange">{t("jobs.postJob")}</Button></div>}
               />
             )}
           </section>

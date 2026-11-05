@@ -10,24 +10,36 @@ export function formatRWF(value) {
   return `RWF ${rwf.format(Number(value))}`;
 }
 
-export function formatDate(value, options) {
+const LOCALES = { en: "en-GB", rw: "rw-RW", fr: "fr-FR" };
+
+export function formatDate(value, options, lang = "en") {
   if (!value) {
     return "";
   }
 
   return new Intl.DateTimeFormat(
-    "en-GB",
+    LOCALES[lang] || "en-GB",
     options || { day: "numeric", month: "short", year: "numeric" }
   ).format(new Date(value));
 }
 
-export function timeAgo(value) {
+// `t` is optional: without it the helper returns English.
+export function timeAgo(value, t) {
   const seconds = Math.floor((Date.now() - new Date(value).getTime()) / 1000);
+  const tr = t || ((key, params) => {
+    const fallback = {
+      "time.justNow": "just now",
+      "time.minutes": `${params?.n} min ago`,
+      "time.hours": `${params?.n} h ago`,
+      "time.days": `${params?.n} d ago`,
+    };
+    return fallback[key];
+  });
 
-  if (seconds < 60) return "just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} h ago`;
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)} d ago`;
+  if (seconds < 60) return tr("time.justNow");
+  if (seconds < 3600) return tr("time.minutes", { n: Math.floor(seconds / 60) });
+  if (seconds < 86400) return tr("time.hours", { n: Math.floor(seconds / 3600) });
+  if (seconds < 604800) return tr("time.days", { n: Math.floor(seconds / 86400) });
 
   return formatDate(value);
 }
@@ -54,8 +66,12 @@ export const PAY_PERIODS = {
   PER_TASK: "per task",
 };
 
-export function formatPay(job) {
-  const period = PAY_PERIODS[job.payPeriod] || "";
+export function jobTypeLabel(type, t) {
+  return (t && t(`labels.jobTypes.${type}`)) || JOB_TYPES[type] || type;
+}
+
+export function formatPay(job, t) {
+  const period = (t && t(`labels.payPeriods.${job.payPeriod}`)) || PAY_PERIODS[job.payPeriod] || "";
 
   if (job.payMin && job.payMax && job.payMin !== job.payMax) {
     return `${formatRWF(job.payMin)} – ${formatRWF(job.payMax)} ${period}`;
@@ -65,7 +81,7 @@ export function formatPay(job) {
     return `${formatRWF(job.payMin || job.payMax)} ${period}`;
   }
 
-  return "Pay negotiable";
+  return (t && t("jobs.payNegotiable")) || "Pay negotiable";
 }
 
 export const ORDER_STATUS = {
@@ -85,11 +101,25 @@ export const APPLICATION_STATUS = {
   REJECTED: { label: "Not selected", tone: "red" },
 };
 
+export function orderStatus(status, t) {
+  const base = ORDER_STATUS[status] || { label: status, tone: "amber" };
+  return { ...base, label: (t && t(`labels.orderStatus.${status}`)) || base.label };
+}
+
+export function applicationStatus(status, t) {
+  const base = APPLICATION_STATUS[status] || { label: status, tone: "amber" };
+  return { ...base, label: (t && t(`labels.applicationStatus.${status}`)) || base.label };
+}
+
 export const PAYMENT_PROVIDERS = {
   MTN_MOMO: "MTN Mobile Money",
   AIRTEL_MONEY: "Airtel Money",
   CASH_ON_DELIVERY: "Cash on delivery",
 };
+
+export function paymentLabel(provider, t) {
+  return (t && t(`labels.payment.${provider}`)) || PAYMENT_PROVIDERS[provider] || provider;
+}
 
 export function toneClasses(tone) {
   switch (tone) {

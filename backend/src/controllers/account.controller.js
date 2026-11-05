@@ -31,7 +31,7 @@ function hashResetToken(token) {
 
 export const updateProfile = asyncHandler(
   async (req, res) => {
-    const { name, phone, district } = req.validated.body;
+    const { name, phone, district, avatarUrl } = req.validated.body;
     const normalizedPhone = normalizePhone(phone);
 
     if (normalizedPhone) {
@@ -62,6 +62,7 @@ export const updateProfile = asyncHandler(
         name,
         phone: normalizedPhone,
         district,
+        avatarUrl: avatarUrl || null,
       },
       select: publicUserFields,
     });

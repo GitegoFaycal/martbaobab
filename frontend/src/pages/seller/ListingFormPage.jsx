@@ -1,7 +1,8 @@
-import { ArrowLeft, Package, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Package } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiRequest, fieldErrorsFrom } from "../../api/api";
+import ImageUploader from "../../components/ImageUploader";
 import {
   Button,
   Container,
@@ -15,6 +16,7 @@ import {
   Textarea,
 } from "../../components/ui";
 import useFetch from "../../hooks/useFetch";
+import { useT } from "../../i18n";
 import { discountPercent, formatRWF } from "../../lib/format";
 
 const initial = {
@@ -30,10 +32,11 @@ const initial = {
   stock: "",
   district: "",
   active: true,
-  imageUrls: [""],
+  imageUrls: [],
 };
 
 export default function ListingFormPage() {
+  const t = useT();
   const { id } = useParams();
   const editing = Boolean(id);
   const navigate = useNavigate();
@@ -72,7 +75,7 @@ export default function ListingFormPage() {
       stock: listing.stock ?? "",
       district: listing.district || "",
       active: listing.active,
-      imageUrls: listing.images?.length ? listing.images.map((image) => image.url) : [""],
+      imageUrls: (listing.images || []).map((image) => image.url),
     });
   }, [editing, mine, id, navigate]);
 
@@ -80,10 +83,6 @@ export default function ListingFormPage() {
     const { name, value, type, checked } = event.target;
     setForm((current) => ({ ...current, [name]: type === "checkbox" ? checked : value }));
     setErrors((current) => ({ ...current, [name]: "" }));
-  }
-
-  function setImage(index, value) {
-    setForm((current) => ({ ...current, imageUrls: current.imageUrls.map((url, i) => (i === index ? value : url)) }));
   }
 
   async function handleSubmit(event) {
@@ -104,7 +103,7 @@ export default function ListingFormPage() {
       categoryId: form.categoryId,
       district: form.district || undefined,
       active: Boolean(form.active),
-      imageUrls: form.imageUrls.map((url) => url.trim()).filter(Boolean),
+      imageUrls: form.imageUrls,
     };
 
     try {
@@ -133,7 +132,7 @@ export default function ListingFormPage() {
   return (
     <main className="min-h-[75vh] bg-loco-cream py-10">
       <Container className="max-w-3xl">
-        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> Seller dashboard</Link>
+        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
 
         <div className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-9">
           <PageHeader eyebrow={editing ? "Edit listing" : "New listing"} title={editing ? "Update listing" : "What are you selling?"} />
@@ -166,6 +165,8 @@ export default function ListingFormPage() {
                 ))}
               </div>
             )}
+
+            <ImageUploader label={t("upload.photos")} value={form.imageUrls} onChange={(imageUrls) => setForm((c) => ({ ...c, imageUrls }))} max={6} />
 
             <Field label="Name" htmlFor="name" error={errors.name}>
               <Input id="name" name="name" value={form.name} onChange={handleChange} placeholder={isService ? "e.g. Plumbing repairs, home visits in Gasabo" : "e.g. Inyange milk 1L, Samsung A12 (used)"} error={errors.name} required />
@@ -203,34 +204,18 @@ export default function ListingFormPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="District" htmlFor="district" optional error={errors.district} hint="Leave empty to use your shop's district.">
-                <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} placeholder="Same as shop" />
+              <Field label={t("common.district")} htmlFor="district" optional error={errors.district} hint="Leave empty to use your shop's district.">
+                <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} placeholder={t("common.sameAsShop")} />
               </Field>
               <div className="flex flex-col justify-end gap-3 pb-1">
                 <label className="flex items-center gap-3 text-sm font-semibold">
-                  <input type="checkbox" name="negotiable" checked={form.negotiable} onChange={handleChange} className="h-4 w-4 accent-loco-wine" /> Price is negotiable
+                  <input type="checkbox" name="negotiable" checked={form.negotiable} onChange={handleChange} className="h-4 w-4 accent-loco-wine" /> {t("common.negotiable")}
                 </label>
                 <label className="flex items-center gap-3 text-sm font-semibold">
                   <input type="checkbox" name="active" checked={form.active} onChange={handleChange} className="h-4 w-4 accent-loco-wine" /> Visible to buyers
                 </label>
               </div>
             </div>
-
-            <Field label="Photos (image links)" optional error={errors.imageUrls} hint="Image upload is coming soon. Paste links to photos for now, up to 6.">
-              <div className="space-y-2">
-                {form.imageUrls.map((url, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input type="url" value={url} onChange={(event) => setImage(index, event.target.value)} placeholder="https://..." aria-label={`Image ${index + 1}`} />
-                    {form.imageUrls.length > 1 && (
-                      <Button type="button" variant="ghost" className="text-red-600" aria-label="Remove image" onClick={() => setForm((c) => ({ ...c, imageUrls: c.imageUrls.filter((_, i) => i !== index) }))}><Trash2 size={16} /></Button>
-                    )}
-                  </div>
-                ))}
-                {form.imageUrls.length < 6 && (
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setForm((c) => ({ ...c, imageUrls: [...c.imageUrls, ""] }))}><Plus size={15} /> Add another photo</Button>
-                )}
-              </div>
-            </Field>
 
             {form.price && (
               <p className="rounded-xl bg-loco-cream p-3 text-sm text-gray-700">
@@ -239,7 +224,7 @@ export default function ListingFormPage() {
             )}
 
             <Button type="submit" variant="orange" className="w-full" loading={submitting}>
-              <Package size={18} /> {submitting ? "Saving..." : editing ? "Save listing" : "Publish listing"}
+              <Package size={18} /> {submitting ? t("common.saving") : editing ? t("common.save") : "Publish listing"}
             </Button>
           </form>
         </div>

@@ -7,9 +7,11 @@ import {
   SellerCTA,
   TrustStrip,
 } from "../components/Sections";
+import { useT } from "../i18n";
 import { getSavedDistrict } from "../lib/rwanda";
 
 export default function HomePage() {
+  const t = useT();
   const district = getSavedDistrict();
   const districtQuery = district ? `&district=${encodeURIComponent(district)}` : "";
 
@@ -18,37 +20,27 @@ export default function HomePage() {
       <Hero />
       <TrustStrip />
 
-      <CategoryStrip
-        kind="GOODS"
-        basePath="/shop"
-        eyebrow="Browse locally"
-        title="What do you need today?"
-      />
+      <CategoryStrip kind="GOODS" basePath="/shop" eyebrow={t("home.browseLocally")} title={t("home.whatToday")} />
 
       <ListingStrip
         query={`?condition=NEW&type=PRODUCT&perPage=8${districtQuery}`}
-        eyebrow={district ? `Fresh in ${district}` : "Fresh from nearby shops"}
-        title="Everyday goods near you"
+        eyebrow={district ? t("home.freshIn", { district }) : t("home.freshNearby")}
+        title={t("home.everydayGoods")}
         to="/shop"
-        emptyText="No products listed yet. Sellers are joining LOCO every day."
+        emptyText={t("home.noProducts")}
       />
 
       <ListingStrip
         query={`?condition=USED&perPage=8${districtQuery}`}
-        eyebrow="Save money"
-        title="Second-hand deals"
+        eyebrow={t("home.saveMoney")}
+        title={t("home.secondHandDeals")}
         to="/second-hand"
-        emptyText="No second-hand items yet. Have something to sell? Open a shop in a minute."
+        emptyText={t("home.noSecondHand")}
       />
 
       <JobStrip />
 
-      <CategoryStrip
-        kind="SERVICES"
-        basePath="/services"
-        eyebrow="Skilled people nearby"
-        title="Local services"
-      />
+      <CategoryStrip kind="SERVICES" basePath="/services" eyebrow={t("home.skilledNearby")} title={t("home.localServices")} />
 
       <HowItWorks />
       <SellerCTA />

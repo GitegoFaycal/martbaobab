@@ -2,6 +2,7 @@ import { ArrowLeft, Store } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRequest, fieldErrorsFrom } from "../../api/api";
+import { SingleImageUploader } from "../../components/ImageUploader";
 import {
   Button,
   Container,
@@ -15,9 +16,11 @@ import {
 } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
+import { useT } from "../../i18n";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
 
 export default function ShopFormPage() {
+  const t = useT();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data, loading } = useFetch("/shops/me");
@@ -88,7 +91,7 @@ export default function ShopFormPage() {
   return (
     <main className="min-h-[75vh] bg-loco-cream py-10">
       <Container className="max-w-3xl">
-        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> Seller dashboard</Link>
+        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
 
         <div className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-9">
           <PageHeader eyebrow={existing ? "Shop settings" : "Open your shop"} title={existing ? "Edit your shop" : "Create your LOCO shop"} description="Buyers see this information on every listing. Use the name people in your area already know." />
@@ -96,6 +99,11 @@ export default function ShopFormPage() {
           {error && <Message className="mb-5">{error}</Message>}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-[auto_1fr]">
+              <SingleImageUploader label={t("upload.logo")} value={form.logoUrl} onChange={(logoUrl) => setForm((c) => ({ ...c, logoUrl }))} shape="round" />
+              <SingleImageUploader label={t("upload.cover")} value={form.coverUrl} onChange={(coverUrl) => setForm((c) => ({ ...c, coverUrl }))} shape="wide" />
+            </div>
+
             <Field label="Shop name" htmlFor="name" error={errors.name}>
               <Input id="name" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Mama Jeanne Boutique, Kimironko Hardware" error={errors.name} required />
             </Field>
@@ -114,8 +122,8 @@ export default function ShopFormPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="District" htmlFor="district" error={errors.district}>
-                <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} error={errors.district} required />
+              <Field label={t("common.district")} htmlFor="district" error={errors.district}>
+                <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} error={errors.district} placeholder={t("common.chooseDistrict")} required />
               </Field>
               <Field label="Sector" htmlFor="sector" optional error={errors.sector}>
                 <Input id="sector" name="sector" value={form.sector} onChange={handleChange} placeholder="e.g. Kimironko" />
@@ -126,17 +134,8 @@ export default function ShopFormPage() {
               <Input id="address" name="address" value={form.address} onChange={handleChange} placeholder="e.g. KG 11 Ave, opposite the bus stop" />
             </Field>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Logo image URL" htmlFor="logoUrl" optional error={errors.logoUrl} hint="Image upload is coming soon. Paste a link for now.">
-                <Input id="logoUrl" name="logoUrl" type="url" value={form.logoUrl} onChange={handleChange} placeholder="https://..." error={errors.logoUrl} />
-              </Field>
-              <Field label="Cover image URL" htmlFor="coverUrl" optional error={errors.coverUrl}>
-                <Input id="coverUrl" name="coverUrl" type="url" value={form.coverUrl} onChange={handleChange} placeholder="https://..." error={errors.coverUrl} />
-              </Field>
-            </div>
-
             <Button type="submit" variant="orange" className="w-full" loading={submitting}>
-              <Store size={18} /> {submitting ? "Saving..." : existing ? "Save shop" : "Create shop"}
+              <Store size={18} /> {submitting ? t("common.saving") : existing ? t("common.save") : "Create shop"}
             </Button>
           </form>
         </div>

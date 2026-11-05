@@ -31,6 +31,15 @@ try {
     stdio: "inherit",
     env: process.env,
   });
+
+  // Demo content: always when SEED_DEMO=true, otherwise only on an empty
+  // marketplace so a fresh deployment is not blank. SEED_DEMO=false disables.
+  if (process.env.SEED_DEMO !== "false") {
+    execFileSync(process.execPath, ["prisma/demo.js"], {
+      stdio: "inherit",
+      env: process.env,
+    });
+  }
 } catch (error) {
   console.error("");
   console.error("==================================================");

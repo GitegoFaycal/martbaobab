@@ -59,6 +59,25 @@ npm run dev
 Frontend: http://localhost:5173
 API health check: http://localhost:5000/api/health
 
+## Demo data
+
+A fresh database is filled with demo content on the first deployment (or with `npm run db:demo`, and `SEED_DEMO=true` forces it): 8 shops across Rwanda, 41 listings (new, second-hand and services with photos), 12 jobs, applications and orders. Set `SEED_DEMO=false` to disable. Every demo account uses the password `Demo1234`, for example:
+
+| Account | Role |
+| --- | --- |
+| jeanne@demo.loco.rw | Seller (Mama Jeanne Boutique, Gasabo) |
+| eric@demo.loco.rw | Seller (Imena Tech, Kicukiro) |
+| diane@demo.loco.rw | Customer and employer (Gasabo) |
+| innocent@demo.loco.rw | Worker with applications (Kicukiro) |
+
+## Photos
+
+Sellers upload photos for listings, shop logo and cover; everyone can set a profile photo. Photos are resized in the browser, then stored in PostgreSQL and served from `/api/images/:id`. Set `BLOB_READ_WRITE_TOKEN` (Vercel Blob) in the backend project to store files in object storage instead.
+
+## Languages
+
+The interface is available in Kinyarwanda, English and French. The language is detected from the browser, can be switched from the header or footer, and is remembered on the device. Dictionaries live in `frontend/src/i18n/`.
+
 ## Roles
 
 - **Customer**: shop, order, post jobs, apply for jobs.

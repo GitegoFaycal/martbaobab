@@ -15,6 +15,7 @@ import {
   shopRouter,
 } from "./routes/marketplace.routes.js";
 import { applicationRouter, jobRouter } from "./routes/job.routes.js";
+import { imageRouter, uploadRouter } from "./routes/upload.routes.js";
 import prisma from "./config/prisma.js";
 import {
   errorHandler,
@@ -98,7 +99,11 @@ const writeRateLimit = rateLimit({
   },
 });
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -131,6 +136,8 @@ app.use("/api/listings", writeRateLimit, listingRouter);
 app.use("/api/orders", writeRateLimit, orderRouter);
 app.use("/api/jobs", writeRateLimit, jobRouter);
 app.use("/api/applications", applicationRouter);
+app.use("/api/uploads", uploadRouter);
+app.use("/api/images", imageRouter);
 app.use("/api/admin", adminRoutes);
 
 app.use(notFoundHandler);
