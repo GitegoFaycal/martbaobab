@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
           className="mx-auto text-red-600"
         />
 
-        <h1 className="mt-5 text-3xl font-black text-baobab-wine">
+        <h1 className="mt-5 text-3xl font-black text-loco-wine">
           Invalid reset link
         </h1>
 
@@ -110,7 +110,7 @@ export default function ResetPasswordPage() {
 
         <Link
           to="/forgot-password"
-          className="mt-7 inline-block rounded-full bg-baobab-wine px-6 py-3 font-bold text-white"
+          className="mt-7 inline-block rounded-full bg-loco-wine px-6 py-3 font-bold text-white"
         >
           Request new link
         </Link>
@@ -120,11 +120,11 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="rounded-3xl bg-white p-6 shadow-xl shadow-orange-100/70 sm:p-9">
-      <p className="font-bold text-baobab-orange">
+      <p className="font-bold text-loco-orange">
         Account recovery
       </p>
 
-      <h1 className="mt-2 text-3xl font-black text-baobab-wine">
+      <h1 className="mt-2 text-3xl font-black text-loco-wine">
         Choose a new password
       </h1>
 
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
 
           <Link
             to="/login"
-            className="mt-5 block rounded-xl bg-baobab-wine px-5 py-3.5 text-center font-bold text-white"
+            className="mt-5 block rounded-xl bg-loco-wine px-5 py-3.5 text-center font-bold text-white"
           >
             Continue to login
           </Link>
@@ -179,7 +179,7 @@ export default function ResetPasswordPage() {
                 (current) => !current
               )
             }
-            className="inline-flex items-center gap-2 text-sm font-bold text-baobab-wine"
+            className="inline-flex items-center gap-2 text-sm font-bold text-loco-wine"
           >
             {showPassword ? (
               <EyeOff size={17} />
@@ -195,7 +195,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-baobab-wine px-5 py-3.5 font-bold text-white disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-loco-wine px-5 py-3.5 font-bold text-white disabled:opacity-60"
           >
             {submitting && (
               <LoaderCircle
@@ -230,7 +230,7 @@ function PasswordField({
         {label}
       </label>
 
-      <div className="flex items-center rounded-xl border border-gray-200 px-4 focus-within:border-baobab-orange focus-within:ring-4 focus-within:ring-orange-100">
+      <div className="flex items-center rounded-xl border border-gray-200 px-4 focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
         <LockKeyhole
           size={19}
           className="text-gray-400"

@@ -33,7 +33,7 @@ export async function sendPasswordResetEmail({
     }
 
     console.log("");
-    console.log("========== MARTBAOBAB RESET LINK ==========");
+    console.log("========== LOCO RESET LINK ==========");
     console.log(`User: ${recipientName}`);
     console.log(`Email: ${recipientEmail}`);
     console.log(`Reset URL: ${resetUrl}`);
@@ -52,17 +52,17 @@ export async function sendPasswordResetEmail({
     from: {
       name:
         process.env.SMTP_FROM_NAME ||
-        "MartBaobab",
+        "LOCO",
       address:
         process.env.SMTP_FROM_EMAIL ||
         process.env.SMTP_USER,
     },
     to: recipientEmail,
-    subject: "Reset your MartBaobab password",
+    subject: "Reset your LOCO password",
     text: [
       `Hello ${recipientName},`,
       "",
-      "A request was received to reset your MartBaobab password.",
+      "A request was received to reset your LOCO password.",
       "",
       `Open this link to choose a new password: ${resetUrl}`,
       "",
@@ -72,7 +72,7 @@ export async function sendPasswordResetEmail({
     html: `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#24171a">
         <div style="background:#7a0019;padding:24px;border-radius:16px 16px 0 0">
-          <h1 style="color:#ffffff;margin:0">MartBaobab</h1>
+          <h1 style="color:#ffffff;margin:0">LOCO</h1>
         </div>
 
         <div style="padding:28px;border:1px solid #f3ded6;border-top:0">
@@ -81,7 +81,7 @@ export async function sendPasswordResetEmail({
           <p>Hello ${recipientName},</p>
 
           <p>
-            A request was received to reset your MartBaobab password.
+            A request was received to reset your LOCO password.
           </p>
 
           <p style="margin:28px 0">

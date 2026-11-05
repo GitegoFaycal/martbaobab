@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { districtSchema, phoneSchema } from "./auth.schema.js";
 
 const strongPassword = z
   .string()
@@ -16,12 +17,9 @@ export const updateProfileSchema = z.object({
       .min(2, "Name must contain at least 2 characters")
       .max(100, "Name must not exceed 100 characters"),
 
-    phone: z
-      .string()
-      .trim()
-      .max(20, "Telephone number is too long")
-      .optional()
-      .or(z.literal("")),
+    phone: phoneSchema,
+
+    district: districtSchema,
   }),
 });
 

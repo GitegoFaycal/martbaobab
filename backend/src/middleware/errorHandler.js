@@ -9,11 +9,13 @@ export function errorHandler(error, req, res, next) {
   if (error.message?.includes("not allowed by CORS")) {
     return res.status(403).json({
       success: false,
-      message: "This origin is not allowed to access the MartBaobab API",
+      message: "This origin is not allowed to access the LOCO API",
     });
   }
 
-  console.error(error);
+  if (!error.status || error.status >= 500) {
+    console.error(error);
+  }
 
   const isDatabaseConnectionError =
     error.name === "PrismaClientInitializationError" ||

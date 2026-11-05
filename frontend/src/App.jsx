@@ -2,143 +2,106 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import PublicOnlyRoute from "./components/auth/PublicOnlyRoute";
 import RoleRoute from "./components/auth/RoleRoute";
-import AuthLayout from "./components/layout/AuthLayout";
+import Footer from "./components/Footer";
 import Header from "./components/Header";
+import AuthLayout from "./components/layout/AuthLayout";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
-import HomePage from "./pages/HomePage";
-import PlaceholderPage from "./pages/PlaceholderPage";
-import ProfilePage from "./pages/profile/ProfilePage";
-import SellerDashboardPage from "./pages/seller/SellerDashboardPage";
-import UnauthorizedPage from "./pages/UnauthorizedPage";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import HomePage from "./pages/HomePage";
+import ApplicationsPage from "./pages/jobs/ApplicationsPage";
+import HiringPage from "./pages/jobs/HiringPage";
+import JobDetailPage from "./pages/jobs/JobDetailPage";
+import JobFormPage from "./pages/jobs/JobFormPage";
+import JobsPage from "./pages/jobs/JobsPage";
+import CartPage from "./pages/marketplace/CartPage";
+import CheckoutPage from "./pages/marketplace/CheckoutPage";
+import ListingDetailPage from "./pages/marketplace/ListingDetailPage";
+import ListingsPage from "./pages/marketplace/ListingsPage";
+import OrderDetailPage from "./pages/marketplace/OrderDetailPage";
+import OrdersPage from "./pages/marketplace/OrdersPage";
+import ShopPage from "./pages/marketplace/ShopPage";
+import ShopsPage from "./pages/marketplace/ShopsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ChangePasswordPage from "./pages/profile/ChangePasswordPage";
 import EditProfilePage from "./pages/profile/EditProfilePage";
+import ProfilePage from "./pages/profile/ProfilePage";
+import ListingFormPage from "./pages/seller/ListingFormPage";
+import SellerDashboardPage from "./pages/seller/SellerDashboardPage";
+import SellerOrdersPage from "./pages/seller/SellerOrdersPage";
+import ShopFormPage from "./pages/seller/ShopFormPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 function MainLayout({ children }) {
   return (
     <>
       <Header />
       {children}
+      <Footer />
     </>
   );
 }
 
+const page = (element) => <MainLayout>{element}</MainLayout>;
+
 export default function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <MainLayout>
-            <HomePage />
-          </MainLayout>
-        }
-      />
+      {/* Public marketplace and jobs */}
+      <Route path="/" element={page(<HomePage />)} />
+      <Route path="/shop" element={page(<ListingsPage mode="shop" />)} />
+      <Route path="/second-hand" element={page(<ListingsPage mode="second-hand" />)} />
+      <Route path="/services" element={page(<ListingsPage mode="services" />)} />
+      <Route path="/listings/:slug" element={page(<ListingDetailPage />)} />
+      <Route path="/shops" element={page(<ShopsPage />)} />
+      <Route path="/shops/:slug" element={page(<ShopPage />)} />
+      <Route path="/cart" element={page(<CartPage />)} />
+      <Route path="/jobs" element={page(<JobsPage />)} />
+      <Route path="/jobs/:slug" element={page(<JobDetailPage />)} />
+      <Route path="/unauthorized" element={page(<UnauthorizedPage />)} />
 
+      {/* Authentication */}
       <Route element={<PublicOnlyRoute />}>
-  <Route element={<AuthLayout />}>
-    <Route
-      path="/login"
-      element={<LoginPage />}
-    />
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+        </Route>
+      </Route>
 
-    <Route
-      path="/register"
-      element={<RegisterPage />}
-    />
-
-    <Route
-      path="/forgot-password"
-      element={<ForgotPasswordPage />}
-    />
-
-    <Route
-      path="/reset-password"
-      element={<ResetPasswordPage />}
-    />
-  </Route>
-</Route>
-
+      {/* Any logged-in user */}
       <Route element={<ProtectedRoute />}>
-     
-  <Route
-    path="/profile"
-    element={
-      <MainLayout>
-        <ProfilePage />
-      </MainLayout>
-    }
-  />
-
-  <Route
-    path="/profile/edit"
-    element={
-      <MainLayout>
-        <EditProfilePage />
-      </MainLayout>
-    }
-  />
-
-  <Route
-    path="/profile/change-password"
-    element={
-      <MainLayout>
-        <ChangePasswordPage />
-      </MainLayout>
-    }
-  />
-        <Route
-          path="/orders"
-          element={
-            <MainLayout>
-              <PlaceholderPage />
-            </MainLayout>
-          }
-        />
+        <Route path="/checkout" element={page(<CheckoutPage />)} />
+        <Route path="/orders" element={page(<OrdersPage />)} />
+        <Route path="/orders/:id" element={page(<OrderDetailPage />)} />
+        <Route path="/jobs/new" element={page(<JobFormPage />)} />
+        <Route path="/jobs/:id/edit" element={page(<JobFormPage />)} />
+        <Route path="/hiring" element={page(<HiringPage />)} />
+        <Route path="/hiring/:id" element={page(<HiringPage />)} />
+        <Route path="/applications" element={page(<ApplicationsPage />)} />
+        <Route path="/profile" element={page(<ProfilePage />)} />
+        <Route path="/profile/edit" element={page(<EditProfilePage />)} />
+        <Route path="/profile/change-password" element={page(<ChangePasswordPage />)} />
       </Route>
 
+      {/* Sellers */}
       <Route element={<RoleRoute allowedRoles={["SELLER", "ADMIN"]} />}>
-        <Route
-          path="/seller"
-          element={
-            <MainLayout>
-              <SellerDashboardPage />
-            </MainLayout>
-          }
-        />
+        <Route path="/seller" element={page(<SellerDashboardPage />)} />
+        <Route path="/seller/shop" element={page(<ShopFormPage />)} />
+        <Route path="/seller/orders" element={page(<SellerOrdersPage />)} />
+        <Route path="/seller/listings/new" element={page(<ListingFormPage />)} />
+        <Route path="/seller/listings/:id/edit" element={page(<ListingFormPage />)} />
       </Route>
 
+      {/* Administrators */}
       <Route element={<RoleRoute allowedRoles={["ADMIN"]} />}>
-        <Route
-          path="/admin"
-          element={
-            <MainLayout>
-              <AdminDashboardPage />
-            </MainLayout>
-          }
-        />
+        <Route path="/admin" element={page(<AdminDashboardPage />)} />
       </Route>
 
-      <Route
-        path="/unauthorized"
-        element={
-          <MainLayout>
-            <UnauthorizedPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/:page"
-        element={
-          <MainLayout>
-            <PlaceholderPage />
-          </MainLayout>
-        }
-      />
+      <Route path="*" element={page(<NotFoundPage />)} />
     </Routes>
   );
 }

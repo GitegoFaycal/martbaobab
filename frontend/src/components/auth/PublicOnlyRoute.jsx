@@ -11,7 +11,7 @@ function getUserDestination(user) {
     return "/seller";
   }
 
-  return "/profile";
+  return "/";
 }
 
 export default function PublicOnlyRoute() {

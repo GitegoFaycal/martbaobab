@@ -6,13 +6,13 @@ const port = process.env.PORT || 5000;
 
 const server = app.listen(port, () => {
   console.log(
-    `MartBaobab API running at http://localhost:${port}`
+    `LOCO API running at http://localhost:${port}`
   );
 });
 
 async function shutdown(signal) {
   console.log(
-    `${signal} received. Closing MartBaobab API.`
+    `${signal} received. Closing LOCO API.`
   );
 
   server.close(async () => {

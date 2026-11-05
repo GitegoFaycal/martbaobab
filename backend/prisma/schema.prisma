@@ -19,6 +19,50 @@ enum ListingType {
   SERVICE
 }
 
+enum ListingCondition {
+  NEW
+  USED
+}
+
+enum CategoryKind {
+  GOODS
+  SERVICES
+  JOBS
+}
+
+enum JobType {
+  DAILY
+  CONTRACT
+  PART_TIME
+  FULL_TIME
+}
+
+enum PayPeriod {
+  PER_DAY
+  PER_WEEK
+  PER_MONTH
+  PER_TASK
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  FILLED
+}
+
+enum ApplicationStatus {
+  PENDING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+}
+
+enum PaymentProvider {
+  MTN_MOMO
+  AIRTEL_MONEY
+  CASH_ON_DELIVERY
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -44,6 +88,7 @@ model User {
   passwordHash        String
   role                Role      @default(CUSTOMER)
   avatarUrl           String?
+  district            String?
   active              Boolean   @default(true)
   emailVerified       Boolean   @default(false)
   resetTokenHash      String?
@@ -51,10 +96,12 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
-  shops     Shop[]
-  orders    Order[]
-  reviews   Review[]
-  addresses Address[]
+  shops        Shop[]
+  orders       Order[]
+  reviews      Review[]
+  addresses    Address[]
+  jobs         Job[]
+  applications JobApplication[]
 }
 
 model Address {
@@ -82,6 +129,9 @@ model Shop {
   phone       String?
   whatsapp    String?
   city        String
+  district    String?
+  sector      String?
+  address     String?
   verified    Boolean  @default(false)
   ownerId     String
   createdAt   DateTime @default(now())
@@ -90,36 +140,52 @@ model Shop {
   owner    User      @relation(fields: [ownerId], references: [id])
   listings Listing[]
   orders   Order[]
+
+  @@index([district])
 }
 
 model Category {
-  id   String  @id @default(cuid())
-  name String
-  slug String  @unique
-  icon String?
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  icon        String?
+  kind        CategoryKind @default(GOODS)
+  description String?
+  position    Int          @default(0)
 
   listings Listing[]
+  jobs     Job[]
 }
 
 model Listing {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String?
-  type        ListingType @default(PRODUCT)
-  price       Decimal     @db.Decimal(12, 2)
-  stock       Int?
-  active      Boolean     @default(true)
-  shopId      String
-  categoryId  String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String           @id @default(cuid())
+  name          String
+  slug          String           @unique
+  description   String?
+  type          ListingType      @default(PRODUCT)
+  condition     ListingCondition @default(NEW)
+  price         Decimal          @db.Decimal(12, 2)
+  originalPrice Decimal?         @db.Decimal(12, 2)
+  unit          String?
+  negotiable    Boolean          @default(false)
+  stock         Int?
+  district      String?
+  views         Int              @default(0)
+  active        Boolean          @default(true)
+  shopId        String
+  categoryId    String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   shop       Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
   category   Category       @relation(fields: [categoryId], references: [id])
   images     ListingImage[]
   orderItems OrderItem[]
   reviews    Review[]
+
+  @@index([condition, active])
+  @@index([categoryId])
+  @@index([district])
 }
 
 model ListingImage {
@@ -132,26 +198,81 @@ model ListingImage {
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
 
+model Job {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  description   String
+  requirements  String?
+  district      String
+  sector        String?
+  jobType       JobType   @default(DAILY)
+  payPeriod     PayPeriod @default(PER_DAY)
+  payMin        Decimal?  @db.Decimal(12, 2)
+  payMax        Decimal?  @db.Decimal(12, 2)
+  workersNeeded Int       @default(1)
+  startDate     DateTime?
+  durationText  String?
+  contactPhone  String?
+  status        JobStatus @default(OPEN)
+  views         Int       @default(0)
+  categoryId    String?
+  employerId    String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  category     Category?        @relation(fields: [categoryId], references: [id])
+  employer     User             @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  applications JobApplication[]
+
+  @@index([status, district])
+  @@index([categoryId])
+}
+
+model JobApplication {
+  id          String            @id @default(cuid())
+  message     String?
+  phone       String
+  status      ApplicationStatus @default(PENDING)
+  jobId       String
+  applicantId String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  job       Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applicant User @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, applicantId])
+}
+
 model Order {
-  id          String      @id @default(cuid())
-  reference   String      @unique
-  status      OrderStatus @default(PENDING)
-  subtotal    Decimal     @db.Decimal(12, 2)
-  deliveryFee Decimal     @default(0) @db.Decimal(12, 2)
-  total       Decimal     @db.Decimal(12, 2)
-  customerId  String
-  shopId      String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id               String      @id @default(cuid())
+  reference        String      @unique
+  status           OrderStatus @default(PENDING)
+  subtotal         Decimal     @db.Decimal(12, 2)
+  deliveryFee      Decimal     @default(0) @db.Decimal(12, 2)
+  total            Decimal     @db.Decimal(12, 2)
+  customerPhone    String?
+  deliveryDistrict String?
+  deliveryAddress  String?
+  note             String?
+  customerId       String
+  shopId           String
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
   customer User        @relation(fields: [customerId], references: [id])
   shop     Shop        @relation(fields: [shopId], references: [id])
   items    OrderItem[]
   payment  Payment?
+
+  @@index([customerId])
+  @@index([shopId, status])
 }
 
 model OrderItem {
   id        String  @id @default(cuid())
+  name      String
   quantity  Int
   unitPrice Decimal @db.Decimal(12, 2)
   orderId   String
@@ -162,13 +283,13 @@ model OrderItem {
 }
 
 model Payment {
-  id        String        @id @default(cuid())
-  provider  String
+  id        String          @id @default(cuid())
+  provider  PaymentProvider @default(CASH_ON_DELIVERY)
   reference String?
-  status    PaymentStatus @default(PENDING)
-  amount    Decimal       @db.Decimal(12, 2)
-  orderId   String        @unique
-  createdAt DateTime      @default(now())
+  status    PaymentStatus   @default(PENDING)
+  amount    Decimal         @db.Decimal(12, 2)
+  orderId   String          @unique
+  createdAt DateTime        @default(now())
 
   order Order @relation(fields: [orderId], references: [id])
 }

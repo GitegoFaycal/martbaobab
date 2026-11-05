@@ -5,6 +5,7 @@ import {
 } from "node:crypto";
 import prisma from "../config/prisma.js";
 import { sendPasswordResetEmail } from "../services/email.service.js";
+import { normalizePhone } from "../constants/rwanda.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { clearAuthenticationCookie } from "../utils/token.js";
 
@@ -14,6 +15,7 @@ const publicUserFields = {
   email: true,
   phone: true,
   role: true,
+  district: true,
   avatarUrl: true,
   active: true,
   emailVerified: true,
@@ -29,8 +31,8 @@ function hashResetToken(token) {
 
 export const updateProfile = asyncHandler(
   async (req, res) => {
-    const { name, phone } = req.validated.body;
-    const normalizedPhone = phone || null;
+    const { name, phone, district } = req.validated.body;
+    const normalizedPhone = normalizePhone(phone);
 
     if (normalizedPhone) {
       const phoneOwner =
@@ -59,6 +61,7 @@ export const updateProfile = asyncHandler(
       data: {
         name,
         phone: normalizedPhone,
+        district,
       },
       select: publicUserFields,
     });

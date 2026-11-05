@@ -1,9 +1,9 @@
 import prisma from "../config/prisma.js";
-import { verifyToken } from "../utils/token.js";
+import { AUTH_COOKIE, verifyToken } from "../utils/token.js";
 
 export default async function authenticate(req, res, next) {
   try {
-    const cookieToken = req.cookies?.martbaobab_token;
+    const cookieToken = req.cookies?.[AUTH_COOKIE];
 
     const authorizationHeader = req.headers.authorization;
     const bearerToken = authorizationHeader?.startsWith("Bearer ")
@@ -31,6 +31,7 @@ export default async function authenticate(req, res, next) {
         email: true,
         phone: true,
         role: true,
+        district: true,
         avatarUrl: true,
         active: true,
         emailVerified: true,

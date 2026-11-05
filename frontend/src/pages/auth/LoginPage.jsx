@@ -19,7 +19,7 @@ function getDashboardPath(user) {
     return "/seller";
   }
 
-  return "/profile";
+  return "/";
 }
 
 export default function LoginPage() {
@@ -80,10 +80,10 @@ export default function LoginPage() {
   return (
     <div className="rounded-3xl bg-white p-6 shadow-xl shadow-orange-100/70 sm:p-9">
       <div>
-        <p className="font-bold text-baobab-orange">Welcome back</p>
+        <p className="font-bold text-loco-orange">Welcome back</p>
 
-        <h1 className="mt-2 text-3xl font-black text-baobab-wine">
-          Log in to MartBaobab
+        <h1 className="mt-2 text-3xl font-black text-loco-wine">
+          Log in to LOCO
         </h1>
 
         <p className="mt-2 text-sm leading-6 text-gray-500">
@@ -111,12 +111,12 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="email"
-            className="mb-2 block text-sm font-bold text-baobab-ink"
+            className="mb-2 block text-sm font-bold text-loco-ink"
           >
             Email address
           </label>
 
-          <div className="flex items-center rounded-xl border border-gray-200 bg-white px-4 focus-within:border-baobab-orange focus-within:ring-4 focus-within:ring-orange-100">
+          <div className="flex items-center rounded-xl border border-gray-200 bg-white px-4 focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
             <Mail size={19} className="text-gray-400" />
 
             <input
@@ -137,20 +137,20 @@ export default function LoginPage() {
           <div className="mb-2 flex items-center justify-between">
             <label
               htmlFor="password"
-              className="text-sm font-bold text-baobab-ink"
+              className="text-sm font-bold text-loco-ink"
             >
               Password
             </label>
 
             <Link
               to="/forgot-password"
-              className="text-sm font-bold text-baobab-wine hover:text-baobab-orange"
+              className="text-sm font-bold text-loco-wine hover:text-loco-orange"
             >
               Forgot password?
             </Link>
           </div>
 
-          <div className="flex items-center rounded-xl border border-gray-200 bg-white px-4 focus-within:border-baobab-orange focus-within:ring-4 focus-within:ring-orange-100">
+          <div className="flex items-center rounded-xl border border-gray-200 bg-white px-4 focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
             <LockKeyhole size={19} className="text-gray-400" />
 
             <input
@@ -168,7 +168,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="text-gray-400 hover:text-baobab-wine"
+              className="text-gray-400 hover:text-loco-wine"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
@@ -179,7 +179,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-baobab-wine px-5 py-3.5 font-bold text-white hover:bg-baobab-wine-dark disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-loco-wine px-5 py-3.5 font-bold text-white hover:bg-loco-wine-dark disabled:cursor-not-allowed disabled:opacity-60"
         >
           {submitting && <LoaderCircle size={19} className="animate-spin" />}
           {submitting ? "Logging in..." : "Log in"}
@@ -187,10 +187,10 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-7 text-center text-sm text-gray-500">
-        Do not have a MartBaobab account?{" "}
+        Do not have a LOCO account?{" "}
         <Link
           to="/register"
-          className="font-bold text-baobab-wine hover:text-baobab-orange"
+          className="font-bold text-loco-wine hover:text-loco-orange"
         >
           Create an account
         </Link>

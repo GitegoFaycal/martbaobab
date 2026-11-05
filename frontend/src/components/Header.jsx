@@ -1,35 +1,43 @@
 import {
+  Briefcase,
   ChevronDown,
+  ClipboardList,
   LogOut,
   Menu,
   Package,
+  Recycle,
+  ShieldCheck,
+  ShoppingBag,
   ShoppingCart,
-  Sprout,
   Store,
   UserRound,
+  Wrench,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import Logo from "./Logo";
 
-const publicLinks = [
-  {
-    label: "Shops",
-    path: "/shops",
-  },
-  {
-    label: "Services",
-    path: "/services",
-  },
-  {
-    label: "Tasks",
-    path: "/tasks",
-  },
+const sections = [
+  { label: "Shop nearby", path: "/shop", icon: ShoppingBag },
+  { label: "Second-hand", path: "/second-hand", icon: Recycle },
+  { label: "Services", path: "/services", icon: Wrench },
+  { label: "Jobs", path: "/jobs", icon: Briefcase },
 ];
+
+function navClass({ isActive }) {
+  return `inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
+    isActive
+      ? "bg-loco-cream text-loco-wine"
+      : "text-loco-ink hover:bg-loco-cream hover:text-loco-wine"
+  }`;
+}
 
 export default function Header() {
   const { user, isAuthenticated, authLoading, logout } = useAuth();
+  const { count } = useCart();
   const navigate = useNavigate();
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -73,271 +81,209 @@ export default function Header() {
       await logout();
       setAccountOpen(false);
       setMobileOpen(false);
-      navigate("/", {
-        replace: true,
-      });
+      navigate("/", { replace: true });
     } finally {
       setLoggingOut(false);
     }
   }
 
+  const accountLinks = [
+    { label: "My profile", to: "/profile", icon: UserRound },
+    { label: "My orders", to: "/orders", icon: Package },
+    { label: "My job applications", to: "/applications", icon: ClipboardList },
+    { label: "People I'm hiring", to: "/hiring", icon: Briefcase },
+    ...(user?.role === "SELLER" || user?.role === "ADMIN"
+      ? [{ label: "Seller dashboard", to: "/seller", icon: Store }]
+      : []),
+    ...(user?.role === "ADMIN"
+      ? [{ label: "Administration", to: "/admin", icon: ShieldCheck }]
+      : []),
+  ];
+
   return (
     <header className="sticky top-0 z-50 border-b border-orange-100 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-5 px-4 py-3">
-        <Link
-          to="/"
-          className="flex shrink-0 items-center gap-2"
-          onClick={() => setMobileOpen(false)}
-        >
-          <span className="relative grid h-10 w-10 place-items-center rounded-full bg-baobab-wine text-white">
-            <ShoppingCart size={22} />
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
+        <Logo onClick={() => setMobileOpen(false)} />
 
-            <Sprout
-              size={15}
-              className="absolute -right-1 -top-1 text-baobab-mint"
-            />
-          </span>
-
-          <span>
-            <strong className="block text-xl leading-5 text-baobab-wine">
-              MartBaobab
-            </strong>
-
-            <small className="tracking-wide text-baobab-orange">
-              Shop · Connect · Earn
-            </small>
-          </span>
-        </Link>
-
-        <nav className="ml-auto hidden items-center gap-6 lg:flex">
-          {publicLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={({ isActive }) =>
-                `text-sm font-semibold ${
-                  isActive
-                    ? "text-baobab-orange"
-                    : "text-baobab-ink hover:text-baobab-wine"
-                }`
-              }
-            >
-              {link.label}
+        <nav className="ml-4 hidden items-center gap-1 lg:flex">
+          {sections.map(({ label, path, icon: Icon }) => (
+            <NavLink key={path} to={path} className={navClass}>
+              <Icon size={16} />
+              {label}
             </NavLink>
           ))}
-
-          {!isAuthenticated && (
-            <NavLink
-              to="/register?role=SELLER"
-              className="text-sm font-semibold text-baobab-ink hover:text-baobab-wine"
-            >
-              Become a seller
-            </NavLink>
-          )}
-
-          {user?.role === "SELLER" && (
-            <NavLink
-              to="/seller"
-              className="text-sm font-semibold text-baobab-wine"
-            >
-              Seller dashboard
-            </NavLink>
-          )}
-
-          {user?.role === "ADMIN" && (
-            <NavLink
-              to="/admin"
-              className="text-sm font-semibold text-baobab-wine"
-            >
-              Administration
-            </NavLink>
-          )}
         </nav>
 
-        {!authLoading && !isAuthenticated && (
-          <div className="hidden items-center gap-3 sm:flex">
-            <Link
-              to="/login"
-              className="rounded-full border border-baobab-wine px-5 py-2 text-sm font-bold text-baobab-wine hover:bg-baobab-cream"
-            >
-              Log in
-            </Link>
+        <div className="ml-auto flex items-center gap-2">
+          <Link
+            to="/jobs/new"
+            className="hidden rounded-full border border-loco-mint px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-mint/10 md:inline-flex"
+          >
+            Post a job
+          </Link>
 
-            <Link
-              to="/register"
-              className="rounded-full bg-baobab-wine px-5 py-2 text-sm font-bold text-white hover:bg-baobab-wine-dark"
-            >
-              Sign up
-            </Link>
-          </div>
-        )}
-
-        {!authLoading && isAuthenticated && (
-          <div ref={accountMenuRef} className="relative hidden sm:block">
-            <button
-              type="button"
-              aria-haspopup="menu"
-              aria-expanded={accountOpen}
-              onClick={() => setAccountOpen((current) => !current)}
-              className="flex items-center gap-3 rounded-full border border-orange-100 bg-white py-1.5 pl-1.5 pr-3 shadow-sm hover:border-baobab-orange"
-            >
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-baobab-mint font-bold text-baobab-wine">
-                {user.name.charAt(0).toUpperCase()}
+          <Link
+            to="/cart"
+            aria-label={`Cart, ${count} items`}
+            className="relative grid h-10 w-10 place-items-center rounded-full text-loco-wine hover:bg-loco-cream"
+          >
+            <ShoppingCart size={21} />
+            {count > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-loco-orange px-1 text-[11px] font-black text-white">
+                {count}
               </span>
-
-              <span className="hidden text-left md:block">
-                <strong className="block max-w-28 truncate text-sm">
-                  {user.name}
-                </strong>
-
-                <small className="block text-xs text-gray-500">
-                  {formatRole(user.role)}
-                </small>
-              </span>
-
-              <ChevronDown size={16} />
-            </button>
-
-            {accountOpen && (
-              <div className="absolute right-0 mt-3 w-60 overflow-hidden rounded-2xl border border-orange-100 bg-white p-2 shadow-xl">
-                <div className="border-b border-gray-100 px-3 py-3">
-                  <p className="truncate font-bold text-baobab-wine">
-                    {user.name}
-                  </p>
-
-                  <p className="truncate text-xs text-gray-500">
-                    {user.email}
-                  </p>
-                </div>
-
-                <Link
-                  to="/profile"
-                  onClick={() => setAccountOpen(false)}
-                  className="mt-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-baobab-cream"
-                >
-                  <UserRound size={18} />
-                  My profile
-                </Link>
-
-                <Link
-                  to="/orders"
-                  onClick={() => setAccountOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-baobab-cream"
-                >
-                  <Package size={18} />
-                  My orders
-                </Link>
-
-                {user.role === "SELLER" && (
-                  <Link
-                    to="/seller"
-                    onClick={() => setAccountOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-baobab-cream"
-                  >
-                    <Store size={18} />
-                    Seller dashboard
-                  </Link>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  disabled={loggingOut}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
-                >
-                  <LogOut size={18} />
-                  {loggingOut ? "Logging out..." : "Log out"}
-                </button>
-              </div>
             )}
-          </div>
-        )}
+          </Link>
 
-        <button
-          type="button"
-          onClick={() => setMobileOpen((current) => !current)}
-          className="ml-auto rounded-lg p-2 lg:hidden"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileOpen ? <X /> : <Menu />}
-        </button>
+          {!authLoading && !isAuthenticated && (
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link
+                to="/login"
+                className="rounded-full border border-loco-wine px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-cream"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-full bg-loco-wine px-4 py-2 text-sm font-bold text-white hover:bg-loco-wine-dark"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
+
+          {!authLoading && isAuthenticated && (
+            <div ref={accountMenuRef} className="relative hidden sm:block">
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={accountOpen}
+                onClick={() => setAccountOpen((current) => !current)}
+                className="flex items-center gap-2 rounded-full border border-orange-100 bg-white py-1 pl-1 pr-3 shadow-sm hover:border-loco-orange"
+              >
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-loco-mint font-bold text-loco-wine">
+                  {user.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="hidden max-w-28 truncate text-left text-sm font-bold md:block">
+                  {user.name.split(" ")[0]}
+                </span>
+                <ChevronDown size={15} />
+              </button>
+
+              {accountOpen && (
+                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-orange-100 bg-white p-2 shadow-xl">
+                  <div className="border-b border-gray-100 px-3 py-3">
+                    <p className="truncate font-bold text-loco-wine">
+                      {user.name}
+                    </p>
+                    <p className="truncate text-xs text-gray-500">
+                      {user.email}
+                      {user.district ? ` · ${user.district}` : ""}
+                    </p>
+                  </div>
+
+                  <div className="mt-1">
+                    {accountLinks.map(({ label, to, icon: Icon }) => (
+                      <Link
+                        key={to}
+                        to={to}
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-loco-cream"
+                      >
+                        <Icon size={17} />
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                    className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  >
+                    <LogOut size={17} />
+                    {loggingOut ? "Logging out..." : "Log out"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen((current) => !current)}
+            className="rounded-lg p-2 text-loco-wine lg:hidden"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-orange-100 bg-white px-4 py-5 lg:hidden">
-          <nav className="mx-auto flex max-w-7xl flex-col gap-2">
-            {publicLinks.map((link) => (
+        <div className="border-t border-orange-100 bg-white px-4 py-4 lg:hidden">
+          <nav className="mx-auto flex max-w-7xl flex-col gap-1">
+            {sections.map(({ label, path, icon: Icon }) => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={path}
+                to={path}
                 onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-4 py-3 font-semibold hover:bg-baobab-cream"
+                className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-cream"
               >
-                {link.label}
+                <Icon size={18} className="text-loco-orange" />
+                {label}
               </Link>
             ))}
 
+            <Link
+              to="/jobs/new"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-cream"
+            >
+              <Briefcase size={18} className="text-loco-mint-dark" />
+              Post a job
+            </Link>
+
+            <hr className="my-2 border-orange-100" />
+
             {isAuthenticated ? (
               <>
-                <Link
-                  to="/profile"
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-xl px-4 py-3 font-semibold hover:bg-baobab-cream"
-                >
-                  My profile
-                </Link>
-
-                <Link
-                  to="/orders"
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-xl px-4 py-3 font-semibold hover:bg-baobab-cream"
-                >
-                  My orders
-                </Link>
-
-                {user.role === "SELLER" && (
+                {accountLinks.map(({ label, to, icon: Icon }) => (
                   <Link
-                    to="/seller"
+                    key={to}
+                    to={to}
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-xl px-4 py-3 font-semibold hover:bg-baobab-cream"
+                    className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-cream"
                   >
-                    Seller dashboard
+                    <Icon size={18} />
+                    {label}
                   </Link>
-                )}
-
-                {user.role === "ADMIN" && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setMobileOpen(false)}
-                    className="rounded-xl px-4 py-3 font-semibold hover:bg-baobab-cream"
-                  >
-                    Administration
-                  </Link>
-                )}
-
+                ))}
                 <button
                   type="button"
                   onClick={handleLogout}
                   disabled={loggingOut}
-                  className="rounded-xl px-4 py-3 text-left font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-left font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
                 >
+                  <LogOut size={18} />
                   Log out
                 </button>
               </>
             ) : (
-              <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="mt-2 grid grid-cols-2 gap-3">
                 <Link
                   to="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-xl border border-baobab-wine px-4 py-3 text-center font-bold text-baobab-wine"
+                  className="rounded-xl border border-loco-wine px-4 py-3 text-center font-bold text-loco-wine"
                 >
                   Log in
                 </Link>
-
                 <Link
                   to="/register"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-xl bg-baobab-wine px-4 py-3 text-center font-bold text-white"
+                  className="rounded-xl bg-loco-wine px-4 py-3 text-center font-bold text-white"
                 >
                   Sign up
                 </Link>
@@ -348,8 +294,4 @@ export default function Header() {
       )}
     </header>
   );
-}
-
-function formatRole(role) {
-  return role.charAt(0) + role.slice(1).toLowerCase();
 }

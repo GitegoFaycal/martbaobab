@@ -1,12 +1,25 @@
 import { z } from "zod";
+import { DISTRICTS, RWANDA_PHONE_PATTERN } from "../constants/rwanda.js";
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(8, "Password must contain at least 8 characters")
   .max(72, "Password must not exceed 72 characters")
   .regex(/[A-Z]/, "Password must contain an uppercase letter")
   .regex(/[a-z]/, "Password must contain a lowercase letter")
   .regex(/[0-9]/, "Password must contain a number");
+
+export const phoneSchema = z
+  .string()
+  .trim()
+  .regex(
+    RWANDA_PHONE_PATTERN,
+    "Enter a valid Rwandan telephone number, e.g. 078 123 4567"
+  );
+
+export const districtSchema = z.enum(DISTRICTS, {
+  message: "Choose your district",
+});
 
 export const registerSchema = z.object({
   body: z.object({
@@ -22,13 +35,9 @@ export const registerSchema = z.object({
       .toLowerCase()
       .email("Enter a valid email address"),
 
-    phone: z
-      .string()
-      .trim()
-      .min(10, "Enter a valid telephone number")
-      .max(20, "Telephone number is too long")
-      .optional()
-      .or(z.literal("")),
+    phone: phoneSchema,
+
+    district: districtSchema,
 
     password: passwordSchema,
 

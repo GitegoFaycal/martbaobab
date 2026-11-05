@@ -6,6 +6,15 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth.routes.js";
 import accountRoutes from "./routes/account.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import {
+  categoryRouter,
+  listingRouter,
+  locationRouter,
+  orderRouter,
+  shopRouter,
+} from "./routes/marketplace.routes.js";
+import { applicationRouter, jobRouter } from "./routes/job.routes.js";
 import prisma from "./config/prisma.js";
 import {
   errorHandler,
@@ -22,6 +31,8 @@ app.set("trust proxy", 1);
 const defaultOrigins = [
   "http://localhost:5173",
   "https://martbaobab-frontend.vercel.app",
+  "https://loco-frontend.vercel.app",
+  "https://loco-rw.vercel.app",
 ];
 
 const allowedOrigins = [
@@ -33,10 +44,10 @@ const allowedOrigins = [
 ];
 
 // Vercel preview deployments of the frontend, e.g.
-// https://martbaobab-frontend-git-feature-x-user.vercel.app
+// https://loco-frontend-git-feature-x-user.vercel.app
 const vercelPreviewPattern = new RegExp(
   process.env.VERCEL_PREVIEW_PATTERN ||
-    "^https://martbaobab-frontend-[a-z0-9-]+\.vercel\.app$"
+    "^https://(martbaobab|loco)-frontend-[a-z0-9-]+\\.vercel\\.app$"
 );
 
 function isAllowedOrigin(origin) {
@@ -75,11 +86,23 @@ const authRateLimit = rateLimit({
   },
 });
 
+const writeRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  skip: (req) => req.method === "GET",
+  message: {
+    success: false,
+    message: "Too many requests. Please slow down.",
+  },
+});
+
 app.use(helmet());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(morgan("dev"));
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 app.get("/api/health", async (req, res) => {
   let database = "ok";
@@ -94,13 +117,21 @@ app.get("/api/health", async (req, res) => {
   res.status(database === "ok" ? 200 : 503).json({
     success: database === "ok",
     status: database === "ok" ? "ok" : "degraded",
-    service: "MartBaobab API",
+    service: "LOCO API",
     database,
   });
 });
 
 app.use("/api/auth", authRateLimit, authRoutes);
 app.use("/api/accounts", accountRoutes);
+app.use("/api/categories", categoryRouter);
+app.use("/api/locations", locationRouter);
+app.use("/api/shops", writeRateLimit, shopRouter);
+app.use("/api/listings", writeRateLimit, listingRouter);
+app.use("/api/orders", writeRateLimit, orderRouter);
+app.use("/api/jobs", writeRateLimit, jobRouter);
+app.use("/api/applications", applicationRouter);
+app.use("/api/admin", adminRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -1,30 +1,57 @@
 import Hero from "../components/Hero";
 import {
-  Categories,
+  CategoryStrip,
+  HowItWorks,
+  JobStrip,
+  ListingStrip,
   SellerCTA,
-  Verified,
+  TrustStrip,
 } from "../components/Sections";
-import Logo from "../components/Logo";
+import { getSavedDistrict } from "../lib/rwanda";
 
 export default function HomePage() {
+  const district = getSavedDistrict();
+  const districtQuery = district ? `&district=${encodeURIComponent(district)}` : "";
+
   return (
-    <>
-      <main>
-        <Hero />
-        <Categories />
-        <Verified />
-        <SellerCTA />
-      </main>
+    <main className="bg-loco-cream">
+      <Hero />
+      <TrustStrip />
 
-      <footer className="border-t border-orange-100 bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between">
-          <Logo />
+      <CategoryStrip
+        kind="GOODS"
+        basePath="/shop"
+        eyebrow="Browse locally"
+        title="What do you need today?"
+      />
 
-          <p className="text-sm text-gray-500">
-            © 2026 MartBaobab. Shop · Deliver · Connect · Earn.
-          </p>
-        </div>
-      </footer>
-    </>
+      <ListingStrip
+        query={`?condition=NEW&type=PRODUCT&perPage=8${districtQuery}`}
+        eyebrow={district ? `Fresh in ${district}` : "Fresh from nearby shops"}
+        title="Everyday goods near you"
+        to="/shop"
+        emptyText="No products listed yet. Sellers are joining LOCO every day."
+      />
+
+      <ListingStrip
+        query={`?condition=USED&perPage=8${districtQuery}`}
+        eyebrow="Save money"
+        title="Second-hand deals"
+        to="/second-hand"
+        emptyText="No second-hand items yet. Have something to sell? Open a shop in a minute."
+      />
+
+      <JobStrip />
+
+      <CategoryStrip
+        kind="SERVICES"
+        basePath="/services"
+        eyebrow="Skilled people nearby"
+        title="Local services"
+      />
+
+      <HowItWorks />
+      <SellerCTA />
+    </main>
   );
 }

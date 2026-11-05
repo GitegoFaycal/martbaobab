@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: martbaobab-postgres
+    container_name: loco-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: martbaobab
@@ -10,6 +10,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - martbaobab_data:/var/lib/postgresql/data
+      - loco_data:/var/lib/postgresql/data
 volumes:
-  martbaobab_data:
+  loco_data:

@@ -1,18 +1,20 @@
 import bcrypt from "bcryptjs";
 import prisma from "../config/prisma.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { normalizePhone } from "../constants/rwanda.js";
 import {
   clearAuthenticationCookie,
   generateToken,
   setAuthenticationCookie,
 } from "../utils/token.js";
 
-const publicUserFields = {
+export const publicUserFields = {
   id: true,
   name: true,
   email: true,
   phone: true,
   role: true,
+  district: true,
   avatarUrl: true,
   active: true,
   emailVerified: true,
@@ -21,24 +23,13 @@ const publicUserFields = {
 };
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, role } = req.validated.body;
+  const { name, email, phone, district, password, role } = req.validated.body;
 
-  const normalizedPhone = phone || null;
+  const normalizedPhone = normalizePhone(phone);
 
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [
-        {
-          email,
-        },
-        ...(normalizedPhone
-          ? [
-              {
-                phone: normalizedPhone,
-              },
-            ]
-          : []),
-      ],
+      OR: [{ email }, { phone: normalizedPhone }],
     },
   });
 
@@ -59,6 +50,7 @@ export const register = asyncHandler(async (req, res) => {
       name,
       email,
       phone: normalizedPhone,
+      district,
       passwordHash,
       role,
     },
@@ -72,8 +64,8 @@ export const register = asyncHandler(async (req, res) => {
     success: true,
     message:
       role === "SELLER"
-        ? "Seller account created successfully"
-        : "Customer account created successfully",
+        ? "Seller account created. Set up your shop to start selling."
+        : "Welcome to LOCO. Your account is ready.",
     user,
   });
 });
@@ -82,9 +74,7 @@ export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.validated.body;
 
   const userWithPassword = await prisma.user.findUnique({
-    where: {
-      email,
-    },
+    where: { email },
   });
 
   if (!userWithPassword) {
@@ -114,9 +104,7 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: {
-      id: userWithPassword.id,
-    },
+    where: { id: userWithPassword.id },
     select: publicUserFields,
   });
 

@@ -20,11 +20,11 @@ export default class ErrorBoundary extends Component {
     }
 
     return (
-      <main className="grid min-h-screen place-items-center bg-baobab-cream px-4">
+      <main className="grid min-h-screen place-items-center bg-loco-cream px-4">
         <div className="max-w-lg text-center">
-          <p className="font-bold text-baobab-orange">Something went wrong</p>
+          <p className="font-bold text-loco-orange">Something went wrong</p>
 
-          <h1 className="mt-2 text-3xl font-black text-baobab-wine">
+          <h1 className="mt-2 text-3xl font-black text-loco-wine">
             This page could not be displayed
           </h1>
 
@@ -35,7 +35,7 @@ export default class ErrorBoundary extends Component {
 
           <a
             href="/"
-            className="mt-7 inline-block rounded-full bg-baobab-wine px-7 py-3 font-bold text-white"
+            className="mt-7 inline-block rounded-full bg-loco-wine px-7 py-3 font-bold text-white"
           >
             Return home
           </a>
