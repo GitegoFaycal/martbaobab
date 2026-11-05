@@ -5,7 +5,6 @@ import App from "./App";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import { AuthProvider } from "./context/AuthContext";
-import { CartProvider } from "./context/CartContext";
 import { I18nProvider } from "./i18n";
 import "./index.css";
 
@@ -16,9 +15,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <BrowserRouter>
           <ScrollToTop />
           <AuthProvider>
-            <CartProvider>
-              <App />
-            </CartProvider>
+            <App />
           </AuthProvider>
         </BrowserRouter>
       </I18nProvider>

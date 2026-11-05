@@ -70,13 +70,13 @@ export default {
     step1Text: "Search by district. See shops, deals and jobs in your own area first.",
     step2: "Talk directly",
     step2Text: "Call or WhatsApp the seller or employer. No middlemen.",
-    step3: "Pay the local way",
-    step3Text: "MTN MoMo, Airtel Money or cash when the moto arrives.",
-    step4: "Delivered by moto",
-    step4Text: "Orders from your district arrive the same day.",
+    step3: "Deal on WhatsApp",
+    step3Text: "Agree on price, payment and delivery directly with the seller. No middlemen, no fees.",
+    step4: "Meet or get it delivered",
+    step4Text: "Collect from the shop or arrange a moto delivery between you.",
     trust1: "Verified shops are checked by the LOCO team",
     trust2: "All 30 districts of Rwanda",
-    trust3: "Prices in RWF, no hidden fees",
+    trust3: "Prices in RWF, no fees, no middlemen",
     sellOn: "Sell on LOCO",
     sellTitle: "Turn your kiosk, boutique or garage into an online shop.",
     sellText: "List new or second-hand products and services. Receive orders on your phone and get paid by MoMo.",
@@ -90,7 +90,7 @@ export default {
 
   footer: {
     tagline: "LOCO connects buyers, sellers, workers and employers in every district of Rwanda. Shop from the kiosk next door, find a good second-hand deal, or get hired for local work.",
-    pay: "Pay with MTN MoMo · Airtel Money · Cash on delivery",
+    pay: "Buyers and sellers deal directly on WhatsApp",
     buy: "Buy",
     work: "Work",
     sell: "Sell",
@@ -164,7 +164,7 @@ export default {
   sections: {
     shopEyebrow: "Shop nearby",
     shopTitle: "Everyday goods from local shops",
-    shopText: "Groceries, airtime, gas, phones and more from shops in your district. Delivered by moto or collected in person.",
+    shopText: "Groceries, airtime, gas, phones and more from shops in your district. Message the seller on WhatsApp to buy.",
     secondHandEyebrow: "Second-hand deals",
     secondHandTitle: "Good items at lower prices",
     secondHandText: "Used phones, furniture, bikes and more, sold by people and shops near you. Compare with the original price and negotiate.",
@@ -175,6 +175,9 @@ export default {
   },
 
   listing: {
+    whatsappMe: "WhatsApp me",
+    dealText: "Agree on price, payment and delivery directly with the seller on WhatsApp.",
+    prefill: "Hello {shop}, I saw \"{item}\" ({price}) on LOCO. Is it still available?",
     addToCart: "Add to cart",
     contactProvider: "Contact provider",
     soldOutView: "Sold out · view",
@@ -398,7 +401,7 @@ export default {
     side1: "Buy everyday goods from the shop next door",
     side2: "Find second-hand deals at lower prices",
     side3: "Get hired for daily and contract work nearby",
-    side4: "Moto delivery and MoMo payment, the local way",
+    side4: "Deal directly with people on WhatsApp, the local way",
     pleaseLogin: "Please log in to continue.",
   },
 

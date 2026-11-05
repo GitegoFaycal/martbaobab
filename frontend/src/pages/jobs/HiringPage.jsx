@@ -1,4 +1,5 @@
-import { Briefcase, MapPin, MessageCircle, Phone, Users } from "lucide-react";
+import { Briefcase, MapPin, Phone, Users } from "lucide-react";
+import WhatsAppIcon from "../../components/WhatsAppIcon";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { apiRequest } from "../../api/api";
@@ -144,7 +145,7 @@ function Applicants({ job, onChanged }) {
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button as="a" href={`tel:${application.phone}`} variant="outline" size="sm"><Phone size={14} /> {formatPhoneForDisplay(application.phone)}</Button>
-                  {wa && <Button as="a" href={wa} target="_blank" rel="noreferrer" variant="mint" size="sm"><MessageCircle size={14} /> WhatsApp</Button>}
+                  {wa && <Button as="a" href={wa} target="_blank" rel="noreferrer" variant="whatsapp" size="sm"><WhatsAppIcon size={15} /> WhatsApp</Button>}
                   <span className="flex-1" />
                   {application.status !== "ACCEPTED" && <Button size="sm" loading={busy === application.id} onClick={() => setStatus(application, "ACCEPTED")}>Accept</Button>}
                   {application.status === "PENDING" && <Button size="sm" variant="ghost" loading={busy === application.id} onClick={() => setStatus(application, "SHORTLISTED")}>Shortlist</Button>}

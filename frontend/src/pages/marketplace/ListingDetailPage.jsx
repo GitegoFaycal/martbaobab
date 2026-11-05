@@ -1,34 +1,19 @@
-import {
-  BadgeCheck,
-  Eye,
-  ImageOff,
-  MapPin,
-  MessageCircle,
-  Minus,
-  Phone,
-  Plus,
-  ShoppingCart,
-  Store,
-} from "lucide-react";
+import { BadgeCheck, Eye, ImageOff, MapPin, Phone, Store } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import ListingCard from "../../components/ListingCard";
-import { Badge, Breadcrumbs, Button, Container, EmptyState, Message, Spinner } from "../../components/ui";
-import { useCart } from "../../context/CartContext";
+import { Link, useParams } from "react-router-dom";
+import ListingCard, { listingWhatsapp } from "../../components/ListingCard";
+import WhatsAppIcon from "../../components/WhatsAppIcon";
+import { Badge, Breadcrumbs, Button, Container, EmptyState, Spinner } from "../../components/ui";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { discountPercent, formatRWF, timeAgo } from "../../lib/format";
-import { formatPhoneForDisplay, whatsappLink } from "../../lib/rwanda";
+import { formatPhoneForDisplay } from "../../lib/rwanda";
 
 export default function ListingDetailPage() {
   const t = useT();
   const { slug } = useParams();
-  const navigate = useNavigate();
-  const { addItem } = useCart();
   const { data, loading, error } = useFetch(`/listings/${slug}`);
-  const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
-  const [notice, setNotice] = useState(null);
 
   if (loading) {
     return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner label={t("common.loading")} /></main>;
@@ -49,21 +34,10 @@ export default function ListingDetailPage() {
   const soldOut = listing.type === "PRODUCT" && listing.stock != null && listing.stock <= 0;
   const isService = listing.type === "SERVICE";
   const district = listing.district || listing.shop?.district;
-  const whatsapp = whatsappLink(listing.shop?.whatsapp || listing.shop?.phone, `Hello ${listing.shop?.name}, I saw "${listing.name}" on LOCO. Is it still available?`);
+  const whatsapp = listingWhatsapp(listing, t);
 
   const sectionPath = listing.condition === "USED" ? "/second-hand" : isService ? "/services" : "/shop";
   const sectionLabel = listing.condition === "USED" ? t("nav.secondHand") : isService ? t("nav.services") : t("nav.shop");
-
-  function handleAdd(buyNow = false) {
-    const result = addItem(listing, quantity);
-
-    if (result.ok) {
-      if (buyNow) navigate("/cart");
-      else setNotice({ type: "success", text: t("listing.addedShort") });
-    } else {
-      setNotice({ type: "conflict", text: t("listing.replaceQuestion", { shop: result.shop.name }) });
-    }
-  }
 
   return (
     <main className="min-h-[75vh] bg-loco-cream py-8">
@@ -111,35 +85,28 @@ export default function ListingDetailPage() {
 
             {listing.description && <p className="mt-5 whitespace-pre-line leading-7 text-gray-700">{listing.description}</p>}
 
-            {notice && (
-              <div className="mt-5">
-                <Message type={notice.type === "success" ? "success" : "error"}>
-                  {notice.text}
-                  {notice.type === "conflict" && (
-                    <button type="button" onClick={() => { addItem(listing, quantity, { replace: true }); setNotice({ type: "success", text: t("listing.cartReplaced") }); }} className="ml-2 font-bold underline">
-                      {t("listing.yesReplace")}
-                    </button>
-                  )}
-                </Message>
-              </div>
-            )}
-
-            {!isService && (
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <div className="flex items-center rounded-xl border border-gray-200">
-                  <button type="button" aria-label={t("listing.decrease")} onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="px-3 py-3 text-loco-wine hover:bg-loco-cream"><Minus size={16} /></button>
-                  <span className="min-w-10 text-center font-bold">{quantity}</span>
-                  <button type="button" aria-label={t("listing.increase")} onClick={() => setQuantity((q) => Math.min(listing.stock ?? 999, q + 1))} className="px-3 py-3 text-loco-wine hover:bg-loco-cream"><Plus size={16} /></button>
-                </div>
-                <Button variant="outline" className="flex-1" disabled={soldOut} onClick={() => handleAdd(false)}><ShoppingCart size={18} /> {t("listing.addToCart")}</Button>
-                <Button variant="orange" className="flex-1" disabled={soldOut} onClick={() => handleAdd(true)}>{t("listing.buyNow")}</Button>
-              </div>
-            )}
-
-            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-              {listing.shop?.phone && <Button as="a" href={`tel:${listing.shop.phone}`} variant="ghost" className="flex-1 border border-orange-100"><Phone size={17} /> {formatPhoneForDisplay(listing.shop.phone)}</Button>}
-              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="mint" className="flex-1"><MessageCircle size={17} /> {t("listing.whatsappSeller")}</Button>}
+            <div className="mt-6 rounded-2xl border border-[#25D366]/30 bg-[#25D366]/10 p-4">
+              {whatsapp ? (
+                <a
+                  href={whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3.5 text-lg font-bold text-white hover:bg-[#1ebe5d] ${soldOut ? "opacity-60" : ""}`}
+                >
+                  <WhatsAppIcon size={22} />
+                  {t("listing.whatsappMe")}
+                </a>
+              ) : (
+                <p className="text-center text-sm font-semibold text-gray-600">{t("listing.contactProvider")}</p>
+              )}
+              <p className="mt-3 text-center text-sm text-gray-600">{t("listing.dealText")}</p>
             </div>
+
+            {listing.shop?.phone && (
+              <Button as="a" href={`tel:${listing.shop.phone}`} variant="outline" className="mt-3 w-full">
+                <Phone size={17} /> {formatPhoneForDisplay(listing.shop.phone)}
+              </Button>
+            )}
 
             <div className="mt-6 rounded-2xl bg-loco-cream p-4">
               <Link to={`/shops/${listing.shop.slug}`} className="flex items-center gap-3">

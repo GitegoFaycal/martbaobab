@@ -4,12 +4,12 @@ import {
   Bike,
   HandCoins,
   MapPin,
-  MessageCircle,
   Search,
   ShieldCheck,
   Store,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import WhatsAppIcon from "./WhatsAppIcon";
 import useFetch from "../hooks/useFetch";
 import { useT } from "../i18n";
 import CategoryIcon from "./CategoryIcon";
@@ -113,7 +113,7 @@ export function HowItWorks() {
   const t = useT();
   const steps = [
     { icon: Search, title: t("home.step1"), text: t("home.step1Text") },
-    { icon: MessageCircle, title: t("home.step2"), text: t("home.step2Text") },
+    { icon: WhatsAppIcon, title: t("home.step2"), text: t("home.step2Text") },
     { icon: HandCoins, title: t("home.step3"), text: t("home.step3Text") },
     { icon: Bike, title: t("home.step4"), text: t("home.step4Text") },
   ];

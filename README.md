@@ -4,12 +4,12 @@ LOCO is a Rwandan web app that connects buyers, sellers, workers and employers i
 
 | Section | What people do there |
 | --- | --- |
-| **Shop nearby** (`/shop`, `/services`) | Buy everyday goods and book local services from shops in their district, with moto delivery and MoMo or cash payment. |
+| **Shop nearby** (`/shop`, `/services`) | Find everyday goods and local services from shops in their district, then message the seller on WhatsApp to agree on price, payment and delivery. LOCO holds no payments and takes no fees. |
 | **Second-hand** (`/second-hand`) | Buy and sell used items at a lower price than new, with the original price shown so the saving is clear. |
 | **Jobs** (`/jobs`) | Employers post daily or contract work (building sites, factories, farms, shops, homes). Workers apply with their phone number and get called. |
 | **People** (`/people`) | Profiles of the people behind LOCO: shop owners and specialists with a photo, what they do, skills and district. The landing page opens with people nearby. Anyone can add a headline, bio and skills to their profile to appear here. |
 
-Everything is local to Rwanda: the 30 districts, Rwandan phone numbers, RWF prices, MTN Mobile Money, Airtel Money and cash on delivery.
+Everything is local to Rwanda: the 30 districts, Rwandan phone numbers, RWF prices, and deals closed directly between people on WhatsApp.
 
 ## Stack
 
@@ -62,7 +62,7 @@ API health check: http://localhost:5000/api/health
 
 ## Demo data
 
-A fresh database is filled with demo content on the first deployment (or with `npm run db:demo`, and `SEED_DEMO=true` forces it): 8 shops across Rwanda, 41 listings (new, second-hand and services with photos), 12 jobs, applications and orders. Set `SEED_DEMO=false` to disable. Every demo account uses the password `Demo1234`, for example:
+A fresh database is filled with demo content on the first deployment (or with `npm run db:demo`, and `SEED_DEMO=true` forces it): 8 shops across Rwanda, 41 listings (new, second-hand and services with photos), 12 jobs and applications. Set `SEED_DEMO=false` to disable. Every demo account uses the password `Demo1234`, for example:
 
 | Account | Role |
 | --- | --- |
@@ -101,9 +101,6 @@ All routes are under `/api`. "cookie" means the httpOnly session cookie set at l
 | GET, POST, PATCH | /shops/me · /shops · /shops/me | seller |
 | GET | /listings?search&category&district&condition&type&minPrice&maxPrice&sort&page · /listings/:slug | none |
 | GET, POST, PATCH, DELETE | /listings/mine · /listings · /listings/:id | seller |
-| POST, GET | /orders · /orders/mine · /orders/:id | cookie |
-| GET | /orders/shop | seller |
-| PATCH | /orders/:id/status | customer (cancel) or seller |
 | GET | /jobs?search&category&district&jobType&page · /jobs/:slug | none |
 | POST, PATCH | /jobs · /jobs/:id · /jobs/:id/toggle | cookie (owner) |
 | GET | /jobs/mine · /applications/mine | cookie |

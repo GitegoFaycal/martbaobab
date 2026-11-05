@@ -70,13 +70,13 @@ export default {
     step1Text: "Shakisha ukurikije akarere. Banza ubone amaduka, ibihendutse n'akazi byo iwanyu.",
     step2: "Vugana n'uwo muhuye",
     step2Text: "Hamagara cyangwa wandikire kuri WhatsApp umucuruzi cyangwa umukoresha. Nta muhuza.",
-    step3: "Ishyura nk'uko bikorwa iwacu",
-    step3Text: "MTN MoMo, Airtel Money cyangwa amafaranga iyo moto igeze.",
-    step4: "Bizanwa na moto",
-    step4Text: "Ibyo watumije mu karere kawe bigera umunsi umwe.",
+    step3: "Mwumvikane kuri WhatsApp",
+    step3Text: "Mwumvikane ku giciro, kwishyura n'aho bizanwa n'umucuruzi ubwe. Nta muhuza, nta mafaranga y'inyongera.",
+    step4: "Muhure cyangwa bikugereho",
+    step4Text: "Bifatire mu iduka cyangwa mwumvikane ku kubizana na moto.",
     trust1: "Amaduka yemejwe agenzurwa n'ikipe ya LOCO",
     trust2: "Uturere twose 30 tw'u Rwanda",
-    trust3: "Ibiciro mu mafaranga y'u Rwanda, nta yihishe",
+    trust3: "Ibiciro mu mafaranga y'u Rwanda, nta mafaranga y'inyongera, nta muhuza",
     sellOn: "Gurisha kuri LOCO",
     sellTitle: "Hindura akabari, butike cyangwa garage yawe iduka rya interineti.",
     sellText: "Tanga ibicuruzwa bishya cyangwa byakoreshejwe na serivisi. Akira ibitumizwa kuri telefoni yawe, wishyurwe na MoMo.",
@@ -90,7 +90,7 @@ export default {
 
   footer: {
     tagline: "LOCO ihuza abaguzi, abacuruzi, abakozi n'abakoresha mu turere twose tw'u Rwanda. Gura mu kabari kakwegereye, bona ibikoreshejwe bihendutse, cyangwa ubone akazi ko hafi.",
-    pay: "Ishyura na MTN MoMo · Airtel Money · Amafaranga igihe bigeze",
+    pay: "Abaguzi n'abacuruzi bavugana ubwabo kuri WhatsApp",
     buy: "Gura",
     work: "Akazi",
     sell: "Gurisha",
@@ -164,7 +164,7 @@ export default {
   sections: {
     shopEyebrow: "Gura hafi yawe",
     shopTitle: "Ibicuruzwa bya buri munsi mu maduka yo hafi",
-    shopText: "Ibiribwa, airtime, gaz, telefoni n'ibindi biva mu maduka yo mu karere kawe. Bizanwa na moto cyangwa ujye kubifata.",
+    shopText: "Ibiribwa, airtime, gaz, telefoni n'ibindi biva mu maduka yo mu karere kawe. Andikira umucuruzi kuri WhatsApp ugure.",
     secondHandEyebrow: "Ibikoreshejwe bihendutse",
     secondHandTitle: "Ibintu byiza ku giciro gito",
     secondHandText: "Telefoni, ibikoresho byo mu nzu, amagare n'ibindi byakoreshejwe, bigurishwa n'abantu n'amaduka hafi yawe. Gereranya n'igiciro cy'ibishya, uvugane ku giciro.",
@@ -175,6 +175,9 @@ export default {
   },
 
   listing: {
+    whatsappMe: "Nyandikira kuri WhatsApp",
+    dealText: "Mwumvikane ku giciro, kwishyura n'aho bizanwa mu buryo butaziguye n'umucuruzi kuri WhatsApp.",
+    prefill: "Muraho {shop}, nabonye \"{item}\" ({price}) kuri LOCO. Biracyahari?",
     addToCart: "Shyira mu gitebo",
     contactProvider: "Vugana n'uwabitanze",
     soldOutView: "Byashize · reba",
@@ -398,7 +401,7 @@ export default {
     side1: "Gura ibintu bya buri munsi mu iduka rikwegereye",
     side2: "Bona ibikoreshejwe ku giciro gito",
     side3: "Bona akazi ka buri munsi n'aka kontaro hafi yawe",
-    side4: "Moto ibizana, wishyure na MoMo, nk'uko bikorwa iwacu",
+    side4: "Vugana n'abantu ubwawe kuri WhatsApp, nk'uko bikorwa iwacu",
     pleaseLogin: "Injira kugira ngo ukomeze.",
   },
 

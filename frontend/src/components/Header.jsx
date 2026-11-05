@@ -4,11 +4,9 @@ import {
   ClipboardList,
   LogOut,
   Menu,
-  Package,
   Recycle,
   ShieldCheck,
   ShoppingBag,
-  ShoppingCart,
   Store,
   UserRound,
   Users,
@@ -18,7 +16,6 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
 import { useT } from "../i18n";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Logo from "./Logo";
@@ -44,7 +41,6 @@ function Avatar({ user, size = "h-8 w-8" }) {
 export default function Header() {
   const t = useT();
   const { user, isAuthenticated, authLoading, logout } = useAuth();
-  const { count } = useCart();
   const navigate = useNavigate();
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -101,7 +97,6 @@ export default function Header() {
 
   const accountLinks = [
     { label: t("nav.myProfile"), to: "/profile", icon: UserRound },
-    { label: t("nav.myOrders"), to: "/orders", icon: Package },
     { label: t("nav.myApplications"), to: "/applications", icon: ClipboardList },
     { label: t("nav.hiring"), to: "/hiring", icon: Briefcase },
     ...(user?.role === "SELLER" || user?.role === "ADMIN"
@@ -132,19 +127,6 @@ export default function Header() {
             className="hidden rounded-full border border-loco-mint px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-mint/10 md:inline-flex"
           >
             {t("nav.postJob")}
-          </Link>
-
-          <Link
-            to="/cart"
-            aria-label={`${t("nav.cart")}, ${count}`}
-            className="relative grid h-10 w-10 place-items-center rounded-full text-loco-wine hover:bg-loco-cream"
-          >
-            <ShoppingCart size={21} />
-            {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-loco-orange px-1 text-[11px] font-black text-white">
-                {count}
-              </span>
-            )}
           </Link>
 
           {!authLoading && !isAuthenticated && (

@@ -4,7 +4,6 @@ import {
   Package,
   Recycle,
   ShieldCheck,
-  ShoppingBag,
   Store,
   Users,
 } from "lucide-react";
@@ -21,7 +20,7 @@ import {
 } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
-import { formatDate, formatRWF, titleCase } from "../../lib/format";
+import { formatDate, titleCase } from "../../lib/format";
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
@@ -76,7 +75,6 @@ export default function AdminDashboardPage() {
             <Stat icon={Store} label="Shops" value={s.shops} sub={`${s.unverifiedShops} waiting for verification`} />
             <Stat icon={Package} label="Active listings" value={s.listings} sub={`${s.secondHand} second-hand`} />
             <Stat icon={Briefcase} label="Open jobs" value={s.openJobs} sub={`${s.applications} applications`} />
-            <Stat icon={ShoppingBag} label="Orders" value={s.orders} sub={`${formatRWF(s.revenue)} delivered`} />
             <Stat icon={Recycle} label="Second-hand share" value={s.listings ? `${Math.round((s.secondHand / s.listings) * 100)}%` : "0%"} sub="of active listings" />
           </div>
         ) : null}
@@ -100,7 +98,7 @@ export default function AdminDashboardPage() {
                       <td className="px-4 py-3"><Link to={`/shops/${shop.slug}`} className="font-bold text-loco-wine hover:underline">{shop.name}</Link><div className="text-xs text-gray-400">{formatDate(shop.createdAt)}</div></td>
                       <td className="px-4 py-3">{shop.owner.name}<div className="text-xs text-gray-400">{shop.owner.email}</div></td>
                       <td className="px-4 py-3">{shop.district}</td>
-                      <td className="px-4 py-3">{shop._count.listings} · {shop._count.orders} orders</td>
+                      <td className="px-4 py-3">{shop._count.listings}</td>
                       <td className="px-4 py-3">{shop.verified ? <Badge tone="green"><BadgeCheck size={12} /> Verified</Badge> : <Badge tone="amber">Pending</Badge>}</td>
                       <td className="px-4 py-3 text-right"><Button size="sm" variant={shop.verified ? "ghost" : "mint"} loading={busy === shop.id} onClick={() => verifyShop(shop)}>{shop.verified ? "Unverify" : "Verify"}</Button></td>
                     </tr>

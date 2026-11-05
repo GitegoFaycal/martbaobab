@@ -1,27 +1,35 @@
-import { BadgeCheck, ImageOff, MapPin, ShoppingCart } from "lucide-react";
+import { BadgeCheck, ImageOff, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
 import { useT } from "../i18n";
 import { discountPercent, formatRWF } from "../lib/format";
+import { whatsappLink } from "../lib/rwanda";
+import WhatsAppIcon from "./WhatsAppIcon";
 
-export default function ListingCard({ listing, onAddResult }) {
+export function listingWhatsapp(listing, t) {
+  const shop = listing.shop || {};
+  const phone = shop.whatsapp || shop.phone;
+  if (!phone) return null;
+
+  const message = t("listing.prefill", {
+    shop: shop.name || "",
+    item: listing.name,
+    price: formatRWF(listing.price),
+  });
+
+  return whatsappLink(phone, `${message}\n${window.location.origin}/listings/${listing.slug}`);
+}
+
+export default function ListingCard({ listing }) {
   const t = useT();
-  const { addItem } = useCart();
   const image = listing.images?.[0]?.url;
   const discount = discountPercent(listing.originalPrice, listing.price);
   const district = listing.district || listing.shop?.district;
-  const canBuy = listing.type === "PRODUCT" && (listing.stock ?? 1) > 0;
-
-  function handleAdd(event) {
-    event.preventDefault();
-    const result = addItem(listing, 1);
-    onAddResult?.(result, listing);
-  }
+  const whatsapp = listingWhatsapp(listing, t);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-loco-orange hover:shadow-md">
       <Link to={`/listings/${listing.slug}`} className="relative block">
-        <div className="aspect-[4/3] w-full overflow-hidden bg-loco-cream">
+        <div className="aspect-4/3 w-full overflow-hidden bg-loco-cream">
           {image ? (
             <img src={image} alt={listing.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
           ) : (
@@ -54,14 +62,19 @@ export default function ListingCard({ listing, onAddResult }) {
         </div>
 
         <div className="mt-auto pt-4">
-          {canBuy ? (
-            <button type="button" onClick={handleAdd} className="flex w-full items-center justify-center gap-2 rounded-xl border border-loco-wine py-2 text-sm font-bold text-loco-wine hover:bg-loco-wine hover:text-white">
-              <ShoppingCart size={16} />
-              {t("listing.addToCart")}
-            </button>
+          {whatsapp ? (
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-bold text-white hover:bg-[#1ebe5d]"
+            >
+              <WhatsAppIcon size={18} />
+              {t("listing.whatsappMe")}
+            </a>
           ) : (
-            <Link to={`/listings/${listing.slug}`} className="flex w-full items-center justify-center rounded-xl border border-loco-mint py-2 text-sm font-bold text-loco-wine hover:bg-loco-mint/10">
-              {listing.type === "SERVICE" ? t("listing.contactProvider") : t("listing.soldOutView")}
+            <Link to={`/listings/${listing.slug}`} className="flex w-full items-center justify-center rounded-xl border border-loco-mint py-2.5 text-sm font-bold text-loco-wine hover:bg-loco-mint/10">
+              {t("listing.contactProvider")}
             </Link>
           )}
         </div>

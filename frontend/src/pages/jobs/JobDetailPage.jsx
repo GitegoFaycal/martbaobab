@@ -4,7 +4,6 @@ import {
   Clock,
   Eye,
   MapPin,
-  MessageCircle,
   Phone,
   Users,
 } from "lucide-react";
@@ -12,6 +11,7 @@ import { useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { apiRequest, fieldErrorsFrom } from "../../api/api";
 import JobCard from "../../components/JobCard";
+import WhatsAppIcon from "../../components/WhatsAppIcon";
 import { Badge, Breadcrumbs, Button, Container, EmptyState, Field, Input, Message, Spinner, Textarea } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
@@ -170,7 +170,7 @@ export default function JobDetailPage() {
                 <h2 className="text-sm font-black text-loco-wine">{t("jobs.contactDirectly")}</h2>
                 <div className="mt-3 flex flex-col gap-2">
                   <Button as="a" href={`tel:${job.contactPhone}`} variant="outline" size="sm"><Phone size={15} /> {formatPhoneForDisplay(job.contactPhone)}</Button>
-                  {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="mint" size="sm"><MessageCircle size={15} /> WhatsApp</Button>}
+                  {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp" size="sm"><WhatsAppIcon size={16} /> WhatsApp</Button>}
                 </div>
               </section>
             )}

@@ -16,12 +16,8 @@ import HiringPage from "./pages/jobs/HiringPage";
 import JobDetailPage from "./pages/jobs/JobDetailPage";
 import JobFormPage from "./pages/jobs/JobFormPage";
 import JobsPage from "./pages/jobs/JobsPage";
-import CartPage from "./pages/marketplace/CartPage";
-import CheckoutPage from "./pages/marketplace/CheckoutPage";
 import ListingDetailPage from "./pages/marketplace/ListingDetailPage";
 import ListingsPage from "./pages/marketplace/ListingsPage";
-import OrderDetailPage from "./pages/marketplace/OrderDetailPage";
-import OrdersPage from "./pages/marketplace/OrdersPage";
 import ShopPage from "./pages/marketplace/ShopPage";
 import ShopsPage from "./pages/marketplace/ShopsPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -32,7 +28,6 @@ import EditProfilePage from "./pages/profile/EditProfilePage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ListingFormPage from "./pages/seller/ListingFormPage";
 import SellerDashboardPage from "./pages/seller/SellerDashboardPage";
-import SellerOrdersPage from "./pages/seller/SellerOrdersPage";
 import ShopFormPage from "./pages/seller/ShopFormPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 
@@ -51,7 +46,7 @@ const page = (element) => <MainLayout>{element}</MainLayout>;
 export default function App() {
   return (
     <Routes>
-      {/* Public marketplace and jobs */}
+      {/* Public marketplace, people and jobs */}
       <Route path="/" element={page(<HomePage />)} />
       <Route path="/shop" element={page(<ListingsPage mode="shop" />)} />
       <Route path="/second-hand" element={page(<ListingsPage mode="second-hand" />)} />
@@ -59,11 +54,10 @@ export default function App() {
       <Route path="/listings/:slug" element={page(<ListingDetailPage />)} />
       <Route path="/shops" element={page(<ShopsPage />)} />
       <Route path="/shops/:slug" element={page(<ShopPage />)} />
-      <Route path="/cart" element={page(<CartPage />)} />
-      <Route path="/jobs" element={page(<JobsPage />)} />
-      <Route path="/jobs/:slug" element={page(<JobDetailPage />)} />
       <Route path="/people" element={page(<PeoplePage />)} />
       <Route path="/people/:id" element={page(<PersonPage />)} />
+      <Route path="/jobs" element={page(<JobsPage />)} />
+      <Route path="/jobs/:slug" element={page(<JobDetailPage />)} />
       <Route path="/unauthorized" element={page(<UnauthorizedPage />)} />
 
       {/* Authentication */}
@@ -78,9 +72,6 @@ export default function App() {
 
       {/* Any logged-in user */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/checkout" element={page(<CheckoutPage />)} />
-        <Route path="/orders" element={page(<OrdersPage />)} />
-        <Route path="/orders/:id" element={page(<OrderDetailPage />)} />
         <Route path="/jobs/new" element={page(<JobFormPage />)} />
         <Route path="/jobs/:id/edit" element={page(<JobFormPage />)} />
         <Route path="/hiring" element={page(<HiringPage />)} />
@@ -95,7 +86,6 @@ export default function App() {
       <Route element={<RoleRoute allowedRoles={["SELLER", "ADMIN"]} />}>
         <Route path="/seller" element={page(<SellerDashboardPage />)} />
         <Route path="/seller/shop" element={page(<ShopFormPage />)} />
-        <Route path="/seller/orders" element={page(<SellerOrdersPage />)} />
         <Route path="/seller/listings/new" element={page(<ListingFormPage />)} />
         <Route path="/seller/listings/:id/edit" element={page(<ListingFormPage />)} />
       </Route>

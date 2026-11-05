@@ -5,7 +5,6 @@ import {
   Package,
   Pencil,
   Plus,
-  ShoppingBag,
   Store,
   Trash2,
 } from "lucide-react";
@@ -30,7 +29,6 @@ export default function SellerDashboardPage() {
   const shopQuery = useFetch("/shops/me");
   const shop = shopQuery.data?.shop;
   const listingsQuery = useFetch("/listings/mine", { enabled: Boolean(shop) });
-  const ordersQuery = useFetch("/orders/shop", { enabled: Boolean(shop) });
   const [busy, setBusy] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -56,9 +54,6 @@ export default function SellerDashboardPage() {
   }
 
   const listings = listingsQuery.data?.listings || [];
-  const orders = ordersQuery.data?.orders || [];
-  const pendingOrders = orders.filter((order) => ["PENDING", "CONFIRMED", "PREPARING"].includes(order.status));
-  const revenue = orders.filter((order) => order.status === "DELIVERED").reduce((sum, order) => sum + Number(order.total), 0);
 
   async function removeListing(listing) {
     if (!window.confirm(`Delete "${listing.name}"?`)) return;
@@ -96,19 +91,14 @@ export default function SellerDashboardPage() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat icon={Package} label="Active listings" value={listings.filter((item) => item.active).length} />
-          <Stat icon={ShoppingBag} label="Orders to handle" value={pendingOrders.length} to="/seller/orders" />
-          <Stat icon={ShoppingBag} label="All orders" value={orders.length} to="/seller/orders" />
-          <Stat icon={Store} label="Delivered sales" value={formatRWF(revenue)} />
+          <Stat icon={Eye} label="Listing views" value={listings.reduce((sum, item) => sum + (item.views || 0), 0)} />
+          <Stat icon={Store} label="Second-hand items" value={listings.filter((item) => item.condition === "USED").length} />
+          <Stat icon={Package} label="Services" value={listings.filter((item) => item.type === "SERVICE").length} />
         </div>
 
-        {pendingOrders.length > 0 && (
-          <section className="mt-8 rounded-2xl border border-orange-200 bg-orange-50 p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="font-bold text-loco-wine">{pendingOrders.length} order{pendingOrders.length > 1 ? "s" : ""} waiting for you</p>
-              <Button as={Link} to="/seller/orders" size="sm">Handle orders</Button>
-            </div>
-          </section>
-        )}
+        <section className="mt-8 rounded-2xl border border-orange-200 bg-orange-50 p-5 text-sm text-loco-ink">
+          Buyers contact you on WhatsApp at the number on your shop. Keep it reachable and reply quickly.
+        </section>
 
         <section className="mt-8">
           <h2 className="mb-4 text-xl font-black text-loco-wine">Your listings</h2>
@@ -131,7 +121,7 @@ export default function SellerDashboardPage() {
                       {listing.type === "SERVICE" && <Badge tone="mint">Service</Badge>}
                       {!listing.active && <Badge tone="red">Hidden</Badge>}
                       {listing.stock != null && <span>{listing.stock} in stock</span>}
-                      <span>{listing.views} views · {listing._count?.orderItems || 0} sold</span>
+                      <span>{listing.views} views</span>
                     </p>
                   </div>
                   <div className="flex shrink-0 gap-1">

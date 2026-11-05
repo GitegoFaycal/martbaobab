@@ -128,14 +128,6 @@ const APPLICATIONS = [
   ["Maths tutor", "sandrine", "I study mathematics at UR Huye campus.", "ACCEPTED"],
 ];
 
-const ORDERS = [
-  { customer: "diane", shop: "mama-jeanne-boutique", items: [["Inyange milk 1L", 2], ["Kabuye sugar 1kg", 1], ["Rice 5kg (Tanzania long grain)", 1]], provider: "MTN_MOMO", status: "DELIVERED", district: "Gasabo", address: "Kibagabaga, near the hospital, house with green roof" },
-  { customer: "kevin", shop: "imena-tech-kicukiro", items: [["Oraimo earphones", 1], ["Phone charger type-C fast", 1]], provider: "AIRTEL_MONEY", status: "OUT_FOR_DELIVERY", district: "Kicukiro", address: "Kagarama, KK 400 St" },
-  { customer: "olive", shop: "aline-fashion-house", items: [["School uniform set", 2]], provider: "CASH_ON_DELIVERY", status: "CONFIRMED", district: "Nyarugenge", address: "Nyamirambo, Biryogo, near the mosque" },
-  { customer: "fabrice", shop: "mama-jeanne-boutique", items: [["Inyange water 500ml (pack of 12)", 1], ["Fanta citron 500ml", 6]], provider: "MTN_MOMO", status: "PENDING", district: "Kicukiro", address: "Gikondo, near Magerwa" },
-  { customer: "sandrine", shop: "musanze-fresh-farm", items: [["Irish potatoes 10kg", 2], ["Eggs (tray of 30)", 1]], provider: "MTN_MOMO", status: "DELIVERED", district: "Musanze", address: "Muhoza, behind the bus park" },
-  { customer: "josiane", shop: "claudine-home-kitchen", items: [["Gas cylinder 12kg (refill)", 1]], provider: "CASH_ON_DELIVERY", status: "CANCELLED", district: "Rwamagana", address: "Kigabiro, near the district office" },
-];
 
 const slugify = (value) =>
   value.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
@@ -342,49 +334,7 @@ async function seedContent() {
     });
   }
 
-  let orderIndex = 0;
-
-  for (const order of ORDERS) {
-    orderIndex += 1;
-    const reference = `LOCO-DEMO-${String(orderIndex).padStart(3, "0")}`;
-    const customer = users[order.customer];
-    const shop = shops[order.shop];
-    const items = order.items
-      .filter(([name]) => listings[name])
-      .map(([name, quantity]) => ({ name, quantity, unitPrice: listings[name].price, listingId: listings[name].id }));
-
-    if (!items.length) continue;
-
-    const subtotal = items.reduce((sum, item) => sum + Number(item.unitPrice) * item.quantity, 0);
-    const deliveryFee = order.district === shop.district ? 1000 : 2500;
-    const total = subtotal + deliveryFee;
-    const existing = await prisma.order.findUnique({ where: { reference } });
-
-    if (existing) {
-      await prisma.order.update({ where: { id: existing.id }, data: { status: order.status } });
-      continue;
-    }
-
-    await prisma.order.create({
-      data: {
-        reference,
-        status: order.status,
-        subtotal,
-        deliveryFee,
-        total,
-        customerPhone: customer.phone,
-        deliveryDistrict: order.district,
-        deliveryAddress: order.address,
-        customerId: customer.id,
-        shopId: shop.id,
-        createdAt: new Date(Date.now() - orderIndex * 36 * 3600 * 1000),
-        items: { create: items },
-        payment: { create: { provider: order.provider, amount: total, status: order.status === "DELIVERED" ? "PAID" : "PENDING" } },
-      },
-    });
-  }
-
-  console.log(`Demo data ready: ${USERS.length} accounts, ${SHOPS.length} shops, ${Object.keys(listings).length} listings, ${JOBS.length} jobs, ${APPLICATIONS.length} applications, ${ORDERS.length} orders.`);
+  console.log(`Demo data ready: ${USERS.length} accounts, ${SHOPS.length} shops, ${Object.keys(listings).length} listings, ${JOBS.length} jobs, ${APPLICATIONS.length} applications.`);
   console.log(`Demo accounts use the password "${DEMO_PASSWORD}" (e.g. jeanne@demo.loco.rw, diane@demo.loco.rw).`);
 }
 

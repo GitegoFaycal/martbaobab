@@ -11,7 +11,6 @@ import {
   categoryRouter,
   listingRouter,
   locationRouter,
-  orderRouter,
   shopRouter,
 } from "./routes/marketplace.routes.js";
 import { applicationRouter, jobRouter } from "./routes/job.routes.js";
@@ -134,7 +133,6 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/locations", locationRouter);
 app.use("/api/shops", writeRateLimit, shopRouter);
 app.use("/api/listings", writeRateLimit, listingRouter);
-app.use("/api/orders", writeRateLimit, orderRouter);
 app.use("/api/jobs", writeRateLimit, jobRouter);
 app.use("/api/applications", applicationRouter);
 app.use("/api/people", peopleRoutes);

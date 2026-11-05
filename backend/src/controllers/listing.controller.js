@@ -197,7 +197,6 @@ export const listMyListings = asyncHandler(async (req, res) => {
     include: {
       images: { orderBy: { position: "asc" }, take: 1 },
       category: { select: { name: true, slug: true } },
-      _count: { select: { orderItems: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -284,25 +283,13 @@ export const deleteListing = asyncHandler(async (req, res) => {
 
   const existing = await prisma.listing.findFirst({
     where: { id: req.params.id, shopId: shop.id },
-    include: { _count: { select: { orderItems: true } } },
   });
 
   if (!existing) {
     throw httpError(404, "Listing not found");
   }
 
-  if (existing._count.orderItems > 0) {
-    await prisma.listing.update({
-      where: { id: existing.id },
-      data: { active: false },
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Listing has orders, so it was hidden instead of deleted",
-    });
-  }
-
+  await prisma.orderItem.deleteMany({ where: { listingId: existing.id } });
   await prisma.listing.delete({ where: { id: existing.id } });
 
   return res.status(200).json({ success: true, message: "Listing deleted" });

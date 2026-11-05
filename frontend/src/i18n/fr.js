@@ -70,13 +70,13 @@ export default {
     step1Text: "Cherchez par district. Voyez d'abord les boutiques, affaires et emplois de votre zone.",
     step2: "Parlez directement",
     step2Text: "Appelez ou écrivez sur WhatsApp au vendeur ou à l'employeur. Sans intermédiaire.",
-    step3: "Payez à la locale",
-    step3Text: "MTN MoMo, Airtel Money ou espèces à l'arrivée de la moto.",
-    step4: "Livré à moto",
-    step4Text: "Les commandes de votre district arrivent le jour même.",
+    step3: "Négociez sur WhatsApp",
+    step3Text: "Convenez du prix, du paiement et de la livraison directement avec le vendeur. Sans intermédiaire, sans frais.",
+    step4: "Rencontrez-vous ou faites-vous livrer",
+    step4Text: "Récupérez en boutique ou organisez une livraison à moto entre vous.",
     trust1: "Les boutiques vérifiées sont contrôlées par l'équipe LOCO",
     trust2: "Les 30 districts du Rwanda",
-    trust3: "Prix en RWF, sans frais cachés",
+    trust3: "Prix en RWF, sans frais, sans intermédiaire",
     sellOn: "Vendre sur LOCO",
     sellTitle: "Transformez votre kiosque, boutique ou garage en boutique en ligne.",
     sellText: "Publiez des produits neufs ou d'occasion et des services. Recevez les commandes sur votre téléphone et soyez payé par MoMo.",
@@ -90,7 +90,7 @@ export default {
 
   footer: {
     tagline: "LOCO relie acheteurs, vendeurs, travailleurs et employeurs dans chaque district du Rwanda. Achetez au kiosque d'à côté, trouvez une bonne affaire d'occasion ou un travail local.",
-    pay: "Payez avec MTN MoMo · Airtel Money · Espèces à la livraison",
+    pay: "Acheteurs et vendeurs traitent directement sur WhatsApp",
     buy: "Acheter",
     work: "Travailler",
     sell: "Vendre",
@@ -164,7 +164,7 @@ export default {
   sections: {
     shopEyebrow: "Acheter à côté",
     shopTitle: "Produits du quotidien des boutiques locales",
-    shopText: "Épicerie, crédit, gaz, téléphones et plus, des boutiques de votre district. Livré à moto ou à retirer sur place.",
+    shopText: "Épicerie, crédit, gaz, téléphones et plus, des boutiques de votre district. Écrivez au vendeur sur WhatsApp pour acheter.",
     secondHandEyebrow: "Bonnes affaires d'occasion",
     secondHandTitle: "De bons articles à petits prix",
     secondHandText: "Téléphones, meubles, vélos et plus, vendus d'occasion par des particuliers et boutiques près de chez vous. Comparez avec le prix neuf et négociez.",
@@ -175,6 +175,9 @@ export default {
   },
 
   listing: {
+    whatsappMe: "Écrivez-moi sur WhatsApp",
+    dealText: "Convenez du prix, du paiement et de la livraison directement avec le vendeur sur WhatsApp.",
+    prefill: "Bonjour {shop}, j'ai vu « {item} » ({price}) sur LOCO. Est-ce toujours disponible ?",
     addToCart: "Ajouter au panier",
     contactProvider: "Contacter le prestataire",
     soldOutView: "Épuisé · voir",
@@ -398,7 +401,7 @@ export default {
     side1: "Achetez les produits du quotidien à la boutique d'à côté",
     side2: "Trouvez des articles d'occasion à petits prix",
     side3: "Trouvez un travail journalier ou un contrat près de chez vous",
-    side4: "Livraison à moto et paiement MoMo, à la locale",
+    side4: "Traitez directement avec les gens sur WhatsApp, à la locale",
     pleaseLogin: "Veuillez vous connecter pour continuer.",
   },
 

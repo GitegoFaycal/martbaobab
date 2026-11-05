@@ -105,6 +105,7 @@ export function Button({
     primary: "bg-loco-wine text-white hover:bg-loco-wine-dark",
     orange: "bg-loco-orange text-white hover:bg-loco-orange-dark",
     mint: "bg-loco-mint text-loco-wine-dark hover:bg-loco-mint-dark",
+    whatsapp: "bg-[#25D366] text-white hover:bg-[#1ebe5d]",
     outline:
       "border border-loco-wine text-loco-wine hover:bg-loco-cream bg-white",
     ghost: "text-loco-wine hover:bg-loco-cream",

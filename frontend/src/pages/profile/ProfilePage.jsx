@@ -4,7 +4,6 @@ import {
   ClipboardList,
   Mail,
   MapPin,
-  Package,
   Phone,
   ShieldCheck,
   Store,
@@ -21,7 +20,6 @@ export default function ProfilePage() {
   const { user } = useAuth();
 
   const shortcuts = [
-    { to: "/orders", icon: Package, label: t("nav.myOrders") },
     { to: "/applications", icon: ClipboardList, label: t("nav.myApplications") },
     { to: "/hiring", icon: Briefcase, label: t("nav.hiring") },
     user.role === "SELLER" || user.role === "ADMIN"

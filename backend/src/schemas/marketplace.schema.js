@@ -86,44 +86,6 @@ export const listingQuerySchema = z.object({
   }),
 });
 
-export const orderSchema = z.object({
-  body: z.object({
-    shopId: z.string().min(1),
-    items: z
-      .array(
-        z.object({
-          listingId: z.string().min(1),
-          quantity: z.coerce.number().int().min(1).max(999),
-        })
-      )
-      .min(1, "Your cart is empty")
-      .max(50),
-    paymentProvider: z.enum(["MTN_MOMO", "AIRTEL_MONEY", "CASH_ON_DELIVERY"]),
-    customerPhone: phone,
-    deliveryDistrict: district,
-    deliveryAddress: z
-      .string()
-      .trim()
-      .min(4, "Describe where the order should be delivered")
-      .max(300),
-    note: optionalText(500),
-  }),
-});
-
-export const orderStatusSchema = z.object({
-  body: z.object({
-    status: z.enum([
-      "PENDING",
-      "CONFIRMED",
-      "PREPARING",
-      "READY",
-      "OUT_FOR_DELIVERY",
-      "DELIVERED",
-      "CANCELLED",
-    ]),
-  }),
-});
-
 export const idParamSchema = z.object({
   params: z.object({
     id: z.string().min(1),

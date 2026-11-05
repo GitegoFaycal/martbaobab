@@ -12,8 +12,6 @@ export const getStats = asyncHandler(async (req, res) => {
     secondHand,
     openJobs,
     applications,
-    orders,
-    revenue,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: "SELLER" } }),
@@ -23,11 +21,6 @@ export const getStats = asyncHandler(async (req, res) => {
     prisma.listing.count({ where: { active: true, condition: "USED" } }),
     prisma.job.count({ where: { status: "OPEN" } }),
     prisma.jobApplication.count(),
-    prisma.order.count(),
-    prisma.order.aggregate({
-      _sum: { total: true },
-      where: { status: "DELIVERED" },
-    }),
   ]);
 
   return res.status(200).json({
@@ -41,8 +34,6 @@ export const getStats = asyncHandler(async (req, res) => {
       secondHand,
       openJobs,
       applications,
-      orders,
-      revenue: Number(revenue._sum.total || 0),
     },
   });
 });
@@ -97,7 +88,7 @@ export const listShopsForReview = asyncHandler(async (req, res) => {
       verified: true,
       createdAt: true,
       owner: { select: { name: true, email: true } },
-      _count: { select: { listings: true, orders: true } },
+      _count: { select: { listings: true } },
     },
     orderBy: [{ verified: "asc" }, { createdAt: "desc" }],
     take: 200,

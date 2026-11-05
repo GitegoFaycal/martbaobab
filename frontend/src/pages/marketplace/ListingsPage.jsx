@@ -1,6 +1,6 @@
-import { Filter, MapPin, Search, X } from "lucide-react";
+import { Filter, MapPin, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import ListingCard from "../../components/ListingCard";
 import {
   Button,
@@ -14,7 +14,6 @@ import {
   Select,
   Spinner,
 } from "../../components/ui";
-import { useCart } from "../../context/CartContext";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
@@ -30,8 +29,6 @@ export default function ListingsPage({ mode = "shop" }) {
   const t = useT();
   const config = MODES[mode];
   const [params, setParams] = useSearchParams();
-  const { addItem } = useCart();
-  const [notice, setNotice] = useState(null);
 
   const filters = {
     search: params.get("search") || "",
@@ -68,14 +65,6 @@ export default function ListingsPage({ mode = "shop" }) {
     setParams(next);
   }
 
-  function handleAddResult(result, listing) {
-    if (result.ok) {
-      setNotice({ type: "success", text: t("listing.added", { name: listing.name }), listing });
-    } else if (result.reason === "different-shop") {
-      setNotice({ type: "conflict", text: t("listing.cartHasItems", { shop: result.shop.name }), listing });
-    }
-  }
-
   const activeFilterCount = [filters.category, filters.minPrice, filters.maxPrice].filter(Boolean).length;
 
   return (
@@ -94,20 +83,6 @@ export default function ListingsPage({ mode = "shop" }) {
           </label>
           <Button type="submit" variant="orange">{t("common.search")}</Button>
         </form>
-
-        {notice && (
-          <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-orange-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-semibold text-loco-ink">{notice.text}</p>
-            <div className="flex gap-2">
-              {notice.type === "conflict" ? (
-                <Button size="sm" variant="orange" onClick={() => { addItem(notice.listing, 1, { replace: true }); setNotice({ type: "success", text: t("listing.cartReplacedWith", { name: notice.listing.name }) }); }}>{t("common.replaceCart")}</Button>
-              ) : (
-                <Button as={Link} to="/cart" size="sm">{t("common.viewCart")}</Button>
-              )}
-              <Button size="sm" variant="ghost" onClick={() => setNotice(null)} aria-label={t("common.dismiss")}><X size={16} /></Button>
-            </div>
-          </div>
-        )}
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[250px_1fr]">
           <aside className="space-y-5 rounded-2xl border border-orange-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:self-start">
@@ -159,7 +134,7 @@ export default function ListingsPage({ mode = "shop" }) {
             ) : data?.listings?.length ? (
               <>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
-                  {data.listings.map((listing) => <ListingCard key={listing.id} listing={listing} onAddResult={handleAddResult} />)}
+                  {data.listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
                 </div>
                 <Pagination pagination={data.pagination} onPage={(page) => update({ page })} />
               </>

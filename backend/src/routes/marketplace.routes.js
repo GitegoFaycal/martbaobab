@@ -18,21 +18,12 @@ import {
   listMyListings,
   updateListing,
 } from "../controllers/listing.controller.js";
-import {
-  createOrder,
-  getOrder,
-  listMyOrders,
-  listShopOrders,
-  updateOrderStatus,
-} from "../controllers/order.controller.js";
 import authenticate from "../middleware/authenticate.js";
 import authorize from "../middleware/authorize.js";
 import validate from "../middleware/validate.js";
 import {
   listingQuerySchema,
   listingSchema,
-  orderSchema,
-  orderStatusSchema,
   shopSchema,
 } from "../schemas/marketplace.schema.js";
 
@@ -58,15 +49,3 @@ listingRouter.post("/", ...seller, validate(listingSchema), createListing);
 listingRouter.patch("/:id", ...seller, validate(listingSchema), updateListing);
 listingRouter.delete("/:id", ...seller, deleteListing);
 listingRouter.get("/:slug", getListing);
-
-export const orderRouter = Router();
-orderRouter.post("/", authenticate, validate(orderSchema), createOrder);
-orderRouter.get("/mine", authenticate, listMyOrders);
-orderRouter.get("/shop", ...seller, listShopOrders);
-orderRouter.get("/:id", authenticate, getOrder);
-orderRouter.patch(
-  "/:id/status",
-  authenticate,
-  validate(orderStatusSchema),
-  updateOrderStatus
-);

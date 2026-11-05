@@ -1,4 +1,5 @@
-import { BadgeCheck, Briefcase, MapPin, MessageCircle, Phone, Store } from "lucide-react";
+import { BadgeCheck, Briefcase, MapPin, Phone, Store } from "lucide-react";
+import WhatsAppIcon from "../../components/WhatsAppIcon";
 import { Link, useParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
 import ListingCard from "../../components/ListingCard";
@@ -67,7 +68,7 @@ export default function PersonPage() {
             <div className="flex shrink-0 flex-col gap-2 sm:w-56">
               <h2 className="text-xs font-bold uppercase tracking-wide text-gray-400">{t("people.contact")}</h2>
               {person.phone && <Button as="a" href={`tel:${person.phone}`} variant="outline"><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</Button>}
-              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="mint"><MessageCircle size={17} /> WhatsApp</Button>}
+              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp"><WhatsAppIcon size={18} /> WhatsApp</Button>}
               {shop && <Button as={Link} to={`/shops/${shop.slug}`} variant="primary"><Store size={17} /> {t("people.visitShop")}</Button>}
             </div>
           </div>
