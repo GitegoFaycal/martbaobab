@@ -90,6 +90,33 @@ export async function fetchCommonsPhoto(query) {
   return { buffer, mime };
 }
 
+// Illustrated avatar for a demo person (DiceBear, free, deterministic per name).
+export async function fetchAvatar(name) {
+  const params = new URLSearchParams({
+    seed: name,
+    size: "256",
+    backgroundColor: "fff8ef,ffe3c9,d9f7ee",
+    radius: "50",
+    skinColor: "763900,9e5622",
+    hairColor: "0e0e0e,562306,6a4e35",
+  });
+
+  const response = await fetchWithTimeout(`https://api.dicebear.com/9.x/adventurer/png?${params}`);
+
+  if (!response.ok) {
+    throw new Error(`Avatar service failed (${response.status})`);
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const mime = response.headers.get("content-type")?.split(";")[0] || "image/png";
+
+  if (!buffer.length || !mime.startsWith("image/")) {
+    throw new Error("Avatar service returned no image");
+  }
+
+  return { buffer, mime };
+}
+
 function escapeXml(value) {
   return String(value).replace(/[<>&"']/g, (char) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[char]));
 }

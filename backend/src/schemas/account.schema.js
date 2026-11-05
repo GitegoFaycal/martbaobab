@@ -28,6 +28,16 @@ export const updateProfileSchema = z.object({
       .max(500)
       .optional()
       .or(z.literal("")),
+
+    headline: z.string().trim().max(80, "Keep the headline under 80 characters").optional().or(z.literal("")),
+
+    bio: z.string().trim().max(600, "Keep the bio under 600 characters").optional().or(z.literal("")),
+
+    skills: z
+      .array(z.string().trim().min(1).max(30))
+      .max(8, "Add at most 8 skills")
+      .optional()
+      .default([]),
   }),
 });
 

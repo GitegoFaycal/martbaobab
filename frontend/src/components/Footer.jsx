@@ -10,6 +10,7 @@ export default function Footer() {
     {
       title: t("footer.buy"),
       links: [
+        { label: t("nav.people"), to: "/people" },
         { label: t("nav.shop"), to: "/shop" },
         { label: t("home.secondHandDeals"), to: "/second-hand" },
         { label: t("home.localServices"), to: "/services" },

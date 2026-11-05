@@ -16,6 +16,9 @@ const publicUserFields = {
   phone: true,
   role: true,
   district: true,
+  headline: true,
+  bio: true,
+  skills: true,
   avatarUrl: true,
   active: true,
   emailVerified: true,
@@ -31,7 +34,7 @@ function hashResetToken(token) {
 
 export const updateProfile = asyncHandler(
   async (req, res) => {
-    const { name, phone, district, avatarUrl } = req.validated.body;
+    const { name, phone, district, avatarUrl, headline, bio, skills } = req.validated.body;
     const normalizedPhone = normalizePhone(phone);
 
     if (normalizedPhone) {
@@ -63,6 +66,9 @@ export const updateProfile = asyncHandler(
         phone: normalizedPhone,
         district,
         avatarUrl: avatarUrl || null,
+        headline: headline || null,
+        bio: bio || null,
+        skills: [...new Set((skills || []).map((skill) => skill.trim()).filter(Boolean))],
       },
       select: publicUserFields,
     });

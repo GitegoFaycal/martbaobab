@@ -1,16 +1,10 @@
-import {
-  ArrowRight,
-  Briefcase,
-  MapPin,
-  Recycle,
-  Search,
-  ShoppingBag,
-  Smartphone,
-} from "lucide-react";
+import { ArrowRight, MapPin, Search, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useFetch from "../hooks/useFetch";
 import { useT } from "../i18n";
 import { getSavedDistrict, saveDistrict } from "../lib/rwanda";
+import PersonCard from "./PersonCard";
 import { DistrictSelect } from "./ui";
 
 export default function Hero() {
@@ -21,6 +15,7 @@ export default function Hero() {
     { key: "shop", label: t("hero.tabGoods"), path: "/shop", placeholder: t("hero.phGoods") },
     { key: "second-hand", label: t("hero.tabSecondHand"), path: "/second-hand", placeholder: t("hero.phSecondHand") },
     { key: "jobs", label: t("hero.tabJobs"), path: "/jobs", placeholder: t("hero.phJobs") },
+    { key: "people", label: t("nav.people"), path: "/people", placeholder: t("people.searchPh") },
   ];
 
   const [tabKey, setTabKey] = useState("shop");
@@ -44,7 +39,7 @@ export default function Hero() {
       <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-loco-orange/25" />
       <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-loco-mint/15" />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-14 lg:grid-cols-[1.15fr_0.85fr] lg:py-20">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-loco-mint">
             <MapPin size={15} />
@@ -60,7 +55,7 @@ export default function Hero() {
           <p className="mt-5 max-w-xl text-lg text-white/80">{t("hero.text")}</p>
 
           <form role="search" onSubmit={handleSearch} className="mt-8 overflow-hidden rounded-2xl bg-white p-2 text-loco-ink shadow-2xl">
-            <div className="mb-2 flex gap-1 px-1">
+            <div className="mb-2 flex flex-wrap gap-1 px-1">
               {tabs.map((item) => (
                 <button
                   key={item.key}
@@ -116,28 +111,54 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-          <Pillar to="/shop" icon={ShoppingBag} title={t("hero.pillarShop")} text={t("hero.pillarShopText")} accent="bg-loco-orange" explore={t("hero.explore")} />
-          <Pillar to="/second-hand" icon={Recycle} title={t("hero.pillarSecondHand")} text={t("hero.pillarSecondHandText")} accent="bg-loco-mint" explore={t("hero.explore")} />
-          <Pillar to="/jobs" icon={Briefcase} title={t("hero.pillarJobs")} text={t("hero.pillarJobsText")} accent="bg-white" explore={t("hero.explore")} />
-          <Pillar to="/services" icon={Smartphone} title={t("hero.pillarServices")} text={t("hero.pillarServicesText")} accent="bg-loco-orange" explore={t("hero.explore")} />
-        </div>
+        <PeopleWall district={district} />
       </div>
     </section>
   );
 }
 
-function Pillar({ to, icon: Icon, title, text, accent, explore }) {
+function PeopleWall({ district }) {
+  const t = useT();
+  const query = district ? `?district=${encodeURIComponent(district)}&perPage=6` : "?perPage=6";
+  const { data, loading } = useFetch(`/people${query}`);
+  const fallback = useFetch("/people?perPage=6", { enabled: Boolean(district) && !loading && (data?.people?.length ?? 0) < 3 });
+  const people = (data?.people?.length ?? 0) >= 3 ? data.people : fallback.data?.people || data?.people || [];
+
   return (
-    <Link to={to} className="group rounded-3xl border border-white/15 bg-white/10 p-5 backdrop-blur transition hover:-translate-y-1 hover:bg-white/15">
-      <span className={`grid h-12 w-12 place-items-center rounded-2xl text-loco-wine ${accent}`}>
-        <Icon size={24} />
-      </span>
-      <strong className="mt-5 block text-lg">{title}</strong>
-      <p className="mt-1 text-sm text-white/70">{text}</p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-loco-mint group-hover:gap-2">
-        {explore} <ArrowRight size={15} />
-      </span>
-    </Link>
+    <div>
+      <div className="mb-4 flex items-end justify-between gap-3">
+        <div>
+          <p className="inline-flex items-center gap-2 text-sm font-bold text-loco-mint"><Users size={16} /> {t("people.eyebrow")}</p>
+          <h2 className="mt-1 text-2xl font-black">{t("people.wallTitle")}</h2>
+        </div>
+        <Link to="/people" className="hidden shrink-0 items-center gap-1 text-sm font-bold text-loco-mint hover:text-white sm:inline-flex">
+          {t("people.seeAll")} <ArrowRight size={15} />
+        </Link>
+      </div>
+
+      {loading && people.length === 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="h-20 animate-pulse rounded-2xl bg-white/10" />
+          ))}
+        </div>
+      ) : people.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-white/30 p-6 text-center text-white/70">
+          <p>{t("people.joinText")}</p>
+          <Link to="/register" className="mt-4 inline-block rounded-full bg-loco-mint px-5 py-2.5 text-sm font-bold text-loco-wine-dark">{t("people.join")}</Link>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {people.slice(0, 6).map((person) => (
+            <PersonCard key={person.id} person={person} compact />
+          ))}
+        </div>
+      )}
+
+      <p className="mt-4 text-sm text-white/70">{t("people.wallText")}</p>
+      <Link to="/people" className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-loco-mint sm:hidden">
+        {t("people.seeAll")} <ArrowRight size={15} />
+      </Link>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ LOCO is a Rwandan web app that connects buyers, sellers, workers and employers i
 | **Shop nearby** (`/shop`, `/services`) | Buy everyday goods and book local services from shops in their district, with moto delivery and MoMo or cash payment. |
 | **Second-hand** (`/second-hand`) | Buy and sell used items at a lower price than new, with the original price shown so the saving is clear. |
 | **Jobs** (`/jobs`) | Employers post daily or contract work (building sites, factories, farms, shops, homes). Workers apply with their phone number and get called. |
+| **People** (`/people`) | Profiles of the people behind LOCO: shop owners and specialists with a photo, what they do, skills and district. The landing page opens with people nearby. Anyone can add a headline, bio and skills to their profile to appear here. |
 
 Everything is local to Rwanda: the 30 districts, Rwandan phone numbers, RWF prices, MTN Mobile Money, Airtel Money and cash on delivery.
 

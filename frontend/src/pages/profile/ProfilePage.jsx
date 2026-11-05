@@ -46,7 +46,17 @@ export default function ProfilePage() {
             </div>
 
             <h1 className="mt-4 text-2xl font-black text-loco-wine">{user.name}</h1>
+            {user.headline && <p className="font-semibold text-loco-orange">{user.headline}</p>}
             <p className="text-sm text-gray-500">{t(`labels.roles.${user.role}`)}{user.district ? ` · ${user.district}` : ""}</p>
+            {user.skills?.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {user.skills.map((skill) => <span key={skill} className="rounded-full bg-loco-cream px-2.5 py-1 text-xs font-semibold text-loco-wine">{skill}</span>)}
+              </div>
+            )}
+            {user.bio && <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-700">{user.bio}</p>}
+            {(user.headline || user.role === "SELLER") && (
+              <Link to={`/people/${user.id}`} className="mt-3 inline-block text-sm font-bold text-loco-wine hover:text-loco-orange">{t("people.yourProfile")} →</Link>
+            )}
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <Item icon={Mail} label={t("auth.email")} value={user.email} />

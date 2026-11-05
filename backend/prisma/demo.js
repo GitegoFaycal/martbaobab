@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { applyDatabaseUrl } from "../src/config/database-url.js";
 import {
+  fetchAvatar,
   fetchCommonsPhoto,
   isStoredImage,
   mapLimit,
@@ -23,23 +24,23 @@ export const DEMO_PASSWORD = "Demo1234";
 
 const USERS = [
   // Sellers
-  { key: "jeanne", name: "Jeanne Uwimana", email: "jeanne@demo.loco.rw", phone: "0788100001", district: "Gasabo", role: "SELLER" },
-  { key: "eric", name: "Eric Habimana", email: "eric@demo.loco.rw", phone: "0788100002", district: "Kicukiro", role: "SELLER" },
-  { key: "aline", name: "Aline Mukamana", email: "aline@demo.loco.rw", phone: "0722100003", district: "Nyarugenge", role: "SELLER" },
-  { key: "patrick", name: "Patrick Nsengimana", email: "patrick@demo.loco.rw", phone: "0733100004", district: "Huye", role: "SELLER" },
-  { key: "grace", name: "Grace Ingabire", email: "grace@demo.loco.rw", phone: "0788100005", district: "Musanze", role: "SELLER" },
-  { key: "jmv", name: "Jean Marie Vianney Hakizimana", email: "jmv@demo.loco.rw", phone: "0788100006", district: "Rubavu", role: "SELLER" },
-  { key: "claudine", name: "Claudine Umutoni", email: "claudine@demo.loco.rw", phone: "0722100007", district: "Rwamagana", role: "SELLER" },
-  { key: "emmanuel", name: "Emmanuel Bizimana", email: "emmanuel@demo.loco.rw", phone: "0788100008", district: "Muhanga", role: "SELLER" },
+  { key: "jeanne", name: "Jeanne Uwimana", email: "jeanne@demo.loco.rw", phone: "0788100001", district: "Gasabo", role: "SELLER", headline: "Grocery shop owner in Kimironko", bio: "I have run Mama Jeanne Boutique for 9 years. Fresh milk every morning, airtime, gas and everything a home needs. We deliver by moto in Kimironko and Kibagabaga.", skills: ["Groceries","Airtime","Moto delivery"] },
+  { key: "eric", name: "Eric Habimana", email: "eric@demo.loco.rw", phone: "0788100002", district: "Kicukiro", role: "SELLER", headline: "Phone seller and repair technician", bio: "Certified phone technician. New Tecno, Samsung and Infinix phones, and checked second-hand phones with a one month guarantee.", skills: ["Phone repair","Smartphones","Accessories"] },
+  { key: "aline", name: "Aline Mukamana", email: "aline@demo.loco.rw", phone: "0722100003", district: "Nyarugenge", role: "SELLER", headline: "Tailor and kitenge designer", bio: "Trained at Nyamirambo vocational centre. Kitenge dresses, school uniforms, repairs and resizing, usually ready in three days.", skills: ["Tailoring","Kitenge","School uniforms"] },
+  { key: "patrick", name: "Patrick Nsengimana", email: "patrick@demo.loco.rw", phone: "0733100004", district: "Huye", role: "SELLER", headline: "Hardware supplier and builder", bio: "20 years in construction. I supply cement, iron sheets and paint, and I can connect you with reliable masons in Huye.", skills: ["Building materials","Construction","Plumbing"] },
+  { key: "grace", name: "Grace Ingabire", email: "grace@demo.loco.rw", phone: "0788100005", district: "Musanze", role: "SELLER", headline: "Farmer, fresh produce from Musanze", bio: "Our family farm near Kinigi grows Irish potatoes, tomatoes and vegetables. We sell at Musanze market and deliver to Kigali twice a week.", skills: ["Potatoes","Vegetables","Eggs"] },
+  { key: "jmv", name: "Jean Marie Vianney Hakizimana", email: "jmv@demo.loco.rw", phone: "0788100006", district: "Rubavu", role: "SELLER", headline: "Moto rider and motorbike mechanic", bio: "Licensed moto rider in Gisenyi since 2015. Parcel delivery, border and airport transfers, and motorbike servicing.", skills: ["Moto delivery","Mechanic","Transport"] },
+  { key: "claudine", name: "Claudine Umutoni", email: "claudine@demo.loco.rw", phone: "0722100007", district: "Rwamagana", role: "SELLER", headline: "Furniture and home goods seller", bio: "New and second-hand furniture, kitchenware and gas refills in Rwamagana. We arrange a truck for large items.", skills: ["Furniture","Kitchenware","Gas"] },
+  { key: "emmanuel", name: "Emmanuel Bizimana", email: "emmanuel@demo.loco.rw", phone: "0788100008", district: "Muhanga", role: "SELLER", headline: "Electrician and laptop technician", bio: "Electrical installations for houses and small businesses, solar systems, and laptop repairs and upgrades in Muhanga.", skills: ["Electrician","Solar","Laptop repair"] },
   // Customers, workers and employers
-  { key: "diane", name: "Diane Uwase", email: "diane@demo.loco.rw", phone: "0788200001", district: "Gasabo", role: "CUSTOMER" },
-  { key: "kevin", name: "Kevin Mugisha", email: "kevin@demo.loco.rw", phone: "0722200002", district: "Kicukiro", role: "CUSTOMER" },
-  { key: "olive", name: "Olive Nyirahabimana", email: "olive@demo.loco.rw", phone: "0788200003", district: "Nyarugenge", role: "CUSTOMER" },
-  { key: "yves", name: "Yves Niyonzima", email: "yves@demo.loco.rw", phone: "0733200004", district: "Huye", role: "CUSTOMER" },
-  { key: "sandrine", name: "Sandrine Mutesi", email: "sandrine@demo.loco.rw", phone: "0788200005", district: "Musanze", role: "CUSTOMER" },
-  { key: "fabrice", name: "Fabrice Ndayisaba", email: "fabrice@demo.loco.rw", phone: "0788200006", district: "Gasabo", role: "CUSTOMER" },
-  { key: "josiane", name: "Josiane Uwera", email: "josiane@demo.loco.rw", phone: "0722200007", district: "Rwamagana", role: "CUSTOMER" },
-  { key: "innocent", name: "Innocent Tuyishime", email: "innocent@demo.loco.rw", phone: "0788200008", district: "Kicukiro", role: "CUSTOMER" },
+  { key: "diane", name: "Diane Uwase", email: "diane@demo.loco.rw", phone: "0788200001", district: "Gasabo", role: "CUSTOMER", headline: "Nurse at Kibagabaga hospital", bio: "Mother of two in Kibagabaga. I post jobs for home help and gardening.", skills: ["Nursing","First aid"] },
+  { key: "kevin", name: "Kevin Mugisha", email: "kevin@demo.loco.rw", phone: "0722200002", district: "Kicukiro", role: "CUSTOMER", headline: "Production supervisor, juice factory", bio: "I recruit packing and loading teams for the factory in the Special Economic Zone.", skills: ["Recruitment","Production"] },
+  { key: "olive", name: "Olive Nyirahabimana", email: "olive@demo.loco.rw", phone: "0788200003", district: "Nyarugenge", role: "CUSTOMER", headline: "Property caretaker in Nyamirambo", bio: "I manage a residential compound and hire guards and cleaners.", skills: ["Property management"] },
+  { key: "yves", name: "Yves Niyonzima", email: "yves@demo.loco.rw", phone: "0733200004", district: "Huye", role: "CUSTOMER", headline: "Secondary school teacher in Huye", bio: "Teacher of physics. Sometimes I look for tutors for my children.", skills: ["Teaching","Physics"] },
+  { key: "sandrine", name: "Sandrine Mutesi", email: "sandrine@demo.loco.rw", phone: "0788200005", district: "Musanze", role: "CUSTOMER", headline: "Mobile money agent in Musanze", bio: "I run a MoMo and Airtel Money kiosk at Muhoza. Fast, honest service every day from 6am.", skills: ["Mobile money","Airtime","Customer service"] },
+  { key: "fabrice", name: "Fabrice Ndayisaba", email: "fabrice@demo.loco.rw", phone: "0788200006", district: "Gasabo", role: "CUSTOMER", headline: "Driver and gardener", bio: "Professional driver with a clean licence, also experienced in gardening and lawn care in Gasabo.", skills: ["Driving","Gardening"] },
+  { key: "josiane", name: "Josiane Uwera", email: "josiane@demo.loco.rw", phone: "0722200007", district: "Rwamagana", role: "CUSTOMER", headline: "Experienced house help and cook", bio: "Three years with a family in Remera. Cooking, cleaning and child care. References available.", skills: ["Cooking","Child care","Cleaning"] },
+  { key: "innocent", name: "Innocent Tuyishime", email: "innocent@demo.loco.rw", phone: "0788200008", district: "Kicukiro", role: "CUSTOMER", headline: "Mason and solar installer", bio: "Four years of masonry in Kigali and certified solar installation. Available for daily or contract work.", skills: ["Masonry","Solar installation","Plastering"] },
 ];
 
 // logo / cover are Wikimedia Commons search queries.
@@ -168,6 +169,13 @@ async function seedPhotos() {
 
   const tasks = [];
 
+  const demoUsers = await prisma.user.findMany({ where: { email: { in: USERS.map((user) => user.email) } } });
+  for (const user of demoUsers) {
+    if (!(await isGoodStoredImage(user.avatarUrl))) {
+      tasks.push({ kind: "avatar", user, title: user.name });
+    }
+  }
+
   for (const shop of shops) {
     const config = SHOPS.find((item) => item.slug === shop.slug);
     if (!(await isGoodStoredImage(shop.logoUrl))) {
@@ -195,6 +203,16 @@ async function seedPhotos() {
   let placeholders = 0;
 
   await mapLimit(tasks, 4, async (task) => {
+    if (task.kind === "avatar") {
+      try {
+        const url = await storeImage(prisma, await fetchAvatar(task.user.name), task.user.id);
+        await prisma.user.update({ where: { id: task.user.id }, data: { avatarUrl: url } });
+      } catch (error) {
+        console.warn(`  no avatar for "${task.user.name}": ${error.message}`);
+      }
+      return;
+    }
+
     const photo = await photoOrPlaceholder(task.query, task.title);
     if (photo.placeholder) placeholders += 1;
 
@@ -228,8 +246,8 @@ async function seedContent() {
   for (const user of USERS) {
     users[user.key] = await prisma.user.upsert({
       where: { email: user.email },
-      update: { name: user.name, district: user.district, role: user.role, active: true },
-      create: { name: user.name, email: user.email, phone: normalizePhone(user.phone), district: user.district, role: user.role, passwordHash, emailVerified: true },
+      update: { name: user.name, district: user.district, role: user.role, active: true, headline: user.headline, bio: user.bio, skills: user.skills },
+      create: { name: user.name, email: user.email, phone: normalizePhone(user.phone), district: user.district, role: user.role, passwordHash, emailVerified: true, headline: user.headline, bio: user.bio, skills: user.skills },
     });
   }
 
@@ -373,7 +391,13 @@ async function main() {
     return;
   }
 
-  if (demoShops === 0 || process.env.SEED_DEMO === "true") {
+  // Re-run the content seed when demo profiles are missing newer fields,
+  // so existing deployments pick up additions without SEED_DEMO=true.
+  const profilesMissing = await prisma.user.count({
+    where: { email: { in: USERS.map((user) => user.email) }, headline: null },
+  });
+
+  if (demoShops === 0 || profilesMissing > 0 || process.env.SEED_DEMO === "true") {
     await seedContent();
   } else {
     console.log("Demo content already present; checking photos.");

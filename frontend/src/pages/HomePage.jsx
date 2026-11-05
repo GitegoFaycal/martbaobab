@@ -4,6 +4,7 @@ import {
   HowItWorks,
   JobStrip,
   ListingStrip,
+  PillarStrip,
   SellerCTA,
   TrustStrip,
 } from "../components/Sections";
@@ -19,6 +20,7 @@ export default function HomePage() {
     <main className="bg-loco-cream">
       <Hero />
       <TrustStrip />
+      <PillarStrip />
 
       <CategoryStrip kind="GOODS" basePath="/shop" eyebrow={t("home.browseLocally")} title={t("home.whatToday")} />
 

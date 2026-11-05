@@ -139,6 +139,35 @@ export function HowItWorks() {
   );
 }
 
+export function PillarStrip() {
+  const t = useT();
+  const pillars = [
+    { to: "/shop", title: t("hero.pillarShop"), text: t("hero.pillarShopText"), accent: "bg-loco-orange" },
+    { to: "/second-hand", title: t("hero.pillarSecondHand"), text: t("hero.pillarSecondHandText"), accent: "bg-loco-mint" },
+    { to: "/jobs", title: t("hero.pillarJobs"), text: t("hero.pillarJobsText"), accent: "bg-loco-wine" },
+    { to: "/services", title: t("hero.pillarServices"), text: t("hero.pillarServicesText"), accent: "bg-loco-orange" },
+  ];
+
+  return (
+    <section className="py-10">
+      <Container>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {pillars.map(({ to, title, text, accent }) => (
+            <Link key={to} to={to} className="group flex items-start gap-4 rounded-2xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-loco-orange">
+              <span className={`mt-1 h-10 w-1.5 shrink-0 rounded-full ${accent}`} />
+              <span>
+                <strong className="block text-loco-ink">{title}</strong>
+                <span className="mt-0.5 block text-sm text-gray-500">{text}</span>
+                <span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-loco-wine group-hover:gap-2">{t("hero.explore")} <ArrowRight size={14} /></span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 export function TrustStrip() {
   const t = useT();
   const items = [

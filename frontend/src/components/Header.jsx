@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   Store,
   UserRound,
+  Users,
   Wrench,
   X,
 } from "lucide-react";
@@ -52,6 +53,7 @@ export default function Header() {
   const accountMenuRef = useRef(null);
 
   const sections = [
+    { label: t("nav.people"), path: "/people", icon: Users },
     { label: t("nav.shop"), path: "/shop", icon: ShoppingBag },
     { label: t("nav.secondHand"), path: "/second-hand", icon: Recycle },
     { label: t("nav.services"), path: "/services", icon: Wrench },

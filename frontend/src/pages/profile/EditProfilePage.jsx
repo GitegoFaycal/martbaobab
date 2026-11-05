@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { fieldErrorsFrom } from "../../api/api";
 import { SingleImageUploader } from "../../components/ImageUploader";
-import { Button, Container, DistrictSelect, Field, Input, Message } from "../../components/ui";
+import { Button, Container, DistrictSelect, Field, Input, Message, Textarea } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { useT } from "../../i18n";
 import { formatPhoneForDisplay, saveDistrict } from "../../lib/rwanda";
@@ -17,6 +17,9 @@ export default function EditProfilePage() {
     phone: formatPhoneForDisplay(user.phone) || "",
     district: user.district || "",
     avatarUrl: user.avatarUrl || "",
+    headline: user.headline || "",
+    bio: user.bio || "",
+    skills: (user.skills || []).join(", "),
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -38,7 +41,15 @@ export default function EditProfilePage() {
     setSuccess("");
 
     try {
-      const response = await updateProfile({ name: form.name.trim(), phone: form.phone.trim(), district: form.district, avatarUrl: form.avatarUrl });
+      const response = await updateProfile({
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        district: form.district,
+        avatarUrl: form.avatarUrl,
+        headline: form.headline.trim(),
+        bio: form.bio.trim(),
+        skills: form.skills.split(",").map((skill) => skill.trim()).filter(Boolean).slice(0, 8),
+      });
       saveDistrict(form.district);
       setSuccess(response.message);
     } catch (requestError) {
@@ -75,6 +86,21 @@ export default function EditProfilePage() {
             </Field>
             <Field label={t("auth.email")} htmlFor="email">
               <Input id="email" value={user.email} disabled />
+            </Field>
+
+            <div className="rounded-2xl bg-loco-cream p-4">
+              <p className="font-bold text-loco-wine">{t("people.yourProfile")}</p>
+              <p className="mt-1 text-sm text-gray-600">{t("people.yourProfileText")}</p>
+            </div>
+
+            <Field label={t("people.headline")} htmlFor="headline" error={errors.headline} hint={t("people.headlineHint")}>
+              <Input id="headline" name="headline" value={form.headline} onChange={handleChange} maxLength={80} error={errors.headline} />
+            </Field>
+            <Field label={t("people.bio")} htmlFor="bio" optional error={errors.bio} hint={t("people.bioHint")}>
+              <Textarea id="bio" name="bio" rows={4} value={form.bio} onChange={handleChange} maxLength={600} error={errors.bio} />
+            </Field>
+            <Field label={t("people.skills")} htmlFor="skills" optional error={errors.skills} hint={t("people.skillsHint")}>
+              <Input id="skills" name="skills" value={form.skills} onChange={handleChange} placeholder="Tailoring, Kitenge, School uniforms" error={errors.skills} />
             </Field>
 
             <Button type="submit" className="w-full" loading={submitting}>{submitting ? t("common.saving") : t("common.save")}</Button>

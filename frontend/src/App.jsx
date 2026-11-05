@@ -25,6 +25,8 @@ import OrdersPage from "./pages/marketplace/OrdersPage";
 import ShopPage from "./pages/marketplace/ShopPage";
 import ShopsPage from "./pages/marketplace/ShopsPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import PeoplePage from "./pages/people/PeoplePage";
+import PersonPage from "./pages/people/PersonPage";
 import ChangePasswordPage from "./pages/profile/ChangePasswordPage";
 import EditProfilePage from "./pages/profile/EditProfilePage";
 import ProfilePage from "./pages/profile/ProfilePage";
@@ -60,6 +62,8 @@ export default function App() {
       <Route path="/cart" element={page(<CartPage />)} />
       <Route path="/jobs" element={page(<JobsPage />)} />
       <Route path="/jobs/:slug" element={page(<JobDetailPage />)} />
+      <Route path="/people" element={page(<PeoplePage />)} />
+      <Route path="/people/:id" element={page(<PersonPage />)} />
       <Route path="/unauthorized" element={page(<UnauthorizedPage />)} />
 
       {/* Authentication */}
