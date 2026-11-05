@@ -1,19 +1,25 @@
 // Demo content for LOCO: shops, listings (new, second-hand, services), jobs,
 // applications and orders across Rwanda. Idempotent: safe to run many times.
 //
-// Runs when the marketplace is empty, or always when SEED_DEMO=true.
+// Runs when the marketplace is empty, or always when SEED_DEMO=true. Photos
+// are fetched once from Wikimedia Commons and stored in LOCO's own image
+// table; later runs only repair missing or placeholder photos.
 // Every demo account uses the password below.
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { applyDatabaseUrl } from "../src/config/database-url.js";
+import {
+  fetchCommonsPhoto,
+  isStoredImage,
+  mapLimit,
+  placeholderSvg,
+  storeImage,
+} from "./demo-images.js";
 
 const prisma = new PrismaClient({ datasourceUrl: applyDatabaseUrl() || undefined });
 
 export const DEMO_PASSWORD = "Demo1234";
-
-const img = (keyword, lock) =>
-  `https://loremflickr.com/800/600/${encodeURIComponent(keyword)}?lock=${lock}`;
 
 const USERS = [
   // Sellers
@@ -36,60 +42,61 @@ const USERS = [
   { key: "innocent", name: "Innocent Tuyishime", email: "innocent@demo.loco.rw", phone: "0788200008", district: "Kicukiro", role: "CUSTOMER" },
 ];
 
+// logo / cover are Wikimedia Commons search queries.
 const SHOPS = [
-  { owner: "jeanne", name: "Mama Jeanne Boutique", slug: "mama-jeanne-boutique", district: "Gasabo", sector: "Kimironko", address: "Near Kimironko market, blue gate", description: "Groceries, drinks, airtime and household items. Open every day 6am to 10pm. Fast moto delivery in Kimironko and Kibagabaga.", verified: true, logo: img("grocery", 101), cover: img("market", 102) },
-  { owner: "eric", name: "Imena Tech Kicukiro", slug: "imena-tech-kicukiro", district: "Kicukiro", sector: "Kagarama", address: "KK 15 Rd, opposite Sonatubes", description: "Phones, accessories, repairs and certified second-hand smartphones with 1 month guarantee.", verified: true, logo: img("smartphone", 103), cover: img("electronics", 104) },
-  { owner: "aline", name: "Aline Fashion House", slug: "aline-fashion-house", district: "Nyarugenge", sector: "Nyamirambo", address: "Biryogo, near the mosque", description: "Tailoring, kitenge dresses, school uniforms and second-hand clothes (caguwa) in good condition.", verified: true, logo: img("fashion", 105), cover: img("tailor", 106) },
-  { owner: "patrick", name: "Huye Hardware & Build", slug: "huye-hardware-build", district: "Huye", sector: "Ngoma", address: "Huye town, main road", description: "Cement, iron sheets, paint, tools and plumbing supplies. We deliver to construction sites in Huye district.", verified: false, logo: img("hardware", 107), cover: img("construction", 108) },
-  { owner: "grace", name: "Musanze Fresh Farm", slug: "musanze-fresh-farm", district: "Musanze", sector: "Muhoza", address: "Musanze market, stall 42", description: "Irish potatoes, vegetables, fruits and eggs straight from farms around the volcanoes.", verified: true, logo: img("vegetables", 109), cover: img("farm", 110) },
-  { owner: "jmv", name: "Rubavu Moto & Services", slug: "rubavu-moto-services", district: "Rubavu", sector: "Gisenyi", address: "Gisenyi, near the border post", description: "Moto delivery, airport and border transfers, and motorbike repairs.", verified: false, logo: img("motorbike", 111), cover: img("motorcycle", 112) },
-  { owner: "claudine", name: "Claudine Home & Kitchen", slug: "claudine-home-kitchen", district: "Rwamagana", sector: "Kigabiro", address: "Rwamagana town centre", description: "Furniture, kitchenware, gas cylinders and second-hand sofas and beds.", verified: true, logo: img("furniture", 113), cover: img("kitchen", 114) },
-  { owner: "emmanuel", name: "Muhanga Repairs & Electronics", slug: "muhanga-repairs-electronics", district: "Muhanga", sector: "Nyamabuye", address: "Muhanga bus park, shop 7", description: "Phone and laptop repairs, used laptops, solar lamps and electrical installation.", verified: false, logo: img("repair", 115), cover: img("laptop", 116) },
+  { owner: "jeanne", name: "Mama Jeanne Boutique", slug: "mama-jeanne-boutique", district: "Gasabo", sector: "Kimironko", address: "Near Kimironko market, blue gate", description: "Groceries, drinks, airtime and household items. Open every day 6am to 10pm. Fast moto delivery in Kimironko and Kibagabaga.", verified: true, logo: "grocery store shelves", cover: "Kimironko market Kigali" },
+  { owner: "eric", name: "Imena Tech Kicukiro", slug: "imena-tech-kicukiro", district: "Kicukiro", sector: "Kagarama", address: "KK 15 Rd, opposite Sonatubes", description: "Phones, accessories, repairs and certified second-hand smartphones with 1 month guarantee.", verified: true, logo: "smartphone store display", cover: "mobile phone shop Africa" },
+  { owner: "aline", name: "Aline Fashion House", slug: "aline-fashion-house", district: "Nyarugenge", sector: "Nyamirambo", address: "Biryogo, near the mosque", description: "Tailoring, kitenge dresses, school uniforms and second-hand clothes (caguwa) in good condition.", verified: true, logo: "kitenge fabric dress", cover: "tailor sewing machine workshop" },
+  { owner: "patrick", name: "Huye Hardware & Build", slug: "huye-hardware-build", district: "Huye", sector: "Ngoma", address: "Huye town, main road", description: "Cement, iron sheets, paint, tools and plumbing supplies. We deliver to construction sites in Huye district.", verified: false, logo: "hardware store tools", cover: "construction site Rwanda" },
+  { owner: "grace", name: "Musanze Fresh Farm", slug: "musanze-fresh-farm", district: "Musanze", sector: "Muhoza", address: "Musanze market, stall 42", description: "Irish potatoes, vegetables, fruits and eggs straight from farms around the volcanoes.", verified: true, logo: "fresh vegetables market stall", cover: "Volcanoes National Park Rwanda" },
+  { owner: "jmv", name: "Rubavu Moto & Services", slug: "rubavu-moto-services", district: "Rubavu", sector: "Gisenyi", address: "Gisenyi, near the border post", description: "Moto delivery, airport and border transfers, and motorbike repairs.", verified: false, logo: "motorcycle taxi Rwanda", cover: "Gisenyi Lake Kivu" },
+  { owner: "claudine", name: "Claudine Home & Kitchen", slug: "claudine-home-kitchen", district: "Rwamagana", sector: "Kigabiro", address: "Rwamagana town centre", description: "Furniture, kitchenware, gas cylinders and second-hand sofas and beds.", verified: true, logo: "furniture shop sofa", cover: "kitchen cookware shop" },
+  { owner: "emmanuel", name: "Muhanga Repairs & Electronics", slug: "muhanga-repairs-electronics", district: "Muhanga", sector: "Nyamabuye", address: "Muhanga bus park, shop 7", description: "Phone and laptop repairs, used laptops, solar lamps and electrical installation.", verified: false, logo: "laptop computer repair", cover: "electronics repair shop" },
 ];
 
-// [shop, category slug, name, price, options]
+// [shop, category slug, name, price, options]; options.photo is the search query.
 const LISTINGS = [
-  ["mama-jeanne-boutique", "food-groceries", "Inyange milk 1L", 1200, { unit: "bottle", stock: 40, keyword: "milk", description: "Fresh Inyange whole milk, 1 litre. Keep refrigerated." }],
-  ["mama-jeanne-boutique", "food-groceries", "Kabuye sugar 1kg", 1800, { unit: "kg", stock: 60, keyword: "sugar" }],
-  ["mama-jeanne-boutique", "food-groceries", "Cooking oil 1L (Mount Meru)", 3200, { unit: "bottle", stock: 25, keyword: "cooking oil" }],
-  ["mama-jeanne-boutique", "food-groceries", "Rice 5kg (Tanzania long grain)", 8500, { unit: "bag", stock: 15, keyword: "rice" }],
-  ["mama-jeanne-boutique", "drinks-water", "Inyange water 500ml (pack of 12)", 4800, { unit: "pack", stock: 30, keyword: "water bottle" }],
-  ["mama-jeanne-boutique", "drinks-water", "Fanta citron 500ml", 700, { unit: "bottle", stock: 100, keyword: "soda" }],
-  ["mama-jeanne-boutique", "gas-charcoal", "Charcoal sack (medium)", 14000, { unit: "sack", stock: 8, keyword: "charcoal" }],
-  ["mama-jeanne-boutique", "beauty-care", "Colgate toothpaste 100ml", 1500, { unit: "piece", stock: 50, keyword: "toothpaste" }],
-  ["imena-tech-kicukiro", "phones-electronics", "Tecno Spark 20 (new, 128GB)", 145000, { stock: 6, keyword: "smartphone", description: "Brand new Tecno Spark 20, 8GB RAM, 128GB storage, dual SIM. 1 year warranty." }],
-  ["imena-tech-kicukiro", "phones-electronics", "Samsung Galaxy A14 (used)", 95000, { condition: "USED", originalPrice: 180000, stock: 1, negotiable: true, keyword: "samsung phone", description: "6 months old, no scratches, comes with charger and box. Battery health 96%." }],
-  ["imena-tech-kicukiro", "phones-electronics", "iPhone 11 64GB (used)", 260000, { condition: "USED", originalPrice: 520000, stock: 1, negotiable: true, keyword: "iphone", description: "Clean iPhone 11, face ID works, small scratch on back. Battery 84%." }],
-  ["imena-tech-kicukiro", "phones-electronics", "Oraimo earphones", 6500, { stock: 20, keyword: "earphones" }],
-  ["imena-tech-kicukiro", "phones-electronics", "Phone charger type-C fast", 4500, { stock: 35, keyword: "charger" }],
-  ["imena-tech-kicukiro", "phone-computer-repair", "Phone screen replacement", 25000, { type: "SERVICE", unit: "repair", keyword: "phone repair", description: "Same-day screen replacement for Samsung, Tecno, Infinix and iPhone. Price from RWF 25,000 depending on model." }],
-  ["aline-fashion-house", "clothing-shoes", "Kitenge dress (made to measure)", 35000, { unit: "piece", stock: 10, keyword: "african dress", description: "Choose your fabric, we sew it in 3 days." }],
-  ["aline-fashion-house", "clothing-shoes", "School uniform set", 18000, { unit: "set", stock: 30, keyword: "school uniform" }],
-  ["aline-fashion-house", "clothing-shoes", "Men's jeans (caguwa, good condition)", 7000, { condition: "USED", originalPrice: 25000, stock: 12, keyword: "jeans" }],
-  ["aline-fashion-house", "clothing-shoes", "Ladies handbag (used, leather)", 12000, { condition: "USED", originalPrice: 40000, stock: 1, negotiable: true, keyword: "handbag" }],
-  ["aline-fashion-house", "tailoring", "Tailoring and repairs", 3000, { type: "SERVICE", unit: "item", keyword: "sewing", description: "Hemming, zips, resizing and custom sewing. Visit the shop or we collect in Nyamirambo." }],
-  ["huye-hardware-build", "building-materials", "Cement 50kg (CIMERWA)", 13500, { unit: "bag", stock: 200, keyword: "cement" }],
-  ["huye-hardware-build", "building-materials", "Iron sheet 28 gauge (3m)", 11000, { unit: "sheet", stock: 120, keyword: "roof sheet" }],
-  ["huye-hardware-build", "building-materials", "Paint 20L white (Sadolin)", 68000, { unit: "bucket", stock: 10, keyword: "paint" }],
-  ["huye-hardware-build", "building-materials", "Wheelbarrow (used)", 18000, { condition: "USED", originalPrice: 35000, stock: 2, keyword: "wheelbarrow" }],
-  ["huye-hardware-build", "plumbing-electrical", "Plumbing installation", 15000, { type: "SERVICE", unit: "visit", keyword: "plumber", description: "Pipes, taps, water tanks and toilets. Call-out in Huye from RWF 15,000." }],
-  ["musanze-fresh-farm", "fresh-produce", "Irish potatoes 10kg", 6500, { unit: "bag", stock: 50, keyword: "potatoes" }],
-  ["musanze-fresh-farm", "fresh-produce", "Tomatoes 1kg", 1200, { unit: "kg", stock: 80, keyword: "tomatoes" }],
-  ["musanze-fresh-farm", "fresh-produce", "Eggs (tray of 30)", 4500, { unit: "tray", stock: 40, keyword: "eggs" }],
-  ["musanze-fresh-farm", "fresh-produce", "Avocados (5 pieces)", 1500, { unit: "pack", stock: 60, keyword: "avocado" }],
-  ["musanze-fresh-farm", "agriculture-livestock", "Maize seeds 2kg", 5200, { unit: "bag", stock: 25, keyword: "maize" }],
-  ["rubavu-moto-services", "moto-delivery", "Moto delivery in Rubavu", 1000, { type: "SERVICE", unit: "trip", keyword: "motorcycle taxi", description: "Parcels and shopping delivered anywhere in Gisenyi within the hour." }],
-  ["rubavu-moto-services", "mechanics", "Motorbike service and repair", 8000, { type: "SERVICE", unit: "service", keyword: "mechanic" }],
-  ["rubavu-moto-services", "motorbikes-bicycles", "Bicycle (used, mountain bike)", 55000, { condition: "USED", originalPrice: 120000, stock: 1, negotiable: true, keyword: "bicycle" }],
-  ["claudine-home-kitchen", "furniture", "3-seater sofa (used, fabric)", 85000, { condition: "USED", originalPrice: 220000, stock: 1, negotiable: true, keyword: "sofa", description: "Two years old, clean, no tears. Collect in Rwamagana or we arrange a truck." }],
-  ["claudine-home-kitchen", "furniture", "Wooden bed 1.5m (new)", 120000, { stock: 3, keyword: "bed" }],
-  ["claudine-home-kitchen", "home-kitchen", "Gas cylinder 12kg (refill)", 15500, { unit: "refill", stock: 20, keyword: "gas cylinder" }],
-  ["claudine-home-kitchen", "home-kitchen", "Saucepan set (5 pieces)", 22000, { unit: "set", stock: 8, keyword: "cooking pot" }],
-  ["claudine-home-kitchen", "home-kitchen", "Dining table + 4 chairs (used)", 60000, { condition: "USED", originalPrice: 150000, stock: 1, keyword: "dining table" }],
-  ["muhanga-repairs-electronics", "phones-electronics", "HP laptop i5 8GB (used)", 220000, { condition: "USED", originalPrice: 450000, stock: 2, negotiable: true, keyword: "laptop", description: "HP ProBook, 8GB RAM, 256GB SSD, Windows 11. 3 months guarantee." }],
-  ["muhanga-repairs-electronics", "phones-electronics", "Solar lamp with phone charging", 9500, { stock: 25, keyword: "solar lamp" }],
-  ["muhanga-repairs-electronics", "phone-computer-repair", "Laptop repair and upgrade", 10000, { type: "SERVICE", unit: "repair", keyword: "computer repair" }],
-  ["muhanga-repairs-electronics", "plumbing-electrical", "House electrical installation", 30000, { type: "SERVICE", unit: "job", keyword: "electrician" }],
+  ["mama-jeanne-boutique", "food-groceries", "Inyange milk 1L", 1200, { unit: "bottle", stock: 40, photo: "milk bottle carton", description: "Fresh Inyange whole milk, 1 litre. Keep refrigerated." }],
+  ["mama-jeanne-boutique", "food-groceries", "Kabuye sugar 1kg", 1800, { unit: "kg", stock: 60, photo: "white sugar bag" }],
+  ["mama-jeanne-boutique", "food-groceries", "Cooking oil 1L (Mount Meru)", 3200, { unit: "bottle", stock: 25, photo: "cooking oil bottle" }],
+  ["mama-jeanne-boutique", "food-groceries", "Rice 5kg (Tanzania long grain)", 8500, { unit: "bag", stock: 15, photo: "rice sack grains" }],
+  ["mama-jeanne-boutique", "drinks-water", "Inyange water 500ml (pack of 12)", 4800, { unit: "pack", stock: 30, photo: "bottled water pack" }],
+  ["mama-jeanne-boutique", "drinks-water", "Fanta citron 500ml", 700, { unit: "bottle", stock: 100, photo: "Fanta bottle" }],
+  ["mama-jeanne-boutique", "gas-charcoal", "Charcoal sack (medium)", 14000, { unit: "sack", stock: 8, photo: "charcoal bag" }],
+  ["mama-jeanne-boutique", "beauty-care", "Colgate toothpaste 100ml", 1500, { unit: "piece", stock: 50, photo: "Colgate toothpaste tube" }],
+  ["imena-tech-kicukiro", "phones-electronics", "Tecno Spark 20 (new, 128GB)", 145000, { stock: 6, photo: "Tecno smartphone", description: "Brand new Tecno Spark 20, 8GB RAM, 128GB storage, dual SIM. 1 year warranty." }],
+  ["imena-tech-kicukiro", "phones-electronics", "Samsung Galaxy A14 (used)", 95000, { condition: "USED", originalPrice: 180000, stock: 1, negotiable: true, photo: "Samsung Galaxy smartphone front screen", description: "6 months old, no scratches, comes with charger and box. Battery health 96%." }],
+  ["imena-tech-kicukiro", "phones-electronics", "iPhone 11 64GB (used)", 260000, { condition: "USED", originalPrice: 520000, stock: 1, negotiable: true, photo: "iPhone 11", description: "Clean iPhone 11, face ID works, small scratch on back. Battery 84%." }],
+  ["imena-tech-kicukiro", "phones-electronics", "Oraimo earphones", 6500, { stock: 20, photo: "earphones earbuds" }],
+  ["imena-tech-kicukiro", "phones-electronics", "Phone charger type-C fast", 4500, { stock: 35, photo: "USB-C phone charger" }],
+  ["imena-tech-kicukiro", "phone-computer-repair", "Phone screen replacement", 25000, { type: "SERVICE", unit: "repair", photo: "smartphone screen repair", description: "Same-day screen replacement for Samsung, Tecno, Infinix and iPhone. Price from RWF 25,000 depending on model." }],
+  ["aline-fashion-house", "clothing-shoes", "Kitenge dress (made to measure)", 35000, { unit: "piece", stock: 10, photo: "kitenge dress African print", description: "Choose your fabric, we sew it in 3 days." }],
+  ["aline-fashion-house", "clothing-shoes", "School uniform set", 18000, { unit: "set", stock: 30, photo: "school uniform Rwanda" }],
+  ["aline-fashion-house", "clothing-shoes", "Men's jeans (caguwa, good condition)", 7000, { condition: "USED", originalPrice: 25000, stock: 12, photo: "blue jeans denim" }],
+  ["aline-fashion-house", "clothing-shoes", "Ladies handbag (used, leather)", 12000, { condition: "USED", originalPrice: 40000, stock: 1, negotiable: true, photo: "leather handbag" }],
+  ["aline-fashion-house", "tailoring", "Tailoring and repairs", 3000, { type: "SERVICE", unit: "item", photo: "sewing machine tailor", description: "Hemming, zips, resizing and custom sewing. Visit the shop or we collect in Nyamirambo." }],
+  ["huye-hardware-build", "building-materials", "Cement 50kg (CIMERWA)", 13500, { unit: "bag", stock: 200, photo: "cement bags" }],
+  ["huye-hardware-build", "building-materials", "Iron sheet 28 gauge (3m)", 11000, { unit: "sheet", stock: 120, photo: "corrugated iron roofing sheets" }],
+  ["huye-hardware-build", "building-materials", "Paint 20L white (Sadolin)", 68000, { unit: "bucket", stock: 10, photo: "paint bucket white" }],
+  ["huye-hardware-build", "building-materials", "Wheelbarrow (used)", 18000, { condition: "USED", originalPrice: 35000, stock: 2, photo: "wheelbarrow" }],
+  ["huye-hardware-build", "plumbing-electrical", "Plumbing installation", 15000, { type: "SERVICE", unit: "visit", photo: "plumber pipes wrench", description: "Pipes, taps, water tanks and toilets. Call-out in Huye from RWF 15,000." }],
+  ["musanze-fresh-farm", "fresh-produce", "Irish potatoes 10kg", 6500, { unit: "bag", stock: 50, photo: "Irish potatoes" }],
+  ["musanze-fresh-farm", "fresh-produce", "Tomatoes 1kg", 1200, { unit: "kg", stock: 80, photo: "fresh tomatoes" }],
+  ["musanze-fresh-farm", "fresh-produce", "Eggs (tray of 30)", 4500, { unit: "tray", stock: 40, photo: "egg tray" }],
+  ["musanze-fresh-farm", "fresh-produce", "Avocados (5 pieces)", 1500, { unit: "pack", stock: 60, photo: "avocados" }],
+  ["musanze-fresh-farm", "agriculture-livestock", "Maize seeds 2kg", 5200, { unit: "bag", stock: 25, photo: "maize seeds" }],
+  ["rubavu-moto-services", "moto-delivery", "Moto delivery in Rubavu", 1000, { type: "SERVICE", unit: "trip", photo: "motorcycle taxi Rwanda", description: "Parcels and shopping delivered anywhere in Gisenyi within the hour." }],
+  ["rubavu-moto-services", "mechanics", "Motorbike service and repair", 8000, { type: "SERVICE", unit: "service", photo: "motorcycle mechanic repair" }],
+  ["rubavu-moto-services", "motorbikes-bicycles", "Bicycle (used, mountain bike)", 55000, { condition: "USED", originalPrice: 120000, stock: 1, negotiable: true, photo: "mountain bike bicycle" }],
+  ["claudine-home-kitchen", "furniture", "3-seater sofa (used, fabric)", 85000, { condition: "USED", originalPrice: 220000, stock: 1, negotiable: true, photo: "sofa couch living room", description: "Two years old, clean, no tears. Collect in Rwamagana or we arrange a truck." }],
+  ["claudine-home-kitchen", "furniture", "Wooden bed 1.5m (new)", 120000, { stock: 3, photo: "wooden bed frame" }],
+  ["claudine-home-kitchen", "home-kitchen", "Gas cylinder 12kg (refill)", 15500, { unit: "refill", stock: 20, photo: "LPG gas cylinder" }],
+  ["claudine-home-kitchen", "home-kitchen", "Saucepan set (5 pieces)", 22000, { unit: "set", stock: 8, photo: "stainless steel cooking pots" }],
+  ["claudine-home-kitchen", "home-kitchen", "Dining table + 4 chairs (used)", 60000, { condition: "USED", originalPrice: 150000, stock: 1, photo: "wooden dining table chairs" }],
+  ["muhanga-repairs-electronics", "phones-electronics", "HP laptop i5 8GB (used)", 220000, { condition: "USED", originalPrice: 450000, stock: 2, negotiable: true, photo: "HP ProBook laptop", description: "HP ProBook, 8GB RAM, 256GB SSD, Windows 11. 3 months guarantee." }],
+  ["muhanga-repairs-electronics", "phones-electronics", "Solar lamp with phone charging", 9500, { stock: 25, photo: "solar lantern lamp" }],
+  ["muhanga-repairs-electronics", "phone-computer-repair", "Laptop repair and upgrade", 10000, { type: "SERVICE", unit: "repair", photo: "laptop repair technician" }],
+  ["muhanga-repairs-electronics", "plumbing-electrical", "House electrical installation", 30000, { type: "SERVICE", unit: "job", photo: "electrician wiring" }],
 ];
 
 const JOBS = [
@@ -134,14 +141,87 @@ const slugify = (value) =>
 
 const normalizePhone = (value) => `+250${value.replace(/^0/, "")}`;
 
-async function main() {
-  const existingShops = await prisma.shop.count();
+// A stored image is "good" when it is a real photo; SVG placeholders are
+// retried on later runs in case the photo source was unavailable.
+async function isGoodStoredImage(url) {
+  if (!isStoredImage(url)) return false;
+  const id = url.split("/images/")[1];
+  const image = await prisma.image.findUnique({ where: { id }, select: { mimeType: true } });
+  return Boolean(image && image.mimeType !== "image/svg+xml");
+}
 
-  if (existingShops > 0 && process.env.SEED_DEMO !== "true") {
-    console.log(`Demo data skipped: marketplace already has ${existingShops} shops (set SEED_DEMO=true to force).`);
+async function photoOrPlaceholder(query, title) {
+  try {
+    return { ...(await fetchCommonsPhoto(query)), placeholder: false };
+  } catch (error) {
+    console.warn(`  no photo for "${title}" (${error.message}); using placeholder`);
+    return { ...placeholderSvg(title), placeholder: true };
+  }
+}
+
+async function seedPhotos() {
+  const shops = await prisma.shop.findMany({ where: { slug: { in: SHOPS.map((shop) => shop.slug) } } });
+  const listings = await prisma.listing.findMany({
+    where: { shop: { slug: { in: SHOPS.map((shop) => shop.slug) } } },
+    include: { images: { orderBy: { position: "asc" }, take: 1 } },
+  });
+
+  const tasks = [];
+
+  for (const shop of shops) {
+    const config = SHOPS.find((item) => item.slug === shop.slug);
+    if (!(await isGoodStoredImage(shop.logoUrl))) {
+      tasks.push({ kind: "logo", shop, query: config.logo, title: shop.name });
+    }
+    if (!(await isGoodStoredImage(shop.coverUrl))) {
+      tasks.push({ kind: "cover", shop, query: config.cover, title: shop.name });
+    }
+  }
+
+  for (const listing of listings) {
+    const config = LISTINGS.find(([, , name]) => name === listing.name);
+    if (!config) continue;
+    if (!(await isGoodStoredImage(listing.images[0]?.url))) {
+      tasks.push({ kind: "listing", listing, query: config[4]?.photo || listing.name, title: listing.name });
+    }
+  }
+
+  if (tasks.length === 0) {
+    console.log("Demo photos already in place.");
     return;
   }
 
+  console.log(`Fetching ${tasks.length} demo photos...`);
+  let placeholders = 0;
+
+  await mapLimit(tasks, 4, async (task) => {
+    const photo = await photoOrPlaceholder(task.query, task.title);
+    if (photo.placeholder) placeholders += 1;
+
+    // Keep an existing placeholder rather than replacing it with another one.
+    if (photo.placeholder) {
+      const current = task.kind === "listing" ? task.listing.images[0]?.url : task.kind === "logo" ? task.shop.logoUrl : task.shop.coverUrl;
+      if (isStoredImage(current)) return;
+    }
+
+    const url = await storeImage(prisma, photo, task.kind === "listing" ? null : task.shop.ownerId);
+
+    if (task.kind === "logo") {
+      await prisma.shop.update({ where: { id: task.shop.id }, data: { logoUrl: url } });
+    } else if (task.kind === "cover") {
+      await prisma.shop.update({ where: { id: task.shop.id }, data: { coverUrl: url } });
+    } else {
+      await prisma.listing.update({
+        where: { id: task.listing.id },
+        data: { images: { deleteMany: {}, create: [{ url, alt: task.listing.name, position: 0 }] } },
+      });
+    }
+  });
+
+  console.log(`Demo photos ready: ${tasks.length - placeholders} photos, ${placeholders} placeholders.`);
+}
+
+async function seedContent() {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
   const users = {};
 
@@ -149,15 +229,7 @@ async function main() {
     users[user.key] = await prisma.user.upsert({
       where: { email: user.email },
       update: { name: user.name, district: user.district, role: user.role, active: true },
-      create: {
-        name: user.name,
-        email: user.email,
-        phone: normalizePhone(user.phone),
-        district: user.district,
-        role: user.role,
-        passwordHash,
-        emailVerified: true,
-      },
+      create: { name: user.name, email: user.email, phone: normalizePhone(user.phone), district: user.district, role: user.role, passwordHash, emailVerified: true },
     });
   }
 
@@ -167,31 +239,14 @@ async function main() {
     const owner = users[shop.owner];
     shops[shop.slug] = await prisma.shop.upsert({
       where: { slug: shop.slug },
-      update: { name: shop.name, description: shop.description, district: shop.district, city: shop.district, sector: shop.sector, address: shop.address, verified: shop.verified, logoUrl: shop.logo, coverUrl: shop.cover },
-      create: {
-        name: shop.name,
-        slug: shop.slug,
-        description: shop.description,
-        phone: owner.phone,
-        whatsapp: owner.phone,
-        city: shop.district,
-        district: shop.district,
-        sector: shop.sector,
-        address: shop.address,
-        verified: shop.verified,
-        logoUrl: shop.logo,
-        coverUrl: shop.cover,
-        ownerId: owner.id,
-      },
+      update: { name: shop.name, description: shop.description, district: shop.district, city: shop.district, sector: shop.sector, address: shop.address, verified: shop.verified },
+      create: { name: shop.name, slug: shop.slug, description: shop.description, phone: owner.phone, whatsapp: owner.phone, city: shop.district, district: shop.district, sector: shop.sector, address: shop.address, verified: shop.verified, ownerId: owner.id },
     });
   }
 
-  const categories = Object.fromEntries(
-    (await prisma.category.findMany()).map((category) => [category.slug, category])
-  );
-
+  const categories = Object.fromEntries((await prisma.category.findMany()).map((category) => [category.slug, category]));
   const listings = {};
-  let lock = 200;
+  let counter = 0;
 
   for (const [shopSlug, categorySlug, name, price, options = {}] of LISTINGS) {
     const shop = shops[shopSlug];
@@ -202,9 +257,7 @@ async function main() {
       continue;
     }
 
-    const slug = slugify(name);
-    lock += 1;
-
+    counter += 1;
     const data = {
       name,
       description: options.description || `${name} from ${shop.name}, ${shop.district}.`,
@@ -219,20 +272,15 @@ async function main() {
       active: true,
       categoryId: category.id,
       shopId: shop.id,
-      views: 20 + ((lock * 37) % 400),
+      views: 20 + ((counter * 37) % 400),
     };
 
-    listings[name] = await prisma.listing.upsert({
-      where: { slug },
-      update: { ...data, images: { deleteMany: {}, create: [{ url: img(options.keyword || name, lock), alt: name, position: 0 }] } },
-      create: { ...data, slug, images: { create: [{ url: img(options.keyword || name, lock), alt: name, position: 0 }] } },
-    });
+    listings[name] = await prisma.listing.upsert({ where: { slug: slugify(name) }, update: data, create: { ...data, slug: slugify(name) } });
   }
 
   const jobs = {};
 
   for (const job of JOBS) {
-    const slug = slugify(job.title);
     const employer = users[job.employer];
     const category = categories[job.category];
     const data = {
@@ -255,13 +303,12 @@ async function main() {
       views: 15 + Math.floor(Math.random() * 200),
     };
 
-    jobs[job.title] = await prisma.job.upsert({ where: { slug }, update: data, create: { ...data, slug } });
+    jobs[job.title] = await prisma.job.upsert({ where: { slug: slugify(job.title) }, update: data, create: { ...data, slug: slugify(job.title) } });
   }
 
   for (const [titleStart, applicantKey, message, status] of APPLICATIONS) {
     const job = Object.values(jobs).find((item) => item.title.startsWith(titleStart));
     const applicant = users[applicantKey];
-
     if (!job || !applicant) continue;
 
     await prisma.jobApplication.upsert({
@@ -280,19 +327,13 @@ async function main() {
     const shop = shops[order.shop];
     const items = order.items
       .filter(([name]) => listings[name])
-      .map(([name, quantity]) => ({
-        name,
-        quantity,
-        unitPrice: listings[name].price,
-        listingId: listings[name].id,
-      }));
+      .map(([name, quantity]) => ({ name, quantity, unitPrice: listings[name].price, listingId: listings[name].id }));
 
     if (!items.length) continue;
 
     const subtotal = items.reduce((sum, item) => sum + Number(item.unitPrice) * item.quantity, 0);
     const deliveryFee = order.district === shop.district ? 1000 : 2500;
     const total = subtotal + deliveryFee;
-
     const existing = await prisma.order.findUnique({ where: { reference } });
 
     if (existing) {
@@ -314,21 +355,31 @@ async function main() {
         shopId: shop.id,
         createdAt: new Date(Date.now() - orderIndex * 36 * 3600 * 1000),
         items: { create: items },
-        payment: {
-          create: {
-            provider: order.provider,
-            amount: total,
-            status: order.status === "DELIVERED" ? "PAID" : "PENDING",
-          },
-        },
+        payment: { create: { provider: order.provider, amount: total, status: order.status === "DELIVERED" ? "PAID" : "PENDING" } },
       },
     });
   }
 
-  console.log(
-    `Demo data ready: ${USERS.length} accounts, ${SHOPS.length} shops, ${Object.keys(listings).length} listings, ${JOBS.length} jobs, ${APPLICATIONS.length} applications, ${ORDERS.length} orders.`
-  );
+  console.log(`Demo data ready: ${USERS.length} accounts, ${SHOPS.length} shops, ${Object.keys(listings).length} listings, ${JOBS.length} jobs, ${APPLICATIONS.length} applications, ${ORDERS.length} orders.`);
   console.log(`Demo accounts use the password "${DEMO_PASSWORD}" (e.g. jeanne@demo.loco.rw, diane@demo.loco.rw).`);
+}
+
+async function main() {
+  const demoShops = await prisma.shop.count({ where: { slug: { in: SHOPS.map((shop) => shop.slug) } } });
+  const allShops = await prisma.shop.count();
+
+  if (allShops > 0 && demoShops === 0 && process.env.SEED_DEMO !== "true") {
+    console.log(`Demo data skipped: marketplace already has ${allShops} shops (set SEED_DEMO=true to force).`);
+    return;
+  }
+
+  if (demoShops === 0 || process.env.SEED_DEMO === "true") {
+    await seedContent();
+  } else {
+    console.log("Demo content already present; checking photos.");
+  }
+
+  await seedPhotos();
 }
 
 main()
