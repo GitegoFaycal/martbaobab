@@ -91,30 +91,31 @@ export async function fetchCommonsPhoto(query) {
 }
 
 // Illustrated avatar for a demo person (DiceBear, free, deterministic per name).
+// SVG output stays crisp at any size; PNG output is capped at 256px.
 export async function fetchAvatar(name) {
   const params = new URLSearchParams({
     seed: name,
-    size: "512",
     backgroundColor: "fff8ef,ffe3c9,d9f7ee",
     radius: "50",
     skinColor: "763900,9e5622",
     hairColor: "0e0e0e,562306,6a4e35",
   });
 
-  const response = await fetchWithTimeout(`https://api.dicebear.com/9.x/adventurer/png?${params}`);
+  const response = await fetchWithTimeout(`https://api.dicebear.com/9.x/adventurer/svg?${params}`);
 
   if (!response.ok) {
     throw new Error(`Avatar service failed (${response.status})`);
   }
 
   const buffer = Buffer.from(await response.arrayBuffer());
-  const mime = response.headers.get("content-type")?.split(";")[0] || "image/png";
+  const mime = response.headers.get("content-type")?.split(";")[0] || "image/svg+xml";
 
-  if (!buffer.length || !mime.startsWith("image/")) {
+  if (!buffer.length || !mime.startsWith("image/") || !buffer.toString("utf8", 0, 200).includes("<svg")) {
     throw new Error("Avatar service returned no image");
   }
 
-  return { buffer, mime };
+  // Vector avatar: record a nominal size so it is not treated as a placeholder.
+  return { buffer, mime: "image/svg+xml", width: 762, height: 762 };
 }
 
 function escapeXml(value) {
@@ -147,9 +148,9 @@ export function placeholderSvg(title, accent = "#f36b21") {
   return { buffer: Buffer.from(svg, "utf8"), mime: "image/svg+xml" };
 }
 
-export async function storeImage(prisma, { buffer, mime }, ownerId = null) {
+export async function storeImage(prisma, { buffer, mime, width = null, height = null }, ownerId = null) {
   const image = await prisma.image.create({
-    data: { mimeType: mime, size: buffer.length, data: buffer, ownerId },
+    data: { mimeType: mime, size: buffer.length, width, height, data: buffer, ownerId },
     select: { id: true },
   });
 

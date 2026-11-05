@@ -144,11 +144,16 @@ const normalizePhone = (value) => `+250${value.replace(/^0/, "")}`;
 
 // A stored image is "good" when it is a real photo; SVG placeholders are
 // retried on later runs in case the photo source was unavailable.
-async function isGoodStoredImage(url, minSize = 0) {
+// Placeholders are SVGs stored without a width; vector avatars record one.
+async function isGoodStoredImage(url, { minWidth = 0, vector = false } = {}) {
   if (!isStoredImage(url)) return false;
   const id = url.split("/images/")[1];
-  const image = await prisma.image.findUnique({ where: { id }, select: { mimeType: true, size: true } });
-  return Boolean(image && image.mimeType !== "image/svg+xml" && image.size >= minSize);
+  const image = await prisma.image.findUnique({ where: { id }, select: { mimeType: true, width: true } });
+  if (!image) return false;
+  const isSvg = image.mimeType === "image/svg+xml";
+  if (isSvg && !image.width) return false;
+  if (vector && !isSvg) return false;
+  return (image.width ?? 0) >= minWidth;
 }
 
 async function photoOrPlaceholder(query, title) {
@@ -171,8 +176,8 @@ async function seedPhotos() {
 
   const demoUsers = await prisma.user.findMany({ where: { email: { in: USERS.map((user) => user.email) } } });
   for (const user of demoUsers) {
-    // Avatars below 30 KB are the old 256px renders; refresh them at 512px.
-    if (!(await isGoodStoredImage(user.avatarUrl, 30000))) {
+    // Avatars must be the vector renders; older 256px PNGs are replaced.
+    if (!(await isGoodStoredImage(user.avatarUrl, { minWidth: 512, vector: true }))) {
       tasks.push({ kind: "avatar", user, title: user.name });
     }
   }
