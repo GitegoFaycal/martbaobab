@@ -35,37 +35,13 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-loco-wine text-white">
-      <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-loco-orange/25" />
-      <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-loco-mint/15" />
+    <section className="relative overflow-hidden bg-white text-loco-ink">
+      <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-loco-orange/10" />
+      <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-loco-mint/10" />
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-12 lg:pt-16">
-        <div className="grid items-end gap-8 lg:grid-cols-[1fr_minmax(0,560px)]">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-loco-mint">
-              <MapPin size={15} />
-              {t("hero.badge")}
-            </span>
-
-            <h1 className="mt-5 text-4xl font-black leading-tight sm:text-5xl xl:text-6xl">
-              {t("hero.title1")}
-              <br />
-              <span className="text-loco-orange">{t("hero.title2")}</span>
-            </h1>
-
-            <p className="mt-4 max-w-xl text-lg text-white/80">{t("hero.text")}</p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/register?role=SELLER" className="inline-flex items-center gap-2 rounded-full bg-loco-mint px-6 py-3 font-bold text-loco-wine-dark hover:bg-loco-mint-dark">
-                {t("hero.openShop")} <ArrowRight size={18} />
-              </Link>
-              <Link to="/jobs/new" className="rounded-full border border-white/40 px-6 py-3 font-bold hover:bg-white/10">
-                {t("hero.hireWorkers")}
-              </Link>
-            </div>
-          </div>
-
-          <form role="search" onSubmit={handleSearch} className="overflow-hidden rounded-2xl bg-white p-2 text-loco-ink shadow-2xl">
+      <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-8 lg:pt-10">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+          <form role="search" onSubmit={handleSearch} className="flex-1 overflow-hidden rounded-2xl border border-orange-100 bg-white p-2 shadow-xl shadow-orange-100/60">
             <div className="mb-2 flex flex-wrap gap-1 px-1">
               {tabs.map((item) => (
                 <button
@@ -94,7 +70,7 @@ export default function Hero() {
                 />
               </label>
 
-              <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3 sm:w-48">
+              <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3 sm:w-52">
                 <MapPin size={18} className="shrink-0 text-loco-orange" />
                 <DistrictSelect
                   name="district"
@@ -111,6 +87,15 @@ export default function Hero() {
               </button>
             </div>
           </form>
+
+          <div className="flex flex-wrap gap-3 lg:flex-col">
+            <Link to="/register?role=SELLER" className="inline-flex items-center justify-center gap-2 rounded-full bg-loco-wine px-6 py-3 font-bold text-white hover:bg-loco-wine-dark">
+              {t("hero.openShop")} <ArrowRight size={18} />
+            </Link>
+            <Link to="/jobs/new" className="inline-flex items-center justify-center rounded-full border border-loco-wine px-6 py-3 font-bold text-loco-wine hover:bg-loco-cream">
+              {t("hero.hireWorkers")}
+            </Link>
+          </div>
         </div>
 
         <PeopleWall district={district} />
@@ -146,11 +131,11 @@ function PeopleWall({ district }) {
     <div className="mt-10">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="inline-flex items-center gap-2 text-sm font-bold text-loco-mint"><Users size={16} /> {t("people.eyebrow")}</p>
-          <h2 className="mt-1 text-2xl font-black sm:text-3xl">{t("people.wallTitle")}</h2>
-          <p className="mt-1 max-w-2xl text-sm text-white/70">{t("people.wallText")}</p>
+          <p className="inline-flex items-center gap-2 text-sm font-bold text-loco-orange"><Users size={16} /> {t("people.eyebrow")}</p>
+          <h2 className="mt-1 text-2xl font-black text-loco-wine sm:text-3xl">{t("people.wallTitle")}</h2>
+          <p className="mt-1 max-w-2xl text-sm text-gray-600">{t("people.wallText")}</p>
         </div>
-        <Link to={district ? `/people?district=${encodeURIComponent(district)}` : "/people"} className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/30 px-4 py-2 text-sm font-bold text-white hover:bg-white/10">
+        <Link to={district ? `/people?district=${encodeURIComponent(district)}` : "/people"} className="inline-flex shrink-0 items-center gap-1 rounded-full border border-loco-wine px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-cream">
           {t("people.seeAll")} <ArrowRight size={15} />
         </Link>
       </div>
@@ -158,13 +143,13 @@ function PeopleWall({ district }) {
       {loading ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: WALL_SIZE }).map((_, index) => (
-            <div key={index} className="h-56 animate-pulse rounded-2xl bg-white/10" />
+            <div key={index} className="h-56 animate-pulse rounded-2xl bg-loco-cream" />
           ))}
         </div>
       ) : people.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/30 p-6 text-center text-white/70">
+        <div className="rounded-2xl border border-dashed border-orange-200 bg-loco-cream p-6 text-center text-gray-600">
           <p>{t("people.joinText")}</p>
-          <Link to="/register" className="mt-4 inline-block rounded-full bg-loco-mint px-5 py-2.5 text-sm font-bold text-loco-wine-dark">{t("people.join")}</Link>
+          <Link to="/register" className="mt-4 inline-block rounded-full bg-loco-wine px-5 py-2.5 text-sm font-bold text-white">{t("people.join")}</Link>
         </div>
       ) : (
         <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
@@ -184,25 +169,25 @@ function HeroPersonCard({ person }) {
   return (
     <Link
       to={`/people/${person.id}`}
-      className="group flex w-56 shrink-0 snap-start flex-col items-center rounded-2xl border border-white/15 bg-white/10 p-5 text-center backdrop-blur transition hover:-translate-y-1 hover:border-loco-mint/60 hover:bg-white/15 sm:w-auto"
+      className="group flex w-56 shrink-0 snap-start flex-col items-center rounded-2xl border border-orange-100 bg-loco-cream p-5 text-center shadow-sm transition hover:-translate-y-1 hover:border-loco-orange hover:shadow-md sm:w-auto"
     >
       <Avatar person={person} size="h-20 w-20" textSize="text-3xl" />
-      <strong className="mt-3 flex w-full items-center justify-center gap-1 text-white">
+      <strong className="mt-3 flex w-full items-center justify-center gap-1 text-loco-ink">
         <span className="truncate">{person.name}</span>
-        {shop?.verified && <BadgeCheck size={15} className="shrink-0 text-loco-mint" />}
+        {shop?.verified && <BadgeCheck size={15} className="shrink-0 text-loco-mint-dark" />}
       </strong>
-      <span className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-loco-mint">{person.headline}</span>
-      <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-white/60">
-        <MapPin size={11} /> {person.district || "Rwanda"}
+      <span className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-loco-wine">{person.headline}</span>
+      <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-gray-500">
+        <MapPin size={11} className="text-loco-orange" /> {person.district || "Rwanda"}
       </span>
       {person.skills?.length > 0 && (
         <span className="mt-3 flex flex-wrap justify-center gap-1">
           {person.skills.slice(0, 2).map((skill) => (
-            <span key={skill} className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-semibold text-white/90">{skill}</span>
+            <span key={skill} className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-loco-wine">{skill}</span>
           ))}
         </span>
       )}
-      <span className="mt-auto pt-4 text-xs font-bold text-loco-orange group-hover:text-white">
+      <span className="mt-auto pt-4 text-xs font-bold text-loco-orange group-hover:text-loco-wine">
         {shop ? t("people.shopOwner") : t("people.specialist")} →
       </span>
     </Link>
