@@ -98,16 +98,10 @@ Create two Vercel projects from this repository.
 ### Backend project
 
 - Root directory: `backend`
-- Build command: `npm run build` (runs `prisma generate`)
-- Environment variables: `DATABASE_URL` (a hosted PostgreSQL such as Neon or Supabase), `JWT_SECRET`, and the `SMTP_*` variables for password-reset email
+- Database: open the project's **Storage** tab and create or connect a **Prisma Postgres** (or Neon) database. The integration injects the connection variables. Do not add a manual `DATABASE_URL` that points at localhost
+- Environment variables: `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` (first administrator), and the `SMTP_*` variables for password-reset email
 - `CLIENT_URL` is optional. The production frontend and its preview deployments are allowed by default; add other origins comma-separated
-- Apply migrations and seed once from your machine with `DATABASE_URL` set to the hosted database:
-
-```bash
-cd backend
-npx prisma migrate deploy
-node prisma/seed.js
-```
+- The build command (`npm run build`) generates the Prisma client, applies migrations and runs the idempotent seed, so a fresh database is ready after the first deployment. The same can be run by hand with `npm run db:deploy` from `backend`
 
 ### Frontend project
 

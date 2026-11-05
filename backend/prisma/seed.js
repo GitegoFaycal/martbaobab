@@ -1,8 +1,9 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import { applyDatabaseUrl } from "../src/config/database-url.js";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ datasourceUrl: applyDatabaseUrl() || undefined });
 
 // Categories for the three LOCO sections. Icons are lucide-react icon names.
 const CATEGORIES = [
