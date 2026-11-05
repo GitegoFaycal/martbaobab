@@ -1,4 +1,4 @@
-import { BadgeCheck, Eye, ImageOff, MapPin, Phone, Store } from "lucide-react";
+import { BadgeCheck, Eye, ImageOff, Link2, MapPin, Phone, Store } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ListingCard, { listingWhatsapp } from "../../components/ListingCard";
@@ -7,6 +7,7 @@ import { Badge, Breadcrumbs, Button, Container, EmptyState, Spinner } from "../.
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { discountPercent, formatRWF, timeAgo } from "../../lib/format";
+import { recordConnection } from "../../lib/connect";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
 
 export default function ListingDetailPage() {
@@ -91,6 +92,7 @@ export default function ListingDetailPage() {
                   href={whatsapp}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() => recordConnection({ listingId: listing.id, channel: "WHATSAPP" })}
                   className={`flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3.5 text-lg font-bold text-white hover:bg-[#1ebe5d] ${soldOut ? "opacity-60" : ""}`}
                 >
                   <WhatsAppIcon size={22} />
@@ -100,10 +102,15 @@ export default function ListingDetailPage() {
                 <p className="text-center text-sm font-semibold text-gray-600">{t("listing.contactProvider")}</p>
               )}
               <p className="mt-3 text-center text-sm text-gray-600">{t("listing.dealText")}</p>
+              {(listing.sellerConnections ?? 0) > 0 && (
+                <p className="mt-2 inline-flex w-full items-center justify-center gap-1 text-center text-xs font-semibold text-loco-mint-dark">
+                  <Link2 size={13} /> {t("connections.sellerConnected", { count: listing.sellerConnections })}
+                </p>
+              )}
             </div>
 
             {listing.shop?.phone && (
-              <Button as="a" href={`tel:${listing.shop.phone}`} variant="outline" className="mt-3 w-full">
+              <Button as="a" href={`tel:${listing.shop.phone}`} variant="outline" className="mt-3 w-full" onClick={() => recordConnection({ listingId: listing.id, channel: "CALL" })}>
                 <Phone size={17} /> {formatPhoneForDisplay(listing.shop.phone)}
               </Button>
             )}
@@ -122,6 +129,7 @@ export default function ListingDetailPage() {
 
             <p className="mt-4 flex items-center gap-4 text-xs text-gray-400">
               <span className="inline-flex items-center gap-1"><Eye size={13} /> {t("common.views", { count: listing.views })}</span>
+              {(listing._count?.connections ?? 0) > 0 && <span className="inline-flex items-center gap-1"><Link2 size={13} /> {t("connections.listingConnected", { count: listing._count.connections })}</span>}
               <span>{t("common.listed", { when: timeAgo(listing.createdAt, t) })}</span>
             </p>
           </div>

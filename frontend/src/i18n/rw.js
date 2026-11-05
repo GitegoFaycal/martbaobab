@@ -2,6 +2,7 @@ export default {
   lang: { label: "Ururimi" },
 
   nav: {
+    myConnections: "Abo twavuganye",
     people: "Abantu",
     shop: "Gura hafi yawe",
     secondHand: "Ibikoreshejwe",
@@ -464,6 +465,35 @@ export default {
     skillsHint: "Ubuhanga kugeza kuri 8, butandukanyijwe n'akitso.",
     yourProfile: "Umwirondoro wawe ugaragara",
     yourProfileText: "Uzuza icyo ukora, abantu bo mu karere kawe bakubone ku rupapuro rw'Abantu.",
+  },
+
+  connections: {
+    viewers: "Barebwe na {count}",
+    connections: "Abavuganye na we {count}",
+    connectionsShort: "{count} bavuganye",
+    madeOnLoco: "Abantu {count} bamaze guhurira kuri LOCO",
+    today: "{count} uyu munsi",
+    peopleOnLoco: "Abantu {count}",
+    listingsOnLoco: "Ibicuruzwa {count}",
+    jobsOpen: "Akazi {count} gafunguye",
+    sellerConnected: "Abantu {count} bamaze kuvugana n'uyu mucuruzi",
+    listingConnected: "Abantu {count} babajije kuri iki kintu",
+    title: "Abo twavuganye",
+    text: "Igihe cyose umuntu akanze WhatsApp cyangwa guhamagara kuri LOCO, ni ihuriro. Dore ayawe.",
+    asSeller: "Abaguzi bakwandikiye",
+    asBuyer: "Abacuruzi wandikiye",
+    noneSeller: "Nta muntu urakwandikira. Shyiraho amafoto n'umutwe usobanutse kugira ngo abantu bakubone.",
+    noneBuyer: "Ntabwo urandikira umuntu. Shaka ikintu hafi yawe ukande Nyandikira kuri WhatsApp.",
+    guest: "Umushyitsi",
+    viaWhatsapp: "kuri WhatsApp",
+    viaCall: "ahamagaye",
+    aboutListing: "kuri {item}",
+    aboutProfile: "aturutse ku mwirondoro wawe",
+    stat: "Abavuganye na we",
+    statViews: "Abarebye umwirondoro",
+    statListings: "Ibicuruzwa",
+    recent: "Abaherutse kuvugana nawe",
+    perListing: "Abavuganye",
   },
 
   time: {

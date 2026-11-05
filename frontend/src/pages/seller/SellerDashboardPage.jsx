@@ -2,6 +2,7 @@ import {
   BadgeCheck,
   Eye,
   ImageOff,
+  Link2,
   Package,
   Pencil,
   Plus,
@@ -21,14 +22,17 @@ import {
   Spinner,
 } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
+import { useT } from "../../i18n";
 import useFetch from "../../hooks/useFetch";
 import { formatRWF } from "../../lib/format";
 
 export default function SellerDashboardPage() {
+  const t = useT();
   const { user } = useAuth();
   const shopQuery = useFetch("/shops/me");
   const shop = shopQuery.data?.shop;
   const listingsQuery = useFetch("/listings/mine", { enabled: Boolean(shop) });
+  const connectionsQuery = useFetch("/connections/mine", { enabled: Boolean(shop) });
   const [busy, setBusy] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -91,6 +95,7 @@ export default function SellerDashboardPage() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat icon={Package} label="Active listings" value={listings.filter((item) => item.active).length} />
+          <Stat icon={Link2} label={t("connections.stat")} value={connectionsQuery.data?.totals?.asSeller ?? 0} to="/connections" />
           <Stat icon={Eye} label="Listing views" value={listings.reduce((sum, item) => sum + (item.views || 0), 0)} />
           <Stat icon={Store} label="Second-hand items" value={listings.filter((item) => item.condition === "USED").length} />
           <Stat icon={Package} label="Services" value={listings.filter((item) => item.type === "SERVICE").length} />
@@ -99,6 +104,29 @@ export default function SellerDashboardPage() {
         <section className="mt-8 rounded-2xl border border-orange-200 bg-orange-50 p-5 text-sm text-loco-ink">
           Buyers contact you on WhatsApp at the number on your shop. Keep it reachable and reply quickly.
         </section>
+
+        {(connectionsQuery.data?.asSeller?.length ?? 0) > 0 && (
+          <section className="mt-8">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-black text-loco-wine">{t("connections.recent")}</h2>
+              <Button as={Link} to="/connections" variant="ghost" size="sm">{t("connections.title")}</Button>
+            </div>
+            <ul className="divide-y divide-orange-50 overflow-hidden rounded-2xl border border-orange-100 bg-white">
+              {connectionsQuery.data.asSeller.slice(0, 6).map((row) => (
+                <li key={row.id} className="flex items-center gap-3 p-3 text-sm">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-loco-mint font-bold text-loco-wine">
+                    {row.buyer?.avatarUrl ? <img src={row.buyer.avatarUrl} alt="" className="h-full w-full object-cover" /> : (row.buyer?.name || "?").charAt(0)}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate">
+                    <strong>{row.buyer?.name || t("connections.guest")}</strong>
+                    {row.listing ? <> · {row.listing.name}</> : <> · {t("connections.aboutProfile")}</>}
+                  </span>
+                  <span className="shrink-0 text-xs text-gray-400">{row.channel === "CALL" ? t("connections.viaCall") : t("connections.viaWhatsapp")}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="mt-8">
           <h2 className="mb-4 text-xl font-black text-loco-wine">Your listings</h2>
@@ -122,6 +150,7 @@ export default function SellerDashboardPage() {
                       {!listing.active && <Badge tone="red">Hidden</Badge>}
                       {listing.stock != null && <span>{listing.stock} in stock</span>}
                       <span>{listing.views} views</span>
+                      <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={12} /> {t("connections.connectionsShort", { count: listing._count?.connections ?? 0 })}</span>
                     </p>
                   </div>
                   <div className="flex shrink-0 gap-1">

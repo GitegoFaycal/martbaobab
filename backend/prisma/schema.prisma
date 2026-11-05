@@ -92,6 +92,7 @@ model User {
   headline            String?
   bio                 String?
   skills              String[]  @default([])
+  views               Int       @default(0)
   active              Boolean   @default(true)
   emailVerified       Boolean   @default(false)
   resetTokenHash      String?
@@ -105,6 +106,8 @@ model User {
   addresses    Address[]
   jobs         Job[]
   applications JobApplication[]
+  connectionsAsSeller Connection[] @relation("ConnectionSeller")
+  connectionsAsBuyer  Connection[] @relation("ConnectionBuyer")
 }
 
 model Address {
@@ -183,8 +186,9 @@ model Listing {
   shop       Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
   category   Category       @relation(fields: [categoryId], references: [id])
   images     ListingImage[]
-  orderItems OrderItem[]
-  reviews    Review[]
+  orderItems  OrderItem[]
+  reviews     Review[]
+  connections Connection[]
 
   @@index([condition, active])
   @@index([categoryId])
@@ -295,6 +299,27 @@ model Payment {
   createdAt DateTime        @default(now())
 
   order Order @relation(fields: [orderId], references: [id])
+}
+
+// A connection: a buyer reached out to a seller (WhatsApp or call) from a
+// listing or a profile. This is the core metric of LOCO.
+model Connection {
+  id         String   @id @default(cuid())
+  channel    String   @default("WHATSAPP")
+  source     String   @default("LISTING")
+  listingId  String?
+  sellerId   String
+  buyerId    String?
+  visitorKey String?
+  createdAt  DateTime @default(now())
+
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  seller  User     @relation("ConnectionSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer   User?    @relation("ConnectionBuyer", fields: [buyerId], references: [id], onDelete: SetNull)
+
+  @@index([sellerId, createdAt])
+  @@index([listingId])
+  @@index([buyerId])
 }
 
 // Uploaded photos. Stored in PostgreSQL when no object storage is

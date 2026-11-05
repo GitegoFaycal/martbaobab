@@ -15,6 +15,7 @@ const personSelect = {
   headline: true,
   bio: true,
   skills: true,
+  views: true,
   role: true,
   createdAt: true,
   shops: {
@@ -33,7 +34,7 @@ const personSelect = {
     },
     take: 1,
   },
-  _count: { select: { jobs: { where: { status: "OPEN" } } } },
+  _count: { select: { jobs: { where: { status: "OPEN" } }, connectionsAsSeller: true } },
 };
 
 // A "person" on LOCO is anyone who offers something locally: a shop owner,
@@ -110,6 +111,12 @@ export const getPerson = asyncHandler(async (req, res) => {
     throw httpError(404, "Profile not found");
   }
 
+  if (req.user?.id !== person.id) {
+    prisma.user
+      .update({ where: { id: person.id }, data: { views: { increment: 1 } } })
+      .catch(() => {});
+  }
+
   const shop = person.shops[0];
 
   const [listings, jobs] = await Promise.all([
@@ -160,6 +167,8 @@ function shapePerson(user) {
     createdAt: user.createdAt,
     shop,
     openJobs: user._count?.jobs ?? 0,
+    views: user.views ?? 0,
+    connections: user._count?.connectionsAsSeller ?? 0,
     kind: shop ? "seller" : "specialist",
   };
 }

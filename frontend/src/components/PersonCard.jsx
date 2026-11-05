@@ -1,4 +1,4 @@
-import { BadgeCheck, Briefcase, MapPin, Store } from "lucide-react";
+import { BadgeCheck, Briefcase, Eye, Link2, MapPin, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
 import { Badge } from "./ui";
@@ -57,6 +57,11 @@ export default function PersonCard({ person, compact = false }) {
             ))}
           </div>
         )}
+
+        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
+          <span className="inline-flex items-center gap-1"><Eye size={12} /> {t("connections.viewers", { count: person.views ?? 0 })}</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={12} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>
+        </div>
 
         <div className="mt-auto flex items-center justify-between pt-4 text-xs text-gray-500">
           <Badge tone={shop ? "blue" : "mint"}>

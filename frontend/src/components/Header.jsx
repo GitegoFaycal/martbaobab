@@ -2,6 +2,7 @@ import {
   Briefcase,
   ChevronDown,
   ClipboardList,
+  Link2,
   LogOut,
   Menu,
   Recycle,
@@ -97,6 +98,7 @@ export default function Header() {
 
   const accountLinks = [
     { label: t("nav.myProfile"), to: "/profile", icon: UserRound },
+    { label: t("nav.myConnections"), to: "/connections", icon: Link2 },
     { label: t("nav.myApplications"), to: "/applications", icon: ClipboardList },
     { label: t("nav.hiring"), to: "/hiring", icon: Briefcase },
     ...(user?.role === "SELLER" || user?.role === "ADMIN"

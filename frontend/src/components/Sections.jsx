@@ -2,11 +2,15 @@ import {
   ArrowRight,
   Banknote,
   Bike,
+  Briefcase,
   HandCoins,
+  Link2,
   MapPin,
+  Package,
   Search,
   ShieldCheck,
   Store,
+  Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import WhatsAppIcon from "./WhatsAppIcon";
@@ -170,17 +174,27 @@ export function PillarStrip() {
 
 export function TrustStrip() {
   const t = useT();
-  const items = [
-    { icon: ShieldCheck, text: t("home.trust1") },
-    { icon: MapPin, text: t("home.trust2") },
-    { icon: Banknote, text: t("home.trust3") },
-  ];
+  const { data } = useFetch("/stats");
+  const s = data?.stats;
+  const items = s
+    ? [
+        { icon: Link2, text: t("connections.madeOnLoco", { count: s.connections.toLocaleString() }), strong: true },
+        { icon: Users, text: t("connections.peopleOnLoco", { count: s.people }) },
+        { icon: Package, text: t("connections.listingsOnLoco", { count: s.listings }) },
+        { icon: Briefcase, text: t("connections.jobsOpen", { count: s.jobs }) },
+        { icon: MapPin, text: t("home.trust2") },
+      ]
+    : [
+        { icon: ShieldCheck, text: t("home.trust1") },
+        { icon: MapPin, text: t("home.trust2") },
+        { icon: Banknote, text: t("home.trust3") },
+      ];
 
   return (
     <div className="border-y border-orange-100 bg-white">
       <Container className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-4 text-sm font-semibold text-gray-600">
-        {items.map(({ icon: Icon, text }) => (
-          <span key={text} className="inline-flex items-center gap-2"><Icon size={17} className="text-loco-mint-dark" />{text}</span>
+        {items.map(({ icon: Icon, text, strong }) => (
+          <span key={text} className={`inline-flex items-center gap-2 ${strong ? "text-loco-wine" : ""}`}><Icon size={17} className={strong ? "text-loco-orange" : "text-loco-mint-dark"} />{text}</span>
         ))}
       </Container>
     </div>

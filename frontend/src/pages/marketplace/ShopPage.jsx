@@ -1,4 +1,4 @@
-import { BadgeCheck, MapPin, Phone, Store } from "lucide-react";
+import { BadgeCheck, Eye, Link2, MapPin, Phone, Store } from "lucide-react";
 import WhatsAppIcon from "../../components/WhatsAppIcon";
 import { Link, useParams } from "react-router-dom";
 import ListingCard from "../../components/ListingCard";
@@ -6,6 +6,7 @@ import { Breadcrumbs, Button, Container, EmptyState, Spinner } from "../../compo
 import useFetch from "../../hooks/useFetch";
 import { useI18n } from "../../i18n";
 import { formatDate } from "../../lib/format";
+import { recordConnection } from "../../lib/connect";
 import { formatPhoneForDisplay, whatsappLink } from "../../lib/rwanda";
 
 export default function ShopPage() {
@@ -47,11 +48,16 @@ export default function ShopPage() {
               </h1>
               <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-orange" />{shop.district}{shop.sector ? `, ${shop.sector}` : ""}{shop.address ? ` · ${shop.address}` : ""}</p>
               {shop.description && <p className="mt-3 max-w-2xl leading-7 text-gray-700">{shop.description}</p>}
-              <p className="mt-3 text-xs text-gray-400">{t("listing.listings", { count: shop._count?.listings ?? listings.length })} · {t("listing.onLocoSince", { date: formatDate(shop.createdAt, { month: "long", year: "numeric" }, lang) })}</p>
+              <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={13} /> {t("connections.connections", { count: shop.owner?._count?.connectionsAsSeller ?? 0 })}</span>
+                <span className="inline-flex items-center gap-1"><Eye size={13} /> {t("connections.viewers", { count: shop.owner?.views ?? 0 })}</span>
+                <span>{t("listing.listings", { count: shop._count?.listings ?? listings.length })}</span>
+                <span>{t("listing.onLocoSince", { date: formatDate(shop.createdAt, { month: "long", year: "numeric" }, lang) })}</span>
+              </p>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:w-52">
-              {shop.phone && <Button as="a" href={`tel:${shop.phone}`} variant="outline"><Phone size={17} /> {formatPhoneForDisplay(shop.phone)}</Button>}
-              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp"><WhatsAppIcon size={18} /> WhatsApp</Button>}
+              {shop.phone && <Button as="a" href={`tel:${shop.phone}`} variant="outline" onClick={() => recordConnection({ personId: shop.owner?.id, channel: "CALL" })}><Phone size={17} /> {formatPhoneForDisplay(shop.phone)}</Button>}
+              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp" onClick={() => recordConnection({ personId: shop.owner?.id, channel: "WHATSAPP" })}><WhatsAppIcon size={18} /> WhatsApp</Button>}
             </div>
           </div>
         </div>

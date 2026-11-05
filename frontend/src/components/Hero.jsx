@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, MapPin, Search, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Eye, Link2, MapPin, Search, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
@@ -185,6 +185,10 @@ function HeroPersonCard({ person }) {
         <span className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-loco-wine">{person.headline}</span>
         <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-gray-500">
           <MapPin size={11} className="text-loco-orange" /> {person.district || "Rwanda"}
+        </span>
+        <span className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-gray-500">
+          <span className="inline-flex items-center gap-1"><Eye size={11} /> {t("connections.viewers", { count: person.views ?? 0 })}</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={11} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>
         </span>
         {person.skills?.length > 0 && (
           <span className="mt-3 flex flex-wrap gap-1">

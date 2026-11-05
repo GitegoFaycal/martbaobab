@@ -10,6 +10,7 @@ import {
 } from "../utils/helpers.js";
 
 const listingInclude = {
+  _count: { select: { connections: true } },
   images: { orderBy: { position: "asc" } },
   category: { select: { id: true, name: true, slug: true, kind: true } },
   shop: {
@@ -23,6 +24,7 @@ const listingInclude = {
       whatsapp: true,
       verified: true,
       logoUrl: true,
+      ownerId: true,
     },
   },
 };
@@ -102,6 +104,7 @@ export const listListings = asyncHandler(async (req, res) => {
     prisma.listing.findMany({
       where,
       include: {
+        _count: { select: { connections: true } },
         images: { orderBy: { position: "asc" }, take: 1 },
         category: { select: { name: true, slug: true } },
         shop: {
@@ -155,9 +158,13 @@ export const getListing = asyncHandler(async (req, res) => {
     take: 8,
   });
 
+  const sellerConnections = await prisma.connection.count({
+    where: { sellerId: listing.shop.ownerId },
+  });
+
   return res.status(200).json({
     success: true,
-    listing: serialize(listing),
+    listing: serialize({ ...listing, sellerConnections }),
     related: serialize(related),
   });
 });
@@ -195,6 +202,7 @@ export const listMyListings = asyncHandler(async (req, res) => {
   const listings = await prisma.listing.findMany({
     where: { shopId: shop.id },
     include: {
+      _count: { select: { connections: true } },
       images: { orderBy: { position: "asc" }, take: 1 },
       category: { select: { name: true, slug: true } },
     },

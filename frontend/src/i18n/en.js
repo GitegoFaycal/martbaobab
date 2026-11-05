@@ -2,6 +2,7 @@ export default {
   lang: { label: "Language" },
 
   nav: {
+    myConnections: "My connections",
     people: "People",
     shop: "Shop nearby",
     secondHand: "Second-hand",
@@ -464,6 +465,35 @@ export default {
     skillsHint: "Up to 8 skills, separated by commas.",
     yourProfile: "Your public profile",
     yourProfileText: "Fill in what you do and people in your district can find you on the People page.",
+  },
+
+  connections: {
+    viewers: "{count} viewers",
+    connections: "{count} connections",
+    connectionsShort: "{count} connected",
+    madeOnLoco: "{count} connections made on LOCO",
+    today: "{count} today",
+    peopleOnLoco: "{count} people",
+    listingsOnLoco: "{count} listings",
+    jobsOpen: "{count} open jobs",
+    sellerConnected: "{count} people have connected with this seller",
+    listingConnected: "{count} people asked about this item",
+    title: "My connections",
+    text: "Every time someone taps WhatsApp or call on LOCO, that is a connection. Here are yours.",
+    asSeller: "Buyers who contacted you",
+    asBuyer: "Sellers you contacted",
+    noneSeller: "Nobody has contacted you yet. Add photos and a clear headline so people find you.",
+    noneBuyer: "You have not contacted anyone yet. Find something nearby and tap WhatsApp me.",
+    guest: "Guest",
+    viaWhatsapp: "via WhatsApp",
+    viaCall: "via call",
+    aboutListing: "about {item}",
+    aboutProfile: "from your profile",
+    stat: "Connections",
+    statViews: "Profile viewers",
+    statListings: "Listings",
+    recent: "Recent connections",
+    perListing: "Connections",
   },
 
   time: {

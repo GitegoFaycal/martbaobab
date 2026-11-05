@@ -31,6 +31,7 @@ export default function Footer() {
       links: [
         { label: t("home.becomeSeller"), to: "/register?role=SELLER" },
         { label: t("nav.sellerDashboard"), to: "/seller" },
+        { label: t("nav.myConnections"), to: "/connections" },
         { label: t("nav.myProfile"), to: "/profile" },
       ],
     },

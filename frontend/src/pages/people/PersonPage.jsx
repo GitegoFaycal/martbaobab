@@ -1,4 +1,4 @@
-import { BadgeCheck, Briefcase, MapPin, Phone, Store } from "lucide-react";
+import { BadgeCheck, Briefcase, Eye, Link2, MapPin, Package, Phone, Store } from "lucide-react";
 import WhatsAppIcon from "../../components/WhatsAppIcon";
 import { Link, useParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
@@ -8,7 +8,17 @@ import { Badge, Breadcrumbs, Button, Container, EmptyState, Spinner } from "../.
 import useFetch from "../../hooks/useFetch";
 import { useI18n } from "../../i18n";
 import { formatDate } from "../../lib/format";
+import { recordConnection } from "../../lib/connect";
 import { formatPhoneForDisplay, whatsappLink } from "../../lib/rwanda";
+
+function Stat({ icon: Icon, label, value, accent = false }) {
+  return (
+    <div className={`rounded-2xl p-3 ${accent ? "bg-loco-mint/20" : "bg-loco-cream"}`}>
+      <dt className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-gray-500"><Icon size={12} /> {label}</dt>
+      <dd className="mt-1 text-2xl font-black text-loco-wine">{value}</dd>
+    </div>
+  );
+}
 
 export default function PersonPage() {
   const { t, lang } = useI18n();
@@ -62,13 +72,19 @@ export default function PersonPage() {
                 </section>
               )}
 
+              <dl className="mt-5 grid max-w-md grid-cols-3 gap-3">
+                <Stat icon={Link2} label={t("connections.stat")} value={person.connections ?? 0} accent />
+                <Stat icon={Eye} label={t("connections.statViews")} value={person.views ?? 0} />
+                <Stat icon={Package} label={t("connections.statListings")} value={shop?._count?.listings ?? listings.length} />
+              </dl>
+
               <p className="mt-4 text-xs text-gray-400">{t("people.memberSince", { date: formatDate(person.createdAt, { month: "long", year: "numeric" }, lang) })}</p>
             </div>
 
             <div className="flex shrink-0 flex-col gap-2 sm:w-56">
               <h2 className="text-xs font-bold uppercase tracking-wide text-gray-400">{t("people.contact")}</h2>
-              {person.phone && <Button as="a" href={`tel:${person.phone}`} variant="outline"><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</Button>}
-              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp"><WhatsAppIcon size={18} /> WhatsApp</Button>}
+              {person.phone && <Button as="a" href={`tel:${person.phone}`} variant="outline" onClick={() => recordConnection({ personId: person.id, channel: "CALL" })}><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</Button>}
+              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp" onClick={() => recordConnection({ personId: person.id, channel: "WHATSAPP" })}><WhatsAppIcon size={18} /> WhatsApp</Button>}
               {shop && <Button as={Link} to={`/shops/${shop.slug}`} variant="primary"><Store size={17} /> {t("people.visitShop")}</Button>}
             </div>
           </div>

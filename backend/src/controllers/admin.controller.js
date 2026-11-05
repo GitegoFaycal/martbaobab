@@ -12,6 +12,8 @@ export const getStats = asyncHandler(async (req, res) => {
     secondHand,
     openJobs,
     applications,
+    connections,
+    connectionsWeek,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: "SELLER" } }),
@@ -21,6 +23,8 @@ export const getStats = asyncHandler(async (req, res) => {
     prisma.listing.count({ where: { active: true, condition: "USED" } }),
     prisma.job.count({ where: { status: "OPEN" } }),
     prisma.jobApplication.count(),
+    prisma.connection.count(),
+    prisma.connection.count({ where: { createdAt: { gte: new Date(Date.now() - 7 * 24 * 3600 * 1000) } } }),
   ]);
 
   return res.status(200).json({
@@ -34,6 +38,8 @@ export const getStats = asyncHandler(async (req, res) => {
       secondHand,
       openJobs,
       applications,
+      connections,
+      connectionsWeek,
     },
   });
 });

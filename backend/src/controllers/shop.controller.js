@@ -25,7 +25,7 @@ const shopSelect = {
   address: true,
   verified: true,
   createdAt: true,
-  owner: { select: { id: true, name: true } },
+  owner: { select: { id: true, name: true, views: true, _count: { select: { connectionsAsSeller: true } } } },
   _count: { select: { listings: true } },
 };
 

@@ -60,6 +60,10 @@ npm run dev
 Frontend: http://localhost:5173
 API health check: http://localhost:5000/api/health
 
+## Connections
+
+A connection is recorded each time a visitor taps **WhatsApp me** or the call button on a listing, a shop or a profile (`POST /api/connections`, deduplicated per person and listing within an hour; guests are tracked by an anonymous browser key). Every profile shows its viewers and connections, every listing shows how many people asked about it, sellers see who contacted them and buyers see the sellers they contacted on `/connections`, and the homepage shows the running totals from `GET /api/stats`.
+
 ## Demo data
 
 A fresh database is filled with demo content on the first deployment (or with `npm run db:demo`, and `SEED_DEMO=true` forces it): 8 shops across Rwanda, 41 listings (new, second-hand and services with photos), 12 jobs and applications. Set `SEED_DEMO=false` to disable. Every demo account uses the password `Demo1234`, for example:

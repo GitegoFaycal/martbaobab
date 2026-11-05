@@ -338,6 +338,61 @@ async function seedContent() {
   console.log(`Demo accounts use the password "${DEMO_PASSWORD}" (e.g. jeanne@demo.loco.rw, diane@demo.loco.rw).`);
 }
 
+// Deterministic pseudo-random so re-runs produce the same numbers.
+function seeded(seed) {
+  let value = seed % 2147483647;
+  return () => (value = (value * 16807) % 2147483647) / 2147483647;
+}
+
+async function seedConnections() {
+  const existing = await prisma.connection.count({ where: { seller: { email: { endsWith: "@demo.loco.rw" } } } });
+  if (existing > 0) {
+    console.log("Demo connections already present.");
+    return;
+  }
+
+  const random = seeded(2026);
+  const demoUsers = await prisma.user.findMany({ where: { email: { endsWith: "@demo.loco.rw" } } });
+  const sellers = demoUsers.filter((user) => user.role === "SELLER" || user.headline);
+  const buyers = demoUsers.filter((user) => user.role === "CUSTOMER");
+  const listings = await prisma.listing.findMany({
+    where: { shop: { owner: { email: { endsWith: "@demo.loco.rw" } } } },
+    select: { id: true, shop: { select: { ownerId: true } } },
+  });
+
+  const rows = [];
+  for (const listing of listings) {
+    const count = 2 + Math.floor(random() * 12);
+    for (let i = 0; i < count; i += 1) {
+      const buyer = buyers[Math.floor(random() * buyers.length)];
+      rows.push({
+        channel: random() < 0.8 ? "WHATSAPP" : "CALL",
+        source: "LISTING",
+        listingId: listing.id,
+        sellerId: listing.shop.ownerId,
+        buyerId: buyer.id === listing.shop.ownerId ? null : buyer.id,
+        visitorKey: buyer.id === listing.shop.ownerId ? `demo-${i}` : null,
+        createdAt: new Date(Date.now() - Math.floor(random() * 30) * 24 * 3600 * 1000 - Math.floor(random() * 86400000)),
+      });
+    }
+  }
+  for (const seller of sellers) {
+    const count = 1 + Math.floor(random() * 6);
+    for (let i = 0; i < count; i += 1) {
+      const buyer = buyers[Math.floor(random() * buyers.length)];
+      if (buyer.id === seller.id) continue;
+      rows.push({ channel: "WHATSAPP", source: "PROFILE", listingId: null, sellerId: seller.id, buyerId: buyer.id, visitorKey: null, createdAt: new Date(Date.now() - Math.floor(random() * 20) * 24 * 3600 * 1000) });
+    }
+  }
+  await prisma.connection.createMany({ data: rows });
+
+  for (const user of demoUsers) {
+    await prisma.user.update({ where: { id: user.id }, data: { views: 40 + Math.floor(random() * 700) } });
+  }
+
+  console.log(`Demo connections ready: ${rows.length} connections, profile views set for ${demoUsers.length} people.`);
+}
+
 async function main() {
   const demoShops = await prisma.shop.count({ where: { slug: { in: SHOPS.map((shop) => shop.slug) } } });
   const allShops = await prisma.shop.count();
@@ -360,6 +415,7 @@ async function main() {
   }
 
   await seedPhotos();
+  await seedConnections();
 }
 
 main()

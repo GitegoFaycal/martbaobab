@@ -2,6 +2,7 @@ export default {
   lang: { label: "Langue" },
 
   nav: {
+    myConnections: "Mes contacts",
     people: "Personnes",
     shop: "Acheter près de chez moi",
     secondHand: "Occasion",
@@ -464,6 +465,35 @@ export default {
     skillsHint: "Jusqu'à 8 compétences, séparées par des virgules.",
     yourProfile: "Votre profil public",
     yourProfileText: "Indiquez ce que vous faites et les gens de votre district vous trouveront sur la page Personnes.",
+  },
+
+  connections: {
+    viewers: "{count} visiteurs",
+    connections: "{count} contacts",
+    connectionsShort: "{count} contacts",
+    madeOnLoco: "{count} mises en relation sur LOCO",
+    today: "{count} aujourd'hui",
+    peopleOnLoco: "{count} personnes",
+    listingsOnLoco: "{count} annonces",
+    jobsOpen: "{count} offres ouvertes",
+    sellerConnected: "{count} personnes ont contacté ce vendeur",
+    listingConnected: "{count} personnes ont demandé cet article",
+    title: "Mes contacts",
+    text: "Chaque fois que quelqu'un appuie sur WhatsApp ou appeler sur LOCO, c'est une mise en relation. Voici les vôtres.",
+    asSeller: "Acheteurs qui vous ont contacté",
+    asBuyer: "Vendeurs que vous avez contactés",
+    noneSeller: "Personne ne vous a encore contacté. Ajoutez des photos et un titre clair pour être trouvé.",
+    noneBuyer: "Vous n'avez encore contacté personne. Trouvez quelque chose près de chez vous et appuyez sur WhatsApp.",
+    guest: "Visiteur",
+    viaWhatsapp: "via WhatsApp",
+    viaCall: "par appel",
+    aboutListing: "à propos de {item}",
+    aboutProfile: "depuis votre profil",
+    stat: "Contacts",
+    statViews: "Visiteurs du profil",
+    statListings: "Annonces",
+    recent: "Contacts récents",
+    perListing: "Contacts",
   },
 
   time: {

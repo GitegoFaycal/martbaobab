@@ -1,7 +1,8 @@
-import { BadgeCheck, ImageOff, MapPin } from "lucide-react";
+import { BadgeCheck, ImageOff, Link2, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
 import { discountPercent, formatRWF } from "../lib/format";
+import { recordConnection } from "../lib/connect";
 import { whatsappLink } from "../lib/rwanda";
 import WhatsAppIcon from "./WhatsAppIcon";
 
@@ -60,6 +61,11 @@ export default function ListingCard({ listing }) {
           <span className="truncate">{listing.shop?.name}{district ? ` · ${district}` : ""}</span>
           {listing.shop?.verified && <BadgeCheck size={14} className="shrink-0 text-loco-mint-dark" />}
         </div>
+        {(listing._count?.connections ?? 0) > 0 && (
+          <p className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-loco-mint-dark">
+            <Link2 size={12} /> {t("connections.connectionsShort", { count: listing._count.connections })}
+          </p>
+        )}
 
         <div className="mt-auto pt-4">
           {whatsapp ? (
@@ -67,6 +73,7 @@ export default function ListingCard({ listing }) {
               href={whatsapp}
               target="_blank"
               rel="noreferrer"
+              onClick={() => recordConnection({ listingId: listing.id, channel: "WHATSAPP" })}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-bold text-white hover:bg-[#1ebe5d]"
             >
               <WhatsAppIcon size={18} />

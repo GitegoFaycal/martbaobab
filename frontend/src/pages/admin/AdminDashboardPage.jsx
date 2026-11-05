@@ -1,6 +1,7 @@
 import {
   BadgeCheck,
   Briefcase,
+  Link2,
   Package,
   Recycle,
   ShieldCheck,
@@ -71,6 +72,7 @@ export default function AdminDashboardPage() {
           <Spinner />
         ) : s ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Stat icon={Link2} label="Connections" value={s.connections} sub={`${s.connectionsWeek} in the last 7 days`} />
             <Stat icon={Users} label="Users" value={s.users} sub={`${s.sellers} sellers`} />
             <Stat icon={Store} label="Shops" value={s.shops} sub={`${s.unverifiedShops} waiting for verification`} />
             <Stat icon={Package} label="Active listings" value={s.listings} sub={`${s.secondHand} second-hand`} />

@@ -21,6 +21,7 @@ import ListingsPage from "./pages/marketplace/ListingsPage";
 import ShopPage from "./pages/marketplace/ShopPage";
 import ShopsPage from "./pages/marketplace/ShopsPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ConnectionsPage from "./pages/people/ConnectionsPage";
 import PeoplePage from "./pages/people/PeoplePage";
 import PersonPage from "./pages/people/PersonPage";
 import ChangePasswordPage from "./pages/profile/ChangePasswordPage";
@@ -77,6 +78,7 @@ export default function App() {
         <Route path="/hiring" element={page(<HiringPage />)} />
         <Route path="/hiring/:id" element={page(<HiringPage />)} />
         <Route path="/applications" element={page(<ApplicationsPage />)} />
+        <Route path="/connections" element={page(<ConnectionsPage />)} />
         <Route path="/profile" element={page(<ProfilePage />)} />
         <Route path="/profile/edit" element={page(<EditProfilePage />)} />
         <Route path="/profile/change-password" element={page(<ChangePasswordPage />)} />
