@@ -31,38 +31,43 @@ export default function PersonCard({ person, compact = false }) {
   }
 
   return (
-    <article className="flex flex-col rounded-2xl border border-orange-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-loco-orange hover:shadow-md">
-      <div className="flex items-start gap-4">
-        <Link to={`/people/${person.id}`}><Avatar person={person} /></Link>
-        <div className="min-w-0 flex-1">
-          <Link to={`/people/${person.id}`} className="flex items-center gap-1 font-black text-loco-ink hover:text-loco-wine">
-            <span className="truncate">{person.name}</span>
-            {shop?.verified && <BadgeCheck size={16} className="shrink-0 text-loco-mint-dark" />}
-          </Link>
-          <p className="mt-0.5 line-clamp-2 text-sm font-semibold text-loco-wine">{person.headline}</p>
-          <p className="mt-1 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} className="text-loco-orange" /> {person.district || "Rwanda"}{shop?.sector ? `, ${shop.sector}` : ""}</p>
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-loco-orange hover:shadow-md">
+      <Link to={`/people/${person.id}`} className="block aspect-4/3 w-full overflow-hidden bg-loco-cream">
+        {person.avatarUrl ? (
+          <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+        ) : (
+          <div className="grid h-full w-full place-items-center bg-loco-mint/30 text-6xl font-black text-loco-wine">{person.name.charAt(0).toUpperCase()}</div>
+        )}
+      </Link>
+
+      <div className="flex flex-1 flex-col p-4">
+        <Link to={`/people/${person.id}`} className="flex items-center gap-1 font-black text-loco-ink hover:text-loco-wine">
+          <span className="truncate">{person.name}</span>
+          {shop?.verified && <BadgeCheck size={16} className="shrink-0 text-loco-mint-dark" />}
+        </Link>
+        <p className="mt-0.5 line-clamp-2 text-sm font-semibold text-loco-wine">{person.headline}</p>
+        <p className="mt-1 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} className="text-loco-orange" /> {person.district || "Rwanda"}{shop?.sector ? `, ${shop.sector}` : ""}</p>
+
+        {person.bio && <p className="mt-3 line-clamp-2 text-sm text-gray-600">{person.bio}</p>}
+
+        {person.skills?.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {person.skills.slice(0, 4).map((skill) => (
+              <span key={skill} className="rounded-full bg-loco-cream px-2.5 py-1 text-xs font-semibold text-loco-wine">{skill}</span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-auto flex items-center justify-between pt-4 text-xs text-gray-500">
+          <Badge tone={shop ? "blue" : "mint"}>
+            {shop ? <><Store size={12} /> {t("people.shopOwner")}</> : <><Briefcase size={12} /> {t("people.specialist")}</>}
+          </Badge>
+          {shop ? (
+            <span>{t("listing.listings", { count: shop._count?.listings ?? 0 })}</span>
+          ) : person.openJobs > 0 ? (
+            <span>{t("people.openJobs", { count: person.openJobs })}</span>
+          ) : null}
         </div>
-      </div>
-
-      {person.bio && <p className="mt-3 line-clamp-2 text-sm text-gray-600">{person.bio}</p>}
-
-      {person.skills?.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {person.skills.slice(0, 4).map((skill) => (
-            <span key={skill} className="rounded-full bg-loco-cream px-2.5 py-1 text-xs font-semibold text-loco-wine">{skill}</span>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-auto flex items-center justify-between pt-4 text-xs text-gray-500">
-        <Badge tone={shop ? "blue" : "mint"}>
-          {shop ? <><Store size={12} /> {t("people.shopOwner")}</> : <><Briefcase size={12} /> {t("people.specialist")}</>}
-        </Badge>
-        {shop ? (
-          <span>{t("listing.listings", { count: shop._count?.listings ?? 0 })}</span>
-        ) : person.openJobs > 0 ? (
-          <span>{t("people.openJobs", { count: person.openJobs })}</span>
-        ) : null}
       </div>
     </article>
   );

@@ -94,7 +94,7 @@ export async function fetchCommonsPhoto(query) {
 export async function fetchAvatar(name) {
   const params = new URLSearchParams({
     seed: name,
-    size: "256",
+    size: "512",
     backgroundColor: "fff8ef,ffe3c9,d9f7ee",
     radius: "50",
     skinColor: "763900,9e5622",

@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { useT } from "../i18n";
 import { getSavedDistrict, saveDistrict } from "../lib/rwanda";
-import { Avatar } from "./PersonCard";
 import { DistrictSelect } from "./ui";
 
 export default function Hero() {
@@ -169,27 +168,35 @@ function HeroPersonCard({ person }) {
   return (
     <Link
       to={`/people/${person.id}`}
-      className="group flex w-56 shrink-0 snap-start flex-col items-center rounded-2xl border border-orange-100 bg-loco-cream p-5 text-center shadow-sm transition hover:-translate-y-1 hover:border-loco-orange hover:shadow-md sm:w-auto"
+      className="group flex w-60 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-orange-100 bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-loco-orange hover:shadow-md sm:w-auto"
     >
-      <Avatar person={person} size="h-20 w-20" textSize="text-3xl" />
-      <strong className="mt-3 flex w-full items-center justify-center gap-1 text-loco-ink">
-        <span className="truncate">{person.name}</span>
-        {shop?.verified && <BadgeCheck size={15} className="shrink-0 text-loco-mint-dark" />}
-      </strong>
-      <span className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-loco-wine">{person.headline}</span>
-      <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-gray-500">
-        <MapPin size={11} className="text-loco-orange" /> {person.district || "Rwanda"}
-      </span>
-      {person.skills?.length > 0 && (
-        <span className="mt-3 flex flex-wrap justify-center gap-1">
-          {person.skills.slice(0, 2).map((skill) => (
-            <span key={skill} className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-loco-wine">{skill}</span>
-          ))}
+      <div className="aspect-4/3 w-full overflow-hidden bg-loco-cream">
+        {person.avatarUrl ? (
+          <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+        ) : (
+          <div className="grid h-full w-full place-items-center bg-loco-mint/30 text-6xl font-black text-loco-wine">{person.name.charAt(0).toUpperCase()}</div>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-4">
+        <strong className="flex items-center gap-1 text-loco-ink">
+          <span className="truncate">{person.name}</span>
+          {shop?.verified && <BadgeCheck size={15} className="shrink-0 text-loco-mint-dark" />}
+        </strong>
+        <span className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-loco-wine">{person.headline}</span>
+        <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-gray-500">
+          <MapPin size={11} className="text-loco-orange" /> {person.district || "Rwanda"}
         </span>
-      )}
-      <span className="mt-auto pt-4 text-xs font-bold text-loco-orange group-hover:text-loco-wine">
-        {shop ? t("people.shopOwner") : t("people.specialist")} →
-      </span>
+        {person.skills?.length > 0 && (
+          <span className="mt-3 flex flex-wrap gap-1">
+            {person.skills.slice(0, 2).map((skill) => (
+              <span key={skill} className="rounded-full bg-loco-cream px-2 py-0.5 text-[11px] font-semibold text-loco-wine">{skill}</span>
+            ))}
+          </span>
+        )}
+        <span className="mt-auto pt-4 text-xs font-bold text-loco-orange group-hover:text-loco-wine">
+          {shop ? t("people.shopOwner") : t("people.specialist")} →
+        </span>
+      </div>
     </Link>
   );
 }
