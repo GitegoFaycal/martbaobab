@@ -16,6 +16,7 @@ const personSelect = {
   bio: true,
   skills: true,
   views: true,
+  phone: true,
   role: true,
   createdAt: true,
   shops: {
@@ -54,7 +55,9 @@ function publicPeopleWhere(q = {}) {
   if (q.kind === "sellers") {
     filters.push({ shops: { some: {} } });
   } else if (q.kind === "specialists") {
-    filters.push({ headline: { not: null } });
+    filters.push({ shops: { none: {} }, headline: { not: null } });
+  } else if (q.kind === "hiring") {
+    filters.push({ jobs: { some: { status: "OPEN" } } });
   }
 
   if (q.search) {
@@ -78,7 +81,7 @@ export const listPeople = asyncHandler(async (req, res) => {
   const q = {
     district: req.query.district ? String(req.query.district) : "",
     search: req.query.search ? String(req.query.search).trim().slice(0, 80) : "",
-    kind: ["sellers", "specialists"].includes(req.query.kind) ? req.query.kind : "",
+    kind: ["sellers", "specialists", "hiring"].includes(req.query.kind) ? req.query.kind : "",
   };
   const paging = paginate(req.query, { perPage: 24 });
   const where = publicPeopleWhere(q);
@@ -87,7 +90,7 @@ export const listPeople = asyncHandler(async (req, res) => {
     prisma.user.findMany({
       where,
       select: personSelect,
-      orderBy: [{ avatarUrl: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }],
+      orderBy: [{ avatarUrl: { sort: "desc", nulls: "last" } }, { connectionsAsSeller: { _count: "desc" } }, { createdAt: "desc" }],
       skip: paging.skip,
       take: paging.take,
     }),
@@ -104,7 +107,7 @@ export const listPeople = asyncHandler(async (req, res) => {
 export const getPerson = asyncHandler(async (req, res) => {
   const person = await prisma.user.findFirst({
     where: { id: req.params.id, ...publicPeopleWhere() },
-    select: { ...personSelect, phone: true },
+    select: personSelect,
   });
 
   if (!person) {
@@ -169,6 +172,9 @@ function shapePerson(user) {
     openJobs: user._count?.jobs ?? 0,
     views: user.views ?? 0,
     connections: user._count?.connectionsAsSeller ?? 0,
+    whatsapp: shop?.whatsapp || shop?.phone || user.phone || null,
+    verified: Boolean(shop?.verified),
+    sector: shop?.sector || null,
     kind: shop ? "seller" : "specialist",
   };
 }

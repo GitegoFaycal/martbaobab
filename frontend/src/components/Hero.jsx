@@ -1,7 +1,6 @@
-import { ArrowRight, BadgeCheck, Eye, Link2, MapPin, Search, Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowRight, MapPin, Search } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
 import { useT } from "../i18n";
 import { getSavedDistrict, saveDistrict } from "../lib/rwanda";
 import { DistrictSelect } from "./ui";
@@ -35,10 +34,11 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-white text-loco-ink">
+      {/* Market search */}
       <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-loco-orange/10" />
       <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-loco-mint/10" />
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-8 lg:pt-10">
+      <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
           <form role="search" onSubmit={handleSearch} className="flex-1 overflow-hidden rounded-2xl border border-orange-100 bg-white p-2 shadow-xl shadow-orange-100/60">
             <div className="mb-2 flex flex-wrap gap-1 px-1">
@@ -97,110 +97,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <PeopleWall district={district} />
       </div>
     </section>
-  );
-}
-
-const WALL_SIZE = 8;
-
-function PeopleWall({ district }) {
-  const t = useT();
-  const local = useFetch(district ? `/people?district=${encodeURIComponent(district)}&perPage=${WALL_SIZE}` : `/people?perPage=${WALL_SIZE}`);
-  const localCount = local.data?.people?.length ?? 0;
-  const needMore = Boolean(district) && !local.loading && localCount < WALL_SIZE;
-  const others = useFetch(`/people?perPage=${WALL_SIZE * 2}`, { enabled: needMore });
-
-  const people = useMemo(() => {
-    const seen = new Set();
-    const merged = [];
-    for (const person of [...(local.data?.people || []), ...(needMore ? others.data?.people || [] : [])]) {
-      if (!seen.has(person.id)) {
-        seen.add(person.id);
-        merged.push(person);
-      }
-    }
-    return merged.slice(0, WALL_SIZE);
-  }, [local.data, others.data, needMore]);
-
-  const loading = local.loading || (needMore && others.loading && people.length === 0);
-
-  return (
-    <div className="mt-10">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="inline-flex items-center gap-2 text-sm font-bold text-loco-orange"><Users size={16} /> {t("people.eyebrow")}</p>
-          <h2 className="mt-1 text-2xl font-black text-loco-wine sm:text-3xl">{t("people.wallTitle")}</h2>
-          <p className="mt-1 max-w-2xl text-sm text-gray-600">{t("people.wallText")}</p>
-        </div>
-        <Link to={district ? `/people?district=${encodeURIComponent(district)}` : "/people"} className="inline-flex shrink-0 items-center gap-1 rounded-full border border-loco-wine px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-cream">
-          {t("people.seeAll")} <ArrowRight size={15} />
-        </Link>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: WALL_SIZE }).map((_, index) => (
-            <div key={index} className="h-56 animate-pulse rounded-2xl bg-loco-cream" />
-          ))}
-        </div>
-      ) : people.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-orange-200 bg-loco-cream p-6 text-center text-gray-600">
-          <p>{t("people.joinText")}</p>
-          <Link to="/register" className="mt-4 inline-block rounded-full bg-loco-wine px-5 py-2.5 text-sm font-bold text-white">{t("people.join")}</Link>
-        </div>
-      ) : (
-        <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-          {people.map((person) => (
-            <HeroPersonCard key={person.id} person={person} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function HeroPersonCard({ person }) {
-  const t = useT();
-  const shop = person.shop;
-
-  return (
-    <Link
-      to={`/people/${person.id}`}
-      className="group flex w-60 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-orange-100 bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-loco-orange hover:shadow-md sm:w-auto"
-    >
-      <div className="aspect-4/3 w-full overflow-hidden bg-loco-cream">
-        {person.avatarUrl ? (
-          <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
-        ) : (
-          <div className="grid h-full w-full place-items-center bg-loco-mint/30 text-6xl font-black text-loco-wine">{person.name.charAt(0).toUpperCase()}</div>
-        )}
-      </div>
-      <div className="flex flex-1 flex-col p-4">
-        <strong className="flex items-center gap-1 text-loco-ink">
-          <span className="truncate">{person.name}</span>
-          {shop?.verified && <BadgeCheck size={15} className="shrink-0 text-loco-mint-dark" />}
-        </strong>
-        <span className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-loco-wine">{person.headline}</span>
-        <span className="mt-1.5 inline-flex items-center gap-1 text-xs text-gray-500">
-          <MapPin size={11} className="text-loco-orange" /> {person.district || "Rwanda"}
-        </span>
-        <span className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-gray-500">
-          <span className="inline-flex items-center gap-1"><Eye size={11} /> {t("connections.viewers", { count: person.views ?? 0 })}</span>
-          <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={11} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>
-        </span>
-        {person.skills?.length > 0 && (
-          <span className="mt-3 flex flex-wrap gap-1">
-            {person.skills.slice(0, 2).map((skill) => (
-              <span key={skill} className="rounded-full bg-loco-cream px-2 py-0.5 text-[11px] font-semibold text-loco-wine">{skill}</span>
-            ))}
-          </span>
-        )}
-        <span className="mt-auto pt-4 text-xs font-bold text-loco-orange group-hover:text-loco-wine">
-          {shop ? t("people.shopOwner") : t("people.specialist")} →
-        </span>
-      </div>
-    </Link>
   );
 }

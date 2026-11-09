@@ -496,6 +496,27 @@ export default {
     perListing: "Abavuganye",
   },
 
+  landing: {
+    market: "Isoko",
+    marketText: "Ibicuruzwa, ibikoreshejwe na serivisi",
+    people: "Abantu",
+    peopleText: "Amaduka, abahanga n'abatanga akazi",
+    community: "Abantu bo mu gace kawe",
+    communityIn: "Abantu bo muri {district}",
+    searchPh: "Shakisha abantu, ubucuruzi cyangwa ubuhanga...",
+    all: "Bose",
+    shops: "Amaduka",
+    specialists: "Abahanga",
+    hiring: "Batanga akazi",
+    more: "Ibindi",
+    contact: "Vugana",
+    showMore: "Erekana abandi bantu",
+    filters: "Shungura",
+    verified: "Byemejwe",
+    noPeople: "Nta muntu urahuye n'ibyo ushaka. Gerageza akandi karere cyangwa ushakishe ikindi.",
+    marketTitle: "Ukeneye iki uyu munsi?",
+  },
+
   time: {
     justNow: "nonaha",
     minutes: "hashize iminota {n}",

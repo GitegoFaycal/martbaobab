@@ -1,0 +1,190 @@
+import {
+  BadgeCheck,
+  Briefcase,
+  Eye,
+  Link2,
+  MapPin,
+  Phone,
+  Search,
+  SlidersHorizontal,
+  Store,
+  Users,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { buildQuery } from "../../api/api";
+import useFetch from "../../hooks/useFetch";
+import { useT } from "../../i18n";
+import { recordConnection } from "../../lib/connect";
+import { getSavedDistrict, saveDistrict, whatsappLink } from "../../lib/rwanda";
+import { Button, DistrictSelect, EmptyState, Spinner } from "../ui";
+import WhatsAppIcon from "../WhatsAppIcon";
+
+const PAGE = 10;
+
+export default function PeopleFeed() {
+  const t = useT();
+  const [district, setDistrict] = useState(getSavedDistrict);
+  const [text, setText] = useState("");
+  const [search, setSearch] = useState("");
+  const [kind, setKind] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [limit, setLimit] = useState(PAGE);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(text.trim()), 350);
+    return () => clearTimeout(timer);
+  }, [text]);
+
+  useEffect(() => setLimit(PAGE), [district, search, kind]);
+
+  const query = useMemo(() => buildQuery({ district, search, kind, perPage: limit }), [district, search, kind, limit]);
+  const { data, loading } = useFetch(`/people${query}`);
+  const people = data?.people || [];
+  const total = data?.pagination?.total ?? 0;
+
+  const chips = [
+    { key: "", label: t("landing.all"), icon: Users },
+    { key: "sellers", label: t("landing.shops"), icon: Store },
+    { key: "specialists", label: t("landing.specialists"), icon: Briefcase },
+    { key: "hiring", label: t("landing.hiring"), icon: Briefcase },
+  ];
+
+  return (
+    <section>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="inline-flex items-center gap-2 text-xl font-black text-loco-wine sm:text-2xl">
+          <Users size={22} className="text-loco-orange" />
+          {district ? t("landing.communityIn", { district }) : t("landing.community")}
+        </h2>
+        <span className="text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <label className="flex flex-1 items-center gap-3 rounded-2xl border border-orange-100 bg-white px-4 shadow-sm focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
+          <Search size={20} className="shrink-0 text-loco-wine" />
+          <input
+            type="search"
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            placeholder={t("landing.searchPh")}
+            aria-label={t("common.search")}
+            className="w-full bg-transparent py-3.5 outline-none"
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => setShowFilters((current) => !current)}
+          aria-label={t("landing.filters")}
+          aria-expanded={showFilters}
+          className={`grid h-13 w-13 shrink-0 place-items-center rounded-2xl border p-3.5 ${showFilters || district ? "border-loco-orange bg-loco-wine text-white" : "border-orange-100 bg-white text-loco-wine"}`}
+        >
+          <SlidersHorizontal size={20} />
+        </button>
+      </div>
+
+      {showFilters && (
+        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-orange-100 bg-white p-3">
+          <MapPin size={18} className="shrink-0 text-loco-orange" />
+          <DistrictSelect
+            aria-label={t("common.district")}
+            value={district}
+            onChange={(event) => {
+              setDistrict(event.target.value);
+              saveDistrict(event.target.value);
+            }}
+            placeholder={t("common.allDistricts")}
+            className="border-0! bg-transparent! px-0! py-2! focus:ring-0!"
+          />
+        </div>
+      )}
+
+      <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+        {chips.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setKind(key)}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold ${kind === key ? "bg-loco-wine text-white" : "border border-orange-100 bg-white text-loco-ink hover:bg-loco-cream"}`}
+          >
+            {key ? <Icon size={14} /> : null}
+            {label}
+          </button>
+        ))}
+        <Link to="/people" className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-orange-100 bg-white px-4 py-2 text-sm font-bold text-loco-ink hover:bg-loco-cream">
+          ··· {t("landing.more")}
+        </Link>
+      </div>
+
+      <div className="mt-4">
+        {loading && people.length === 0 ? (
+          <Spinner label={t("common.loading")} />
+        ) : people.length === 0 ? (
+          <EmptyState icon={Users} title={t("people.none")} description={t("landing.noPeople")} action={district ? <Button variant="outline" onClick={() => { setDistrict(""); saveDistrict(""); }}>{t("common.allDistricts")}</Button> : null} />
+        ) : (
+          <ul className="space-y-3">
+            {people.map((person) => <PersonRow key={person.id} person={person} />)}
+          </ul>
+        )}
+
+        {people.length < total && (
+          <div className="mt-5 text-center">
+            <Button variant="outline" onClick={() => setLimit((current) => current + PAGE)} loading={loading}>{t("landing.showMore")}</Button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function PersonRow({ person }) {
+  const t = useT();
+  const shop = person.shop;
+  const whatsapp = whatsappLink(person.whatsapp, `Muraho ${person.name}, I found your profile on LOCO.`);
+  const location = [person.district, person.sector].filter(Boolean).join(", ") || "Rwanda";
+
+  return (
+    <li className="flex items-center gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm transition hover:border-loco-orange sm:gap-4 sm:p-4">
+      <Link to={`/people/${person.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-loco-cream sm:h-24 sm:w-24">
+        {person.avatarUrl ? (
+          <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover" />
+        ) : (
+          <span className="grid h-full w-full place-items-center bg-loco-mint/30 text-3xl font-black text-loco-wine">{person.name.charAt(0).toUpperCase()}</span>
+        )}
+      </Link>
+
+      <div className="min-w-0 flex-1">
+        <Link to={`/people/${person.id}`} className="block truncate text-base font-black text-loco-ink hover:text-loco-wine sm:text-lg">{person.name}</Link>
+        <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-gray-600">
+          {shop ? <Store size={14} className="shrink-0 text-loco-orange" /> : <Briefcase size={14} className="shrink-0 text-loco-orange" />}
+          <span className="truncate">{person.headline}</span>
+        </p>
+        <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-gray-500">
+          <MapPin size={12} className="shrink-0 text-loco-orange" /> {location}
+        </p>
+        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs">
+          {person.verified && <span className="inline-flex items-center gap-1 font-bold text-green-700"><BadgeCheck size={13} /> {t("landing.verified")}</span>}
+          <span className="inline-flex items-center gap-1 text-loco-mint-dark"><Link2 size={12} /> {person.connections ?? 0}</span>
+          <span className="inline-flex items-center gap-1 text-gray-400"><Eye size={12} /> {person.views ?? 0}</span>
+        </p>
+      </div>
+
+      {whatsapp ? (
+        <a
+          href={whatsapp}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => recordConnection({ personId: person.id, channel: "WHATSAPP" })}
+          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-loco-wine px-3.5 py-2.5 text-sm font-bold text-white hover:bg-loco-wine-dark sm:px-5"
+        >
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#25D366]"><WhatsAppIcon size={15} /></span>
+          <span className="hidden sm:inline">{t("landing.contact")}</span>
+        </a>
+      ) : (
+        <Link to={`/people/${person.id}`} className="inline-flex shrink-0 items-center gap-2 rounded-full border border-loco-wine px-3.5 py-2.5 text-sm font-bold text-loco-wine sm:px-5">
+          <Phone size={16} /> <span className="hidden sm:inline">{t("landing.contact")}</span>
+        </Link>
+      )}
+    </li>
+  );
+}

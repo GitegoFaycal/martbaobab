@@ -496,6 +496,27 @@ export default {
     perListing: "Connections",
   },
 
+  landing: {
+    market: "Market",
+    marketText: "Goods, second-hand and services",
+    people: "People",
+    peopleText: "Shops, specialists and employers",
+    community: "People in your community",
+    communityIn: "People in {district}",
+    searchPh: "Search people, businesses or skills...",
+    all: "All",
+    shops: "Shops",
+    specialists: "Specialists",
+    hiring: "Hiring",
+    more: "More",
+    contact: "Contact",
+    showMore: "Show more people",
+    filters: "Filters",
+    verified: "Verified",
+    noPeople: "No one matches yet. Try another district or search.",
+    marketTitle: "What do you need today?",
+  },
+
   time: {
     justNow: "just now",
     minutes: "{n} min ago",

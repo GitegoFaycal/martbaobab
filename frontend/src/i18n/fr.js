@@ -496,6 +496,27 @@ export default {
     perListing: "Contacts",
   },
 
+  landing: {
+    market: "Marché",
+    marketText: "Produits, occasion et services",
+    people: "Personnes",
+    peopleText: "Boutiques, spécialistes et employeurs",
+    community: "Les gens de votre communauté",
+    communityIn: "Les gens de {district}",
+    searchPh: "Rechercher des personnes, des commerces ou des compétences...",
+    all: "Tous",
+    shops: "Boutiques",
+    specialists: "Spécialistes",
+    hiring: "Recrutent",
+    more: "Plus",
+    contact: "Contacter",
+    showMore: "Voir plus de personnes",
+    filters: "Filtres",
+    verified: "Vérifié",
+    noPeople: "Personne ne correspond pour l'instant. Essayez un autre district ou une autre recherche.",
+    marketTitle: "De quoi avez-vous besoin aujourd'hui ?",
+  },
+
   time: {
     justNow: "à l'instant",
     minutes: "il y a {n} min",
