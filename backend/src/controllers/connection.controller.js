@@ -2,7 +2,7 @@ import prisma from "../config/prisma.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { httpError, serialize } from "../utils/helpers.js";
 
-const CHANNELS = new Set(["WHATSAPP", "CALL"]);
+const CHANNELS = new Set(["WHATSAPP", "CALL", "CONNECT"]);
 const DEDUPE_MINUTES = 60;
 
 function visitorKeyFrom(req) {
@@ -54,16 +54,21 @@ export const recordConnection = asyncHandler(async (req, res) => {
     return res.status(200).json({ success: true, counted: false, reason: "self" });
   }
 
+  if (channel === "CONNECT" && !buyerId) {
+    throw httpError(401, "Log in to connect");
+  }
+
   if (!buyerId && !visitorKey) {
     return res.status(200).json({ success: true, counted: false, reason: "anonymous" });
   }
 
-  const since = new Date(Date.now() - DEDUPE_MINUTES * 60 * 1000);
+  // In-app connections are permanent: one per pair of people.
+  const since = channel === "CONNECT" ? new Date(0) : new Date(Date.now() - DEDUPE_MINUTES * 60 * 1000);
 
   const recent = await prisma.connection.findFirst({
     where: {
       sellerId,
-      listingId: listing ? listing.id : null,
+      ...(channel === "CONNECT" ? { channel: "CONNECT" } : { listingId: listing ? listing.id : null }),
       createdAt: { gte: since },
       ...(buyerId ? { buyerId } : { visitorKey }),
     },

@@ -137,7 +137,7 @@ const normalizePhone = (value) => `+250${value.replace(/^0/, "")}`;
 // A stored image is "good" when it is a real photo; SVG placeholders are
 // retried on later runs in case the photo source was unavailable.
 // Placeholders are SVGs stored without a width; vector avatars record one.
-async function isGoodStoredImage(url, { minWidth = 0, vector = false } = {}) {
+async function isGoodStoredImage(url, { minWidth = 0, vector = false, raster = false } = {}) {
   if (!isStoredImage(url)) return false;
   const id = url.split("/images/")[1];
   const image = await prisma.image.findUnique({ where: { id }, select: { mimeType: true, width: true } });
@@ -145,6 +145,7 @@ async function isGoodStoredImage(url, { minWidth = 0, vector = false } = {}) {
   const isSvg = image.mimeType === "image/svg+xml";
   if (isSvg && !image.width) return false;
   if (vector && !isSvg) return false;
+  if (raster && isSvg) return false;
   return (image.width ?? 0) >= minWidth;
 }
 
@@ -154,6 +155,23 @@ async function photoOrPlaceholder(query, title) {
   } catch (error) {
     console.warn(`  no photo for "${title}" (${error.message}); using placeholder`);
     return { ...placeholderSvg(title), placeholder: true };
+  }
+}
+
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const portraitDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "demo-portraits");
+
+// Portrait shipped with the repo for a demo account (email prefix = file name).
+async function bundledPortrait(email) {
+  const key = email.split("@")[0];
+  try {
+    const buffer = await readFile(path.join(portraitDir, `${key}.jpg`));
+    return { buffer, mime: "image/jpeg", width: 600, height: 600 };
+  } catch {
+    return null;
   }
 }
 
@@ -169,7 +187,11 @@ async function seedPhotos() {
   const demoUsers = await prisma.user.findMany({ where: { email: { in: USERS.map((user) => user.email) } } });
   for (const user of demoUsers) {
     // Avatars must be the vector renders; older 256px PNGs are replaced.
-    if (!(await isGoodStoredImage(user.avatarUrl, { minWidth: 512, vector: true }))) {
+    // Prefer the bundled photorealistic portrait (replacing an older vector
+    // avatar); otherwise keep or fetch a vector avatar.
+    const hasPortrait = Boolean(await bundledPortrait(user.email));
+    const good = await isGoodStoredImage(user.avatarUrl, hasPortrait ? { minWidth: 600, raster: true } : { minWidth: 512, vector: true });
+    if (!good) {
       tasks.push({ kind: "avatar", user, title: user.name });
     }
   }
@@ -203,7 +225,8 @@ async function seedPhotos() {
   await mapLimit(tasks, 4, async (task) => {
     if (task.kind === "avatar") {
       try {
-        const url = await storeImage(prisma, await fetchAvatar(task.user.name), task.user.id);
+        const photo = (await bundledPortrait(task.user.email)) || (await fetchAvatar(task.user.name));
+        const url = await storeImage(prisma, photo, task.user.id);
         await prisma.user.update({ where: { id: task.user.id }, data: { avatarUrl: url } });
       } catch (error) {
         console.warn(`  no avatar for "${task.user.name}": ${error.message}`);

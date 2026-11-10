@@ -97,9 +97,11 @@ export const listPeople = asyncHandler(async (req, res) => {
     prisma.user.count({ where }),
   ]);
 
+  const connectedIds = await connectedSet(req.user?.id, people.map((person) => person.id));
+
   return res.status(200).json({
     success: true,
-    people: serialize(people.map(shapePerson)),
+    people: serialize(people.map((person) => ({ ...shapePerson(person), connected: connectedIds.has(person.id) }))),
     pagination: paginationMeta(total, paging),
   });
 });
@@ -147,13 +149,25 @@ export const getPerson = asyncHandler(async (req, res) => {
     }),
   ]);
 
+  const connectedIds = await connectedSet(req.user?.id, [person.id]);
+
   return res.status(200).json({
     success: true,
-    person: serialize({ ...shapePerson(person), phone: shop?.phone || person.phone, whatsapp: shop?.whatsapp || null }),
+    person: serialize({ ...shapePerson(person), phone: shop?.phone || person.phone, whatsapp: shop?.whatsapp || null, connected: connectedIds.has(person.id) }),
     listings: serialize(listings),
     jobs: serialize(jobs),
   });
 });
+
+// Which of these people the current user has pressed Connect on.
+async function connectedSet(userId, sellerIds) {
+  if (!userId || sellerIds.length === 0) return new Set();
+  const rows = await prisma.connection.findMany({
+    where: { buyerId: userId, channel: "CONNECT", sellerId: { in: sellerIds } },
+    select: { sellerId: true },
+  });
+  return new Set(rows.map((row) => row.sellerId));
+}
 
 function shapePerson(user) {
   const shop = user.shops?.[0] || null;

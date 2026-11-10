@@ -1,6 +1,7 @@
 import { BadgeCheck, Briefcase, Eye, Link2, MapPin, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
+import ProfileActions from "./ProfileActions";
 import { Badge } from "./ui";
 
 export function Avatar({ person, size = "h-16 w-16", textSize = "text-2xl" }) {
@@ -62,6 +63,8 @@ export default function PersonCard({ person, compact = false }) {
           <span className="inline-flex items-center gap-1"><Eye size={12} /> {t("connections.viewers", { count: person.views ?? 0 })}</span>
           <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={12} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>
         </div>
+
+        <div className="mt-4"><ProfileActions person={person} /></div>
 
         <div className="mt-auto flex items-center justify-between pt-4 text-xs text-gray-500">
           <Badge tone={shop ? "blue" : "mint"}>

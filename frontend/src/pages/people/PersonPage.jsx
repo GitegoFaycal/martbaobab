@@ -1,5 +1,5 @@
 import { BadgeCheck, Briefcase, Eye, Link2, MapPin, Package, Phone, Store } from "lucide-react";
-import WhatsAppIcon from "../../components/WhatsAppIcon";
+import ProfileActions from "../../components/ProfileActions";
 import { Link, useParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
 import ListingCard from "../../components/ListingCard";
@@ -9,7 +9,7 @@ import useFetch from "../../hooks/useFetch";
 import { useI18n } from "../../i18n";
 import { formatDate } from "../../lib/format";
 import { recordConnection } from "../../lib/connect";
-import { formatPhoneForDisplay, whatsappLink } from "../../lib/rwanda";
+import { formatPhoneForDisplay } from "../../lib/rwanda";
 
 function Stat({ icon: Icon, label, value, accent = false }) {
   return (
@@ -39,7 +39,6 @@ export default function PersonPage() {
 
   const { person, listings, jobs } = data;
   const shop = person.shop;
-  const whatsapp = whatsappLink(person.whatsapp || person.phone, `Hello ${person.name}, I found your profile on LOCO.`);
 
   return (
     <main className="min-h-[75vh] bg-loco-cream pb-12">
@@ -83,9 +82,8 @@ export default function PersonPage() {
 
             <div className="flex shrink-0 flex-col gap-2 sm:w-56">
               <h2 className="text-xs font-bold uppercase tracking-wide text-gray-400">{t("people.contact")}</h2>
-              {person.phone && <Button as="a" href={`tel:${person.phone}`} variant="outline" onClick={() => recordConnection({ personId: person.id, channel: "CALL" })}><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</Button>}
-              {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp" onClick={() => recordConnection({ personId: person.id, channel: "WHATSAPP" })}><WhatsAppIcon size={18} /> WhatsApp</Button>}
-              {shop && <Button as={Link} to={`/shops/${shop.slug}`} variant="primary"><Store size={17} /> {t("people.visitShop")}</Button>}
+              <ProfileActions person={{ ...person, whatsapp: person.whatsapp || person.phone }} layout="column" size="lg" />
+              {person.phone && <Button as="a" href={`tel:${person.phone}`} variant="ghost" onClick={() => recordConnection({ personId: person.id, channel: "CALL" })}><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</Button>}
             </div>
           </div>
         </div>

@@ -468,6 +468,7 @@ export default {
   },
 
   connections: {
+    viaLoco: "connected on LOCO",
     viewers: "{count} viewers",
     connections: "{count} connections",
     connectionsShort: "{count} connected",
@@ -497,6 +498,11 @@ export default {
   },
 
   landing: {
+    visitBusiness: "Visit business",
+    visitProfile: "Visit profile",
+    connect: "Connect",
+    connected: "Connected",
+    connectLogin: "Log in to connect with people on LOCO.",
     market: "Market",
     marketText: "Goods, second-hand and services",
     people: "People",

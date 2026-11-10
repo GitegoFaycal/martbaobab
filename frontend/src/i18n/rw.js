@@ -468,6 +468,7 @@ export default {
   },
 
   connections: {
+    viaLoco: "bahujwe kuri LOCO",
     viewers: "Barebwe na {count}",
     connections: "Abavuganye na we {count}",
     connectionsShort: "{count} bavuganye",
@@ -497,6 +498,11 @@ export default {
   },
 
   landing: {
+    visitBusiness: "Sura ubucuruzi",
+    visitProfile: "Reba umwirondoro",
+    connect: "Huza",
+    connected: "Mwahujwe",
+    connectLogin: "Injira kugira ngo uhuze n'abantu kuri LOCO.",
     market: "Isoko",
     marketText: "Ibicuruzwa, ibikoreshejwe na serivisi",
     people: "Abantu",

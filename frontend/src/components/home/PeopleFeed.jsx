@@ -4,7 +4,6 @@ import {
   Eye,
   Link2,
   MapPin,
-  Phone,
   Search,
   SlidersHorizontal,
   Store,
@@ -15,10 +14,9 @@ import { Link } from "react-router-dom";
 import { buildQuery } from "../../api/api";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
-import { recordConnection } from "../../lib/connect";
-import { getSavedDistrict, saveDistrict, whatsappLink } from "../../lib/rwanda";
+import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
 import { Button, DistrictSelect, EmptyState, Spinner } from "../ui";
-import WhatsAppIcon from "../WhatsAppIcon";
+import ProfileActions from "../ProfileActions";
 
 const PAGE = 10;
 
@@ -140,11 +138,11 @@ export default function PeopleFeed() {
 function PersonRow({ person }) {
   const t = useT();
   const shop = person.shop;
-  const whatsapp = whatsappLink(person.whatsapp, `Muraho ${person.name}, I found your profile on LOCO.`);
   const location = [person.district, person.sector].filter(Boolean).join(", ") || "Rwanda";
 
   return (
-    <li className="flex items-center gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm transition hover:border-loco-orange sm:gap-4 sm:p-4">
+    <li className="flex flex-col gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm transition hover:border-loco-orange lg:flex-row lg:items-center lg:gap-4 lg:p-4">
+      <div className="flex items-center gap-3 sm:gap-4 lg:flex-1">
       <Link to={`/people/${person.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-loco-cream sm:h-24 sm:w-24">
         {person.avatarUrl ? (
           <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover" />
@@ -168,23 +166,11 @@ function PersonRow({ person }) {
           <span className="inline-flex items-center gap-1 text-gray-400"><Eye size={12} /> {person.views ?? 0}</span>
         </p>
       </div>
+      </div>
 
-      {whatsapp ? (
-        <a
-          href={whatsapp}
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => recordConnection({ personId: person.id, channel: "WHATSAPP" })}
-          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-loco-wine px-3.5 py-2.5 text-sm font-bold text-white hover:bg-loco-wine-dark sm:px-5"
-        >
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#25D366]"><WhatsAppIcon size={15} /></span>
-          <span className="hidden sm:inline">{t("landing.contact")}</span>
-        </a>
-      ) : (
-        <Link to={`/people/${person.id}`} className="inline-flex shrink-0 items-center gap-2 rounded-full border border-loco-wine px-3.5 py-2.5 text-sm font-bold text-loco-wine sm:px-5">
-          <Phone size={16} /> <span className="hidden sm:inline">{t("landing.contact")}</span>
-        </Link>
-      )}
+      <div className="shrink-0">
+        <ProfileActions person={person} />
+      </div>
     </li>
   );
 }

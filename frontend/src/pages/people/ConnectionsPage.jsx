@@ -68,7 +68,7 @@ export default function ConnectionsPage() {
                       )}
                     </p>
                     <p className="mt-1 flex items-center gap-2 text-xs text-gray-400">
-                      <span className="inline-flex items-center gap-1">{row.channel === "CALL" ? <Phone size={12} /> : <WhatsAppIcon size={12} className="text-[#25D366]" />} {row.channel === "CALL" ? t("connections.viaCall") : t("connections.viaWhatsapp")}</span>
+                      <span className="inline-flex items-center gap-1">{row.channel === "CALL" ? <Phone size={12} /> : row.channel === "CONNECT" ? <Link2 size={12} className="text-loco-mint-dark" /> : <WhatsAppIcon size={12} className="text-[#25D366]" />} {row.channel === "CALL" ? t("connections.viaCall") : row.channel === "CONNECT" ? t("connections.viaLoco") : t("connections.viaWhatsapp")}</span>
                       <span>· {timeAgo(row.createdAt, t)}</span>
                     </p>
                   </div>
