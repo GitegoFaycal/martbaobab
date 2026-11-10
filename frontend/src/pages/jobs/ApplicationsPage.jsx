@@ -11,7 +11,7 @@ export default function ApplicationsPage() {
   const applications = data?.applications || [];
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
         <PageHeader eyebrow={t("applications.eyebrow")} title={t("applications.title")} description={t("applications.text")} />
         {error && <Message className="mb-4">{error}</Message>}
@@ -26,10 +26,10 @@ export default function ApplicationsPage() {
               const status = applicationStatus(application.status, t);
               const job = application.job;
               return (
-                <li key={application.id} className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
+                <li key={application.id} className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <Link to={`/jobs/${job.slug}`} className="font-black text-loco-ink hover:text-loco-wine">{job.title}</Link>
+                      <Link to={`/jobs/${job.slug}`} className="font-black text-loco-ink hover:text-loco-navy">{job.title}</Link>
                       <p className="mt-1 text-sm text-gray-500">{job.employer?.name} · {job.district} · {jobTypeLabel(job.jobType, t)} · {formatPay(job, t)}</p>
                       <p className="mt-1 text-xs text-gray-400">{t("applications.appliedWhen", { when: timeAgo(application.createdAt, t) })}{job.status !== "OPEN" ? ` · ${t(`jobs.${job.status.toLowerCase()}`)}` : ""}</p>
                     </div>

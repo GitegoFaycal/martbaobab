@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 
 export default function UnauthorizedPage() {
   return (
-    <main className="grid min-h-[75vh] place-items-center bg-loco-cream px-4">
+    <main className="grid min-h-[75vh] place-items-center bg-loco-ice px-4">
       <div className="max-w-lg text-center">
         <span className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-red-100 text-red-700">
           <ShieldX size={40} />
         </span>
 
-        <p className="mt-7 font-bold text-loco-orange">
+        <p className="mt-7 font-bold text-loco-blue">
           Access restricted
         </p>
 
-        <h1 className="mt-2 text-4xl font-black text-loco-wine">
+        <h1 className="mt-2 text-4xl font-black text-loco-navy">
           You cannot access this page
         </h1>
 
@@ -24,7 +24,7 @@ export default function UnauthorizedPage() {
 
         <Link
           to="/"
-          className="mt-7 inline-block rounded-full bg-loco-wine px-7 py-3 font-bold text-white"
+          className="mt-7 inline-block rounded-full bg-loco-navy px-7 py-3 font-bold text-white"
         >
           Return home
         </Link>

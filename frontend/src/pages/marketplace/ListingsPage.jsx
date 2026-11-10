@@ -68,35 +68,35 @@ export default function ListingsPage({ mode = "shop" }) {
   const activeFilterCount = [filters.category, filters.minPrice, filters.maxPrice].filter(Boolean).length;
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
         <PageHeader eyebrow={t(`sections.${config.key}Eyebrow`)} title={t(`sections.${config.key}Title`)} description={t(`sections.${config.key}Text`)} />
 
-        <form onSubmit={(event) => { event.preventDefault(); update({ search: searchText.trim() }); }} className="grid gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_220px_auto]">
-          <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3">
-            <Search size={18} className="shrink-0 text-loco-wine" />
+        <form onSubmit={(event) => { event.preventDefault(); update({ search: searchText.trim() }); }} className="grid gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_220px_auto]">
+          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
+            <Search size={18} className="shrink-0 text-loco-navy" />
             <input type="search" value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder={t("sections.searchPh")} aria-label={t("common.search")} className="w-full bg-transparent py-3 outline-none" />
           </label>
-          <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3">
-            <MapPin size={18} className="shrink-0 text-loco-orange" />
+          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
+            <MapPin size={18} className="shrink-0 text-loco-blue" />
             <DistrictSelect aria-label={t("common.district")} value={filters.district} onChange={(event) => update({ district: event.target.value })} placeholder={t("common.allDistricts")} className="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
           </label>
           <Button type="submit" variant="orange">{t("common.search")}</Button>
         </form>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[250px_1fr]">
-          <aside className="space-y-5 rounded-2xl border border-orange-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:self-start">
+          <aside className="space-y-5 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:self-start">
             <div className="flex items-center justify-between">
-              <h2 className="inline-flex items-center gap-2 font-black text-loco-wine"><Filter size={17} /> {t("common.filters")}</h2>
-              {activeFilterCount > 0 && <button type="button" onClick={() => update({ category: "", minPrice: "", maxPrice: "" })} className="text-xs font-bold text-loco-orange">{t("common.clear")} ({activeFilterCount})</button>}
+              <h2 className="inline-flex items-center gap-2 font-black text-loco-navy"><Filter size={17} /> {t("common.filters")}</h2>
+              {activeFilterCount > 0 && <button type="button" onClick={() => update({ category: "", minPrice: "", maxPrice: "" })} className="text-xs font-bold text-loco-blue">{t("common.clear")} ({activeFilterCount})</button>}
             </div>
 
             <div>
               <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{t("common.category")}</h3>
               <ul className="max-h-72 space-y-1 overflow-y-auto pr-1 text-sm">
-                <li><button type="button" onClick={() => update({ category: "" })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${!filters.category ? "bg-loco-cream text-loco-wine" : "hover:bg-loco-cream"}`}>{t("common.allCategories")}</button></li>
+                <li><button type="button" onClick={() => update({ category: "" })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${!filters.category ? "bg-loco-ice text-loco-navy" : "hover:bg-loco-ice"}`}>{t("common.allCategories")}</button></li>
                 {categories.map((category) => (
-                  <li key={category.id}><button type="button" onClick={() => update({ category: category.slug })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${filters.category === category.slug ? "bg-loco-cream text-loco-wine" : "hover:bg-loco-cream"}`}>{category.name}</button></li>
+                  <li key={category.id}><button type="button" onClick={() => update({ category: category.slug })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${filters.category === category.slug ? "bg-loco-ice text-loco-navy" : "hover:bg-loco-ice"}`}>{category.name}</button></li>
                 ))}
               </ul>
             </div>

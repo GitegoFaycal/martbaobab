@@ -61,13 +61,13 @@ export default function EditProfilePage() {
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container className="max-w-2xl">
-        <Link to="/profile" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> {t("nav.myProfile")}</Link>
+        <Link to="/profile" className="inline-flex items-center gap-2 font-bold text-loco-navy"><ArrowLeft size={18} /> {t("nav.myProfile")}</Link>
 
         <div className="mt-5 rounded-3xl bg-white p-6 shadow-lg sm:p-9">
-          <p className="font-bold text-loco-orange">{t("nav.myProfile")}</p>
-          <h1 className="mt-2 text-3xl font-black text-loco-wine">{t("common.edit")}</h1>
+          <p className="font-bold text-loco-blue">{t("nav.myProfile")}</p>
+          <h1 className="mt-2 text-3xl font-black text-loco-navy">{t("common.edit")}</h1>
 
           {error && <Message className="mt-5">{error}</Message>}
           {success && <Message type="success" className="mt-5">{success}</Message>}
@@ -88,8 +88,8 @@ export default function EditProfilePage() {
               <Input id="email" value={user.email} disabled />
             </Field>
 
-            <div className="rounded-2xl bg-loco-cream p-4">
-              <p className="font-bold text-loco-wine">{t("people.yourProfile")}</p>
+            <div className="rounded-2xl bg-loco-ice p-4">
+              <p className="font-bold text-loco-navy">{t("people.yourProfile")}</p>
               <p className="mt-1 text-sm text-gray-600">{t("people.yourProfileText")}</p>
             </div>
 

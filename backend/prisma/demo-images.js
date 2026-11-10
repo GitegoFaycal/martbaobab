@@ -95,7 +95,7 @@ export async function fetchCommonsPhoto(query) {
 export async function fetchAvatar(name) {
   const params = new URLSearchParams({
     seed: name,
-    backgroundColor: "fff8ef,ffe3c9,d9f7ee",
+    backgroundColor: "eef4ff,d6e6ff,d2f3fc",
     radius: "50",
     skinColor: "763900,9e5622",
     hairColor: "0e0e0e,562306,6a4e35",
@@ -123,7 +123,7 @@ function escapeXml(value) {
 }
 
 // Branded placeholder with the item name, used when no photo could be fetched.
-export function placeholderSvg(title, accent = "#f36b21") {
+export function placeholderSvg(title, accent = "#1e7ff5") {
   const words = String(title).split(/\s+/);
   const lines = [];
   let line = "";
@@ -140,10 +140,10 @@ export function placeholderSvg(title, accent = "#f36b21") {
 
   const text = lines
     .slice(0, 3)
-    .map((item, index) => `<text x="400" y="${300 + index * 44 - (Math.min(lines.length, 3) - 1) * 22}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#7a0019">${escapeXml(item)}</text>`)
+    .map((item, index) => `<text x="400" y="${300 + index * 44 - (Math.min(lines.length, 3) - 1) * 22}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#0b2a6f">${escapeXml(item)}</text>`)
     .join("");
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#fff8ef"/><circle cx="700" cy="90" r="140" fill="${accent}" opacity="0.18"/><circle cx="90" cy="540" r="160" fill="#19d3a2" opacity="0.16"/><rect x="40" y="40" width="720" height="520" rx="36" fill="none" stroke="${accent}" stroke-width="3" opacity="0.5"/>${text}<text x="400" y="530" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" fill="#f36b21">LOCO · demo photo</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#eef4ff"/><circle cx="700" cy="90" r="140" fill="${accent}" opacity="0.18"/><circle cx="90" cy="540" r="160" fill="#2ec4f2" opacity="0.16"/><rect x="40" y="40" width="720" height="520" rx="36" fill="none" stroke="${accent}" stroke-width="3" opacity="0.5"/>${text}<text x="400" y="530" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" fill="#1e7ff5">LOCO · demo photo</text></svg>`;
 
   return { buffer: Buffer.from(svg, "utf8"), mime: "image/svg+xml" };
 }

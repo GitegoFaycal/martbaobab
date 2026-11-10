@@ -38,22 +38,22 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="border-t border-orange-100 bg-white">
+    <footer className="border-t border-blue-100 bg-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-6 text-gray-500">{t("footer.tagline")}</p>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-loco-orange">{t("footer.pay")}</p>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-loco-blue">{t("footer.pay")}</p>
           <div className="mt-4"><LanguageSwitcher /></div>
         </div>
 
         {columns.map((column) => (
           <div key={column.title}>
-            <h3 className="font-black text-loco-wine">{column.title}</h3>
+            <h3 className="font-black text-loco-navy">{column.title}</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               {column.links.map((link) => (
                 <li key={link.to}>
-                  <Link to={link.to} className="text-gray-600 hover:text-loco-wine">{link.label}</Link>
+                  <Link to={link.to} className="text-gray-600 hover:text-loco-navy">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -61,7 +61,7 @@ export default function Footer() {
         ))}
       </div>
 
-      <div className="border-t border-orange-100">
+      <div className="border-t border-blue-100">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {t("footer.rights")}</p>
           <p>{t("footer.motto")}</p>

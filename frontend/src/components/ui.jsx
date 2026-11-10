@@ -10,7 +10,7 @@ function inputClasses(error) {
   return `${inputBase} ${
     error
       ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-      : "border-gray-200 focus:border-loco-orange focus:ring-orange-100"
+      : "border-gray-200 focus:border-loco-blue focus:ring-blue-100"
   }`;
 }
 
@@ -102,13 +102,13 @@ export function Button({
   ...props
 }) {
   const variants = {
-    primary: "bg-loco-wine text-white hover:bg-loco-wine-dark",
-    orange: "bg-loco-orange text-white hover:bg-loco-orange-dark",
-    mint: "bg-loco-mint text-loco-wine-dark hover:bg-loco-mint-dark",
+    primary: "bg-loco-navy text-white hover:bg-loco-navy-dark",
+    orange: "bg-loco-blue text-white hover:bg-loco-blue-dark",
+    mint: "bg-loco-sky text-loco-navy-dark hover:bg-loco-sky-dark",
     whatsapp: "bg-[#25D366] text-white hover:bg-[#1ebe5d]",
     outline:
-      "border border-loco-wine text-loco-wine hover:bg-loco-cream bg-white",
-    ghost: "text-loco-wine hover:bg-loco-cream",
+      "border border-loco-navy text-loco-navy hover:bg-loco-ice bg-white",
+    ghost: "text-loco-navy hover:bg-loco-ice",
     danger: "bg-red-600 text-white hover:bg-red-700",
   };
 
@@ -163,8 +163,8 @@ export function Badge({ tone = "amber", children, className = "" }) {
 
 export function Spinner({ label = "Loading..." }) {
   return (
-    <div className="flex items-center justify-center gap-3 py-16 text-loco-wine">
-      <LoaderCircle size={28} className="animate-spin text-loco-orange" />
+    <div className="flex items-center justify-center gap-3 py-16 text-loco-navy">
+      <LoaderCircle size={28} className="animate-spin text-loco-blue" />
       <span className="font-semibold">{label}</span>
     </div>
   );
@@ -177,11 +177,11 @@ export function EmptyState({
   action,
 }) {
   return (
-    <div className="rounded-3xl border border-dashed border-orange-200 bg-white px-6 py-14 text-center">
-      <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-loco-cream text-loco-wine">
+    <div className="rounded-3xl border border-dashed border-blue-200 bg-white px-6 py-14 text-center">
+      <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-loco-ice text-loco-navy">
         <Icon size={30} />
       </span>
-      <h3 className="mt-5 text-xl font-black text-loco-wine">{title}</h3>
+      <h3 className="mt-5 text-xl font-black text-loco-navy">{title}</h3>
       {description && (
         <p className="mx-auto mt-2 max-w-md text-gray-500">{description}</p>
       )}
@@ -194,8 +194,8 @@ export function PageHeader({ eyebrow, title, description, action, children }) {
   return (
     <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
-        {eyebrow && <p className="font-bold text-loco-orange">{eyebrow}</p>}
-        <h1 className="mt-1 text-3xl font-black text-loco-wine sm:text-4xl">
+        {eyebrow && <p className="font-bold text-loco-blue">{eyebrow}</p>}
+        <h1 className="mt-1 text-3xl font-black text-loco-navy sm:text-4xl">
           {title}
         </h1>
         {description && (
@@ -251,7 +251,7 @@ export function Breadcrumbs({ items }) {
           <li key={`${item.label}-${index}`} className="flex items-center gap-1">
             {index > 0 && <span aria-hidden="true">/</span>}
             {item.to ? (
-              <Link to={item.to} className="font-semibold hover:text-loco-wine">
+              <Link to={item.to} className="font-semibold hover:text-loco-navy">
                 {item.label}
               </Link>
             ) : (
@@ -274,7 +274,7 @@ export function Container({ className = "", children }) {
 
 export function Page({ className = "", children }) {
   return (
-    <main className={`min-h-[75vh] bg-loco-cream py-10 ${className}`}>
+    <main className={`min-h-[75vh] bg-loco-ice py-10 ${className}`}>
       <Container>{children}</Container>
     </main>
   );

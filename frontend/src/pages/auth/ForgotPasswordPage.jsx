@@ -48,20 +48,20 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-xl shadow-orange-100/70 sm:p-9">
+    <div className="rounded-3xl bg-white p-6 shadow-xl shadow-blue-100/70 sm:p-9">
       <Link
         to="/login"
-        className="inline-flex items-center gap-2 text-sm font-bold text-loco-wine"
+        className="inline-flex items-center gap-2 text-sm font-bold text-loco-navy"
       >
         <ArrowLeft size={17} />
         Back to login
       </Link>
 
-      <p className="mt-7 font-bold text-loco-orange">
+      <p className="mt-7 font-bold text-loco-blue">
         Account recovery
       </p>
 
-      <h1 className="mt-2 text-3xl font-black text-loco-wine">
+      <h1 className="mt-2 text-3xl font-black text-loco-navy">
         Forgot your password?
       </h1>
 
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
             Email address
           </label>
 
-          <div className="flex items-center rounded-xl border border-gray-200 px-4 focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
+          <div className="flex items-center rounded-xl border border-gray-200 px-4 focus-within:border-loco-blue focus-within:ring-4 focus-within:ring-blue-100">
             <Mail
               size={19}
               className="text-gray-400"
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-loco-wine px-5 py-3.5 font-bold text-white disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-loco-navy px-5 py-3.5 font-bold text-white disabled:opacity-60"
         >
           {submitting && (
             <LoaderCircle

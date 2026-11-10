@@ -24,8 +24,8 @@ import Logo from "./Logo";
 function navClass({ isActive }) {
   return `inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
     isActive
-      ? "bg-loco-cream text-loco-wine"
-      : "text-loco-ink hover:bg-loco-cream hover:text-loco-wine"
+      ? "bg-loco-ice text-loco-navy"
+      : "text-loco-ink hover:bg-loco-ice hover:text-loco-navy"
   }`;
 }
 
@@ -33,7 +33,7 @@ function Avatar({ user, size = "h-8 w-8" }) {
   return user.avatarUrl ? (
     <img src={user.avatarUrl} alt="" className={`${size} rounded-full object-cover`} />
   ) : (
-    <span className={`grid ${size} place-items-center rounded-full bg-loco-mint font-bold text-loco-wine`}>
+    <span className={`grid ${size} place-items-center rounded-full bg-loco-sky font-bold text-loco-navy`}>
       {user.name.charAt(0).toUpperCase()}
     </span>
   );
@@ -108,7 +108,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-orange-100 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-blue-100 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
         <Logo onClick={() => setMobileOpen(false)} />
 
@@ -126,17 +126,17 @@ export default function Header() {
 
           <Link
             to="/jobs/new"
-            className="hidden rounded-full border border-loco-mint px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-mint/10 md:inline-flex"
+            className="hidden rounded-full border border-loco-sky px-4 py-2 text-sm font-bold text-loco-navy hover:bg-loco-sky/10 md:inline-flex"
           >
             {t("nav.postJob")}
           </Link>
 
           {!authLoading && !isAuthenticated && (
             <div className="hidden items-center gap-2 sm:flex">
-              <Link to="/login" className="rounded-full border border-loco-wine px-4 py-2 text-sm font-bold text-loco-wine hover:bg-loco-cream">
+              <Link to="/login" className="rounded-full border border-loco-navy px-4 py-2 text-sm font-bold text-loco-navy hover:bg-loco-ice">
                 {t("nav.login")}
               </Link>
-              <Link to="/register" className="rounded-full bg-loco-wine px-4 py-2 text-sm font-bold text-white hover:bg-loco-wine-dark">
+              <Link to="/register" className="rounded-full bg-loco-navy px-4 py-2 text-sm font-bold text-white hover:bg-loco-navy-dark">
                 {t("nav.signup")}
               </Link>
             </div>
@@ -149,7 +149,7 @@ export default function Header() {
                 aria-haspopup="menu"
                 aria-expanded={accountOpen}
                 onClick={() => setAccountOpen((current) => !current)}
-                className="flex items-center gap-2 rounded-full border border-orange-100 bg-white py-1 pl-1 pr-3 shadow-sm hover:border-loco-orange"
+                className="flex items-center gap-2 rounded-full border border-blue-100 bg-white py-1 pl-1 pr-3 shadow-sm hover:border-loco-blue"
               >
                 <Avatar user={user} />
                 <span className="hidden max-w-28 truncate text-left text-sm font-bold md:block">
@@ -159,9 +159,9 @@ export default function Header() {
               </button>
 
               {accountOpen && (
-                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-orange-100 bg-white p-2 shadow-xl">
+                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-blue-100 bg-white p-2 shadow-xl">
                   <div className="border-b border-gray-100 px-3 py-3">
-                    <p className="truncate font-bold text-loco-wine">{user.name}</p>
+                    <p className="truncate font-bold text-loco-navy">{user.name}</p>
                     <p className="truncate text-xs text-gray-500">
                       {user.email}
                       {user.district ? ` · ${user.district}` : ""}
@@ -174,7 +174,7 @@ export default function Header() {
                         key={to}
                         to={to}
                         onClick={() => setAccountOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-loco-cream"
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold hover:bg-loco-ice"
                       >
                         <Icon size={17} />
                         {label}
@@ -199,7 +199,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setMobileOpen((current) => !current)}
-            className="rounded-lg p-2 text-loco-wine lg:hidden"
+            className="rounded-lg p-2 text-loco-navy lg:hidden"
             aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.openMenu")}
             aria-expanded={mobileOpen}
           >
@@ -209,7 +209,7 @@ export default function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-orange-100 bg-white px-4 py-4 lg:hidden">
+        <div className="border-t border-blue-100 bg-white px-4 py-4 lg:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1">
             <div className="mb-2 flex justify-end md:hidden">
               <LanguageSwitcher />
@@ -220,9 +220,9 @@ export default function Header() {
                 key={path}
                 to={path}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-cream"
+                className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-ice"
               >
-                <Icon size={18} className="text-loco-orange" />
+                <Icon size={18} className="text-loco-blue" />
                 {label}
               </Link>
             ))}
@@ -230,13 +230,13 @@ export default function Header() {
             <Link
               to="/jobs/new"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-cream"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-ice"
             >
-              <Briefcase size={18} className="text-loco-mint-dark" />
+              <Briefcase size={18} className="text-loco-sky-dark" />
               {t("nav.postJob")}
             </Link>
 
-            <hr className="my-2 border-orange-100" />
+            <hr className="my-2 border-blue-100" />
 
             {isAuthenticated ? (
               <>
@@ -245,7 +245,7 @@ export default function Header() {
                     key={to}
                     to={to}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-cream"
+                    className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold hover:bg-loco-ice"
                   >
                     <Icon size={18} />
                     {label}
@@ -263,10 +263,10 @@ export default function Header() {
               </>
             ) : (
               <div className="mt-2 grid grid-cols-2 gap-3">
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-xl border border-loco-wine px-4 py-3 text-center font-bold text-loco-wine">
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-xl border border-loco-navy px-4 py-3 text-center font-bold text-loco-navy">
                   {t("nav.login")}
                 </Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)} className="rounded-xl bg-loco-wine px-4 py-3 text-center font-bold text-white">
+                <Link to="/register" onClick={() => setMobileOpen(false)} className="rounded-xl bg-loco-navy px-4 py-3 text-center font-bold text-white">
                   {t("nav.signup")}
                 </Link>
               </div>

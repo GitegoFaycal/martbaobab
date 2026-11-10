@@ -110,10 +110,10 @@ export default function ImageUploader({
 
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {value.map((url, index) => (
-          <div key={url} className="group relative aspect-square overflow-hidden rounded-xl border border-orange-100 bg-loco-cream">
+          <div key={url} className="group relative aspect-square overflow-hidden rounded-xl border border-blue-100 bg-loco-ice">
             <img src={url} alt="" className="h-full w-full object-cover" />
             {index === 0 && (
-              <span className="absolute left-1.5 top-1.5 rounded-full bg-loco-wine px-2 py-0.5 text-[10px] font-bold text-white">
+              <span className="absolute left-1.5 top-1.5 rounded-full bg-loco-navy px-2 py-0.5 text-[10px] font-bold text-white">
                 {t("upload.main")}
               </span>
             )}
@@ -129,7 +129,7 @@ export default function ImageUploader({
         ))}
 
         {Array.from({ length: busy }).map((_, index) => (
-          <div key={`busy-${index}`} className="grid aspect-square place-items-center rounded-xl border border-dashed border-orange-200 bg-loco-cream text-loco-orange">
+          <div key={`busy-${index}`} className="grid aspect-square place-items-center rounded-xl border border-dashed border-blue-200 bg-loco-ice text-loco-blue">
             <LoaderCircle size={22} className="animate-spin" />
           </div>
         ))}
@@ -143,7 +143,7 @@ export default function ImageUploader({
               event.preventDefault();
               handleFiles(event.dataTransfer.files);
             }}
-            className="grid aspect-square place-items-center rounded-xl border-2 border-dashed border-orange-200 bg-white text-loco-wine hover:border-loco-orange hover:bg-loco-cream"
+            className="grid aspect-square place-items-center rounded-xl border-2 border-dashed border-blue-200 bg-white text-loco-navy hover:border-loco-blue hover:bg-loco-ice"
           >
             <span className="flex flex-col items-center gap-1 text-xs font-bold">
               <ImagePlus size={24} />
@@ -205,17 +205,17 @@ export function SingleImageUploader({ value, onChange, label, shape = "square", 
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className={`relative grid shrink-0 place-items-center overflow-hidden border-2 border-dashed border-orange-200 bg-loco-cream text-loco-wine hover:border-loco-orange ${shapeClass}`}
+          className={`relative grid shrink-0 place-items-center overflow-hidden border-2 border-dashed border-blue-200 bg-loco-ice text-loco-navy hover:border-loco-blue ${shapeClass}`}
         >
           {value ? <img src={value} alt="" className="h-full w-full object-cover" /> : <Camera size={24} />}
           {busy && (
-            <span className="absolute inset-0 grid place-items-center bg-white/70 text-loco-orange">
+            <span className="absolute inset-0 grid place-items-center bg-white/70 text-loco-blue">
               <LoaderCircle size={22} className="animate-spin" />
             </span>
           )}
         </button>
         <div className="text-sm">
-          <button type="button" onClick={() => inputRef.current?.click()} className="font-bold text-loco-wine hover:text-loco-orange">
+          <button type="button" onClick={() => inputRef.current?.click()} className="font-bold text-loco-navy hover:text-loco-blue">
             {value ? t("upload.change") : t("upload.choose")}
           </button>
           {value && (

@@ -33,12 +33,12 @@ export default function JobDetailPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
-    return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner label={t("common.loading")} /></main>;
+    return <main className="min-h-[75vh] bg-loco-ice py-10"><Spinner label={t("common.loading")} /></main>;
   }
 
   if (error || !data?.job) {
     return (
-      <main className="min-h-[75vh] bg-loco-cream py-10">
+      <main className="min-h-[75vh] bg-loco-ice py-10">
         <Container><EmptyState title={t("jobs.notFound")} description={t("jobs.notFoundText")} action={<Button as={Link} to="/jobs">{t("jobs.allJobs")}</Button>} /></Container>
       </main>
     );
@@ -74,12 +74,12 @@ export default function JobDetailPage() {
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-8">
+    <main className="min-h-[75vh] bg-loco-ice py-8">
       <Container>
         <Breadcrumbs items={[{ label: t("common.home"), to: "/" }, { label: t("nav.jobs"), to: "/jobs" }, ...(job.category ? [{ label: job.category.name, to: `/jobs?category=${job.category.slug}` }] : []), { label: job.title }]} />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-          <article className="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+          <article className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-black text-loco-ink sm:text-3xl">{job.title}</h1>
@@ -98,13 +98,13 @@ export default function JobDetailPage() {
             </dl>
 
             <section className="mt-8">
-              <h2 className="font-black text-loco-wine">{t("jobs.aboutWork")}</h2>
+              <h2 className="font-black text-loco-navy">{t("jobs.aboutWork")}</h2>
               <p className="mt-2 whitespace-pre-line leading-7 text-gray-700">{job.description}</p>
             </section>
 
             {job.requirements && (
               <section className="mt-6">
-                <h2 className="font-black text-loco-wine">{t("jobs.lookingFor")}</h2>
+                <h2 className="font-black text-loco-navy">{t("jobs.lookingFor")}</h2>
                 <p className="mt-2 whitespace-pre-line leading-7 text-gray-700">{job.requirements}</p>
               </section>
             )}
@@ -116,10 +116,10 @@ export default function JobDetailPage() {
           </article>
 
           <aside className="space-y-4">
-            <section className="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm lg:sticky lg:top-24">
+            <section className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm lg:sticky lg:top-24">
               {isEmployer ? (
                 <>
-                  <h2 className="font-black text-loco-wine">{t("jobs.yourPost")}</h2>
+                  <h2 className="font-black text-loco-navy">{t("jobs.yourPost")}</h2>
                   <p className="mt-2 text-sm text-gray-600">{t("jobs.appliedSoFar", { count: job._count?.applications || 0 })}</p>
                   <div className="mt-4 flex flex-col gap-2">
                     <Button as={Link} to={`/hiring/${job.id}`}>{t("jobs.seeApplicants")}</Button>
@@ -128,13 +128,13 @@ export default function JobDetailPage() {
                 </>
               ) : job.status !== "OPEN" ? (
                 <>
-                  <h2 className="font-black text-loco-wine">{t("jobs.jobIs", { status: statusLabel.toLowerCase() })}</h2>
+                  <h2 className="font-black text-loco-navy">{t("jobs.jobIs", { status: statusLabel.toLowerCase() })}</h2>
                   <p className="mt-2 text-sm text-gray-600">{t("jobs.jobClosedText")}</p>
                   <Button as={Link} to="/jobs" variant="outline" className="mt-4 w-full">{t("jobs.findOther")}</Button>
                 </>
               ) : myApplication ? (
                 <>
-                  <h2 className="font-black text-loco-wine">{t("jobs.youApplied")}</h2>
+                  <h2 className="font-black text-loco-navy">{t("jobs.youApplied")}</h2>
                   {success && <Message type="success" className="mt-3">{success}</Message>}
                   <p className="mt-3 text-sm text-gray-600">{t("jobs.sentAgo", { when: timeAgo(myApplication.createdAt, t) })}</p>
                   <Badge tone={applicationStatus(myApplication.status, t).tone} className="mt-3">{applicationStatus(myApplication.status, t).label}</Badge>
@@ -142,14 +142,14 @@ export default function JobDetailPage() {
                 </>
               ) : !isAuthenticated ? (
                 <>
-                  <h2 className="font-black text-loco-wine">{t("jobs.apply")}</h2>
+                  <h2 className="font-black text-loco-navy">{t("jobs.apply")}</h2>
                   <p className="mt-2 text-sm text-gray-600">{t("jobs.loginToApplyText")}</p>
                   <Button as={Link} to="/login" state={{ from: location, message: t("jobs.loginMessage") }} variant="orange" className="mt-4 w-full">{t("jobs.loginToApply")}</Button>
                   <Button as={Link} to="/register" variant="outline" className="mt-2 w-full">{t("jobs.createAccount")}</Button>
                 </>
               ) : (
                 <form onSubmit={handleApply}>
-                  <h2 className="font-black text-loco-wine">{t("jobs.apply")}</h2>
+                  <h2 className="font-black text-loco-navy">{t("jobs.apply")}</h2>
                   <p className="mt-1 text-sm text-gray-600">{t("jobs.applyText")}</p>
                   {submitError && <Message className="mt-4">{submitError}</Message>}
                   <div className="mt-4 space-y-4">
@@ -166,8 +166,8 @@ export default function JobDetailPage() {
             </section>
 
             {job.contactPhone && job.status === "OPEN" && !isEmployer && (
-              <section className="rounded-3xl border border-orange-100 bg-white p-5 shadow-sm">
-                <h2 className="text-sm font-black text-loco-wine">{t("jobs.contactDirectly")}</h2>
+              <section className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-black text-loco-navy">{t("jobs.contactDirectly")}</h2>
                 <div className="mt-3 flex flex-col gap-2">
                   <Button as="a" href={`tel:${job.contactPhone}`} variant="outline" size="sm"><Phone size={15} /> {formatPhoneForDisplay(job.contactPhone)}</Button>
                   {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp" size="sm"><WhatsAppIcon size={16} /> WhatsApp</Button>}
@@ -179,7 +179,7 @@ export default function JobDetailPage() {
 
         {similar?.length > 0 && (
           <section className="mt-12">
-            <h2 className="mb-5 text-2xl font-black text-loco-wine">{t("jobs.similar")}</h2>
+            <h2 className="mb-5 text-2xl font-black text-loco-navy">{t("jobs.similar")}</h2>
             <div className="grid gap-4 md:grid-cols-2">{similar.map((item) => <JobCard key={item.id} job={item} compact />)}</div>
           </section>
         )}
@@ -190,8 +190,8 @@ export default function JobDetailPage() {
 
 function Detail({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl bg-loco-cream p-4">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-loco-wine shadow-sm"><Icon size={19} /></span>
+    <div className="flex items-start gap-3 rounded-2xl bg-loco-ice p-4">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-loco-navy shadow-sm"><Icon size={19} /></span>
       <div>
         <dt className="text-xs font-bold uppercase tracking-wide text-gray-400">{label}</dt>
         <dd className="mt-0.5 font-bold text-loco-ink">{value}</dd>

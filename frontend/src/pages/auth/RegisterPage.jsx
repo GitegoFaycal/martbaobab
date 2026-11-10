@@ -83,9 +83,9 @@ export default function RegisterPage() {
   ];
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-xl shadow-orange-100/70 sm:p-9">
-      <p className="font-bold text-loco-orange">{t("auth.join")}</p>
-      <h1 className="mt-2 text-3xl font-black text-loco-wine">{t("auth.registerTitle")}</h1>
+    <div className="rounded-3xl bg-white p-6 shadow-xl shadow-blue-100/70 sm:p-9">
+      <p className="font-bold text-loco-blue">{t("auth.join")}</p>
+      <h1 className="mt-2 text-3xl font-black text-loco-navy">{t("auth.registerTitle")}</h1>
       <p className="mt-2 text-sm leading-6 text-gray-500">{t("auth.registerText")}</p>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
@@ -93,8 +93,8 @@ export default function RegisterPage() {
           { key: "CUSTOMER", icon: UserRound, label: t("auth.buyerWorker"), text: t("auth.buyerWorkerText") },
           { key: "SELLER", icon: Store, label: t("auth.seller"), text: t("auth.sellerText") },
         ].map(({ key, icon: Icon, label, text }) => (
-          <button key={key} type="button" onClick={() => setForm((c) => ({ ...c, role: key }))} aria-pressed={form.role === key} className={`rounded-2xl border p-4 text-left ${form.role === key ? "border-loco-orange bg-orange-50 ring-2 ring-orange-100" : "border-gray-200 hover:border-loco-orange"}`}>
-            <Icon size={22} className={form.role === key ? "text-loco-orange" : "text-gray-400"} />
+          <button key={key} type="button" onClick={() => setForm((c) => ({ ...c, role: key }))} aria-pressed={form.role === key} className={`rounded-2xl border p-4 text-left ${form.role === key ? "border-loco-blue bg-blue-50 ring-2 ring-blue-100" : "border-gray-200 hover:border-loco-blue"}`}>
+            <Icon size={22} className={form.role === key ? "text-loco-blue" : "text-gray-400"} />
             <strong className="mt-2 block text-sm text-loco-ink">{label}</strong>
             <span className="text-xs text-gray-500">{text}</span>
           </button>
@@ -124,7 +124,7 @@ export default function RegisterPage() {
         <Field label={t("auth.password")} htmlFor="password" error={fieldErrors.password}>
           <div className="relative">
             <Input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" value={form.password} onChange={handleChange} placeholder={t("auth.createPassword")} error={fieldErrors.password} className="pr-12" />
-            <button type="button" onClick={() => setShowPassword((c) => !c)} aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-loco-wine">
+            <button type="button" onClick={() => setShowPassword((c) => !c)} aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-loco-navy">
               {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
             </button>
           </div>
@@ -140,7 +140,7 @@ export default function RegisterPage() {
         </Field>
 
         <label className="flex items-start gap-3 text-sm leading-6 text-gray-600">
-          <input type="checkbox" required className="mt-1 h-4 w-4 accent-loco-wine" />
+          <input type="checkbox" required className="mt-1 h-4 w-4 accent-loco-navy" />
           <span>{t("auth.agree")}</span>
         </label>
 
@@ -150,7 +150,7 @@ export default function RegisterPage() {
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        {t("auth.haveAccount")} <Link to="/login" className="font-bold text-loco-wine hover:text-loco-orange">{t("auth.login")}</Link>
+        {t("auth.haveAccount")} <Link to="/login" className="font-bold text-loco-navy hover:text-loco-blue">{t("auth.login")}</Link>
       </p>
     </div>
   );

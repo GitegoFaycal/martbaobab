@@ -85,15 +85,15 @@ export default function ShopFormPage() {
   }
 
   if (loading) {
-    return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner /></main>;
+    return <main className="min-h-[75vh] bg-loco-ice py-10"><Spinner /></main>;
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container className="max-w-3xl">
-        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
+        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-navy"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
 
-        <div className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-9">
+        <div className="mt-5 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-9">
           <PageHeader eyebrow={existing ? "Shop settings" : "Open your shop"} title={existing ? "Edit your shop" : "Create your LOCO shop"} description="Buyers see this information on every listing. Use the name people in your area already know." />
 
           {error && <Message className="mb-5">{error}</Message>}

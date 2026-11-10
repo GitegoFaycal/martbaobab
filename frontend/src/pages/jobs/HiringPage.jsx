@@ -23,7 +23,7 @@ export default function HiringPage() {
   const selected = id ? jobs.find((job) => job.id === id) : null;
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
         <PageHeader
           eyebrow="Hiring"
@@ -43,13 +43,13 @@ export default function HiringPage() {
             <ul className="space-y-3">
               {jobs.map((job) => (
                 <li key={job.id}>
-                  <Link to={`/hiring/${job.id}`} className={`block rounded-2xl border bg-white p-4 shadow-sm transition ${selected?.id === job.id ? "border-loco-orange ring-2 ring-orange-100" : "border-orange-100 hover:border-loco-orange"}`}>
+                  <Link to={`/hiring/${job.id}`} className={`block rounded-2xl border bg-white p-4 shadow-sm transition ${selected?.id === job.id ? "border-loco-blue ring-2 ring-blue-100" : "border-blue-100 hover:border-loco-blue"}`}>
                     <div className="flex items-start justify-between gap-2">
                       <strong className="line-clamp-2 text-loco-ink">{job.title}</strong>
                       <Badge tone={job.status === "OPEN" ? "mint" : "red"}>{job.status === "OPEN" ? "Open" : job.status}</Badge>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">{job.district} · {JOB_TYPES[job.jobType]} · {formatPay(job)}</p>
-                    <p className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-loco-wine"><Users size={14} /> {job._count?.applications || 0} applicants</p>
+                    <p className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-loco-navy"><Users size={14} /> {job._count?.applications || 0} applicants</p>
                   </Link>
                 </li>
               ))}
@@ -101,11 +101,11 @@ function Applicants({ job, onChanged }) {
   }
 
   return (
-    <div className="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-black text-loco-wine">{job.title}</h2>
-          <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-orange" /> {job.district}{job.sector ? `, ${job.sector}` : ""} · {job.workersNeeded} needed</p>
+          <h2 className="text-xl font-black text-loco-navy">{job.title}</h2>
+          <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" /> {job.district}{job.sector ? `, ${job.sector}` : ""} · {job.workersNeeded} needed</p>
         </div>
         <div className="flex gap-2">
           <Button as={Link} to={`/jobs/${job.slug}`} variant="ghost" size="sm">View</Button>
@@ -122,17 +122,17 @@ function Applicants({ job, onChanged }) {
       {loading ? (
         <Spinner />
       ) : applications.length === 0 ? (
-        <p className="mt-3 rounded-2xl bg-loco-cream p-6 text-center text-sm text-gray-600">Nobody has applied yet. Share the job link on WhatsApp to reach more workers.</p>
+        <p className="mt-3 rounded-2xl bg-loco-ice p-6 text-center text-sm text-gray-600">Nobody has applied yet. Share the job link on WhatsApp to reach more workers.</p>
       ) : (
         <ul className="mt-3 space-y-3">
           {applications.map((application) => {
             const status = APPLICATION_STATUS[application.status];
             const wa = whatsappLink(application.phone, `Hello ${application.applicant.name}, this is about the job "${job.title}" you applied for on LOCO.`);
             return (
-              <li key={application.id} className="rounded-2xl border border-orange-100 p-4">
+              <li key={application.id} className="rounded-2xl border border-blue-100 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-11 w-11 place-items-center rounded-full bg-loco-mint font-black text-loco-wine">{application.applicant.name.charAt(0).toUpperCase()}</span>
+                    <span className="grid h-11 w-11 place-items-center rounded-full bg-loco-sky font-black text-loco-navy">{application.applicant.name.charAt(0).toUpperCase()}</span>
                     <div>
                       <strong className="text-loco-ink">{application.applicant.name}</strong>
                       <p className="text-xs text-gray-500">{application.applicant.district || "District not set"} · applied {timeAgo(application.createdAt)}</p>
@@ -141,7 +141,7 @@ function Applicants({ job, onChanged }) {
                   <Badge tone={status.tone}>{status.label}</Badge>
                 </div>
 
-                {application.message && <p className="mt-3 rounded-xl bg-loco-cream p-3 text-sm leading-6 text-gray-700">"{application.message}"</p>}
+                {application.message && <p className="mt-3 rounded-xl bg-loco-ice p-3 text-sm leading-6 text-gray-700">"{application.message}"</p>}
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button as="a" href={`tel:${application.phone}`} variant="outline" size="sm"><Phone size={14} /> {formatPhoneForDisplay(application.phone)}</Button>

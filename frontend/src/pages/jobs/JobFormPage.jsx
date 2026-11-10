@@ -111,15 +111,15 @@ export default function JobFormPage() {
   }
 
   if (editing && loading) {
-    return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner /></main>;
+    return <main className="min-h-[75vh] bg-loco-ice py-10"><Spinner /></main>;
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container className="max-w-3xl">
-        <Link to={editing ? "/hiring" : "/jobs"} className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> Back</Link>
+        <Link to={editing ? "/hiring" : "/jobs"} className="inline-flex items-center gap-2 font-bold text-loco-navy"><ArrowLeft size={18} /> Back</Link>
 
-        <div className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-9">
+        <div className="mt-5 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-9">
           <PageHeader
             eyebrow={editing ? "Edit job" : "Hire locally"}
             title={editing ? "Update your job post" : "Post a job"}

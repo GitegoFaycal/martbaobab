@@ -14,10 +14,10 @@ export default function AuthLayout() {
   ];
 
   return (
-    <main className="min-h-screen bg-loco-cream lg:grid lg:grid-cols-2">
-      <section className="relative hidden overflow-hidden bg-loco-wine p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="absolute -right-36 -top-36 h-96 w-96 rounded-full bg-loco-orange/30" />
-        <div className="absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-loco-mint/20" />
+    <main className="min-h-screen bg-loco-ice lg:grid lg:grid-cols-2">
+      <section className="relative hidden overflow-hidden bg-loco-navy p-12 text-white lg:flex lg:flex-col lg:justify-between">
+        <div className="absolute -right-36 -top-36 h-96 w-96 rounded-full bg-loco-blue/30" />
+        <div className="absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-loco-sky/20" />
 
         <div className="relative flex items-center justify-between">
           <Logo light />
@@ -25,13 +25,13 @@ export default function AuthLayout() {
         </div>
 
         <div className="relative max-w-xl">
-          <p className="font-semibold text-loco-mint">Local Connect · Rwanda</p>
+          <p className="font-semibold text-loco-sky">Local Connect · Rwanda</p>
           <h1 className="mt-4 text-5xl font-black leading-tight">{t("auth.sideTitle")}</h1>
           <p className="mt-5 text-lg text-white/75">{t("auth.sideText")}</p>
           <div className="mt-10 space-y-5">
             {features.map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/10 text-loco-orange"><Icon size={22} /></span>
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/10 text-loco-blue"><Icon size={22} /></span>
                 <span className="font-semibold">{text}</span>
               </div>
             ))}
@@ -50,7 +50,7 @@ export default function AuthLayout() {
           <div className="mb-4 hidden justify-end lg:flex"><LanguageSwitcher /></div>
           <Outlet />
           <p className="mt-6 text-center text-sm text-gray-500">
-            <Link to="/" className="font-bold text-loco-wine hover:text-loco-orange">{t("auth.backTo")}</Link>
+            <Link to="/" className="font-bold text-loco-navy hover:text-loco-blue">{t("auth.backTo")}</Link>
           </p>
         </div>
       </section>

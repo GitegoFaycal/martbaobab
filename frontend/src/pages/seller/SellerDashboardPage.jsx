@@ -38,16 +38,16 @@ export default function SellerDashboardPage() {
   const [error, setError] = useState("");
 
   if (shopQuery.loading) {
-    return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner label="Loading your shop..." /></main>;
+    return <main className="min-h-[75vh] bg-loco-ice py-10"><Spinner label="Loading your shop..." /></main>;
   }
 
   if (!shop) {
     return (
-      <main className="min-h-[75vh] bg-loco-cream py-10">
+      <main className="min-h-[75vh] bg-loco-ice py-10">
         <Container>
           <PageHeader eyebrow="Seller dashboard" title={`Welcome, ${user.name.split(" ")[0]}`} />
-          <div className="rounded-3xl bg-loco-wine p-8 text-white sm:p-10">
-            <Store size={38} className="text-loco-mint" />
+          <div className="rounded-3xl bg-loco-navy p-8 text-white sm:p-10">
+            <Store size={38} className="text-loco-sky" />
             <h2 className="mt-5 text-2xl font-black sm:text-3xl">Set up your LOCO shop</h2>
             <p className="mt-2 max-w-xl text-white/75">Tell buyers who you are and where you are. It takes two minutes, then you can list new or second-hand products and services.</p>
             <Button as={Link} to="/seller/shop" variant="orange" className="mt-6"><Plus size={18} /> Create my shop</Button>
@@ -75,7 +75,7 @@ export default function SellerDashboardPage() {
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
         <PageHeader
           eyebrow="Seller dashboard"
@@ -101,20 +101,20 @@ export default function SellerDashboardPage() {
           <Stat icon={Package} label="Services" value={listings.filter((item) => item.type === "SERVICE").length} />
         </div>
 
-        <section className="mt-8 rounded-2xl border border-orange-200 bg-orange-50 p-5 text-sm text-loco-ink">
+        <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm text-loco-ink">
           Buyers contact you on WhatsApp at the number on your shop. Keep it reachable and reply quickly.
         </section>
 
         {(connectionsQuery.data?.asSeller?.length ?? 0) > 0 && (
           <section className="mt-8">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-black text-loco-wine">{t("connections.recent")}</h2>
+              <h2 className="text-xl font-black text-loco-navy">{t("connections.recent")}</h2>
               <Button as={Link} to="/connections" variant="ghost" size="sm">{t("connections.title")}</Button>
             </div>
-            <ul className="divide-y divide-orange-50 overflow-hidden rounded-2xl border border-orange-100 bg-white">
+            <ul className="divide-y divide-blue-50 overflow-hidden rounded-2xl border border-blue-100 bg-white">
               {connectionsQuery.data.asSeller.slice(0, 6).map((row) => (
                 <li key={row.id} className="flex items-center gap-3 p-3 text-sm">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-loco-mint font-bold text-loco-wine">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-loco-sky font-bold text-loco-navy">
                     {row.buyer?.avatarUrl ? <img src={row.buyer.avatarUrl} alt="" className="h-full w-full object-cover" /> : (row.buyer?.name || "?").charAt(0)}
                   </span>
                   <span className="min-w-0 flex-1 truncate">
@@ -129,28 +129,28 @@ export default function SellerDashboardPage() {
         )}
 
         <section className="mt-8">
-          <h2 className="mb-4 text-xl font-black text-loco-wine">Your listings</h2>
+          <h2 className="mb-4 text-xl font-black text-loco-navy">Your listings</h2>
           {listingsQuery.loading ? (
             <Spinner />
           ) : listings.length === 0 ? (
             <EmptyState icon={Package} title="No listings yet" description="Add the products and services you sell. Mark used items as second-hand with the original price so buyers see the saving." action={<Button as={Link} to="/seller/listings/new" variant="orange">Add your first listing</Button>} />
           ) : (
-            <ul className="divide-y divide-orange-50 overflow-hidden rounded-2xl border border-orange-100 bg-white">
+            <ul className="divide-y divide-blue-50 overflow-hidden rounded-2xl border border-blue-100 bg-white">
               {listings.map((listing) => (
                 <li key={listing.id} className="flex items-center gap-4 p-4">
-                  <span className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-loco-cream">
-                    {listing.images?.[0]?.url ? <img src={listing.images[0].url} alt="" className="h-full w-full object-cover" /> : <span className="grid h-full w-full place-items-center text-loco-wine/30"><ImageOff /></span>}
+                  <span className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-loco-ice">
+                    {listing.images?.[0]?.url ? <img src={listing.images[0].url} alt="" className="h-full w-full object-cover" /> : <span className="grid h-full w-full place-items-center text-loco-navy/30"><ImageOff /></span>}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <Link to={`/listings/${listing.slug}`} className="block truncate font-bold text-loco-ink hover:text-loco-wine">{listing.name}</Link>
+                    <Link to={`/listings/${listing.slug}`} className="block truncate font-bold text-loco-ink hover:text-loco-navy">{listing.name}</Link>
                     <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                      <span className="font-semibold text-loco-wine">{formatRWF(listing.price)}</span>
+                      <span className="font-semibold text-loco-navy">{formatRWF(listing.price)}</span>
                       {listing.condition === "USED" && <Badge tone="blue">Second-hand</Badge>}
                       {listing.type === "SERVICE" && <Badge tone="mint">Service</Badge>}
                       {!listing.active && <Badge tone="red">Hidden</Badge>}
                       {listing.stock != null && <span>{listing.stock} in stock</span>}
                       <span>{listing.views} views</span>
-                      <span className="inline-flex items-center gap-1 font-semibold text-loco-mint-dark"><Link2 size={12} /> {t("connections.connectionsShort", { count: listing._count?.connections ?? 0 })}</span>
+                      <span className="inline-flex items-center gap-1 font-semibold text-loco-sky-dark"><Link2 size={12} /> {t("connections.connectionsShort", { count: listing._count?.connections ?? 0 })}</span>
                     </p>
                   </div>
                   <div className="flex shrink-0 gap-1">
@@ -170,11 +170,11 @@ export default function SellerDashboardPage() {
 function Stat({ icon: Icon, label, value, to }) {
   const content = (
     <>
-      <span className="grid h-11 w-11 place-items-center rounded-xl bg-loco-mint/20 text-loco-wine"><Icon size={22} /></span>
-      <strong className="mt-4 block text-2xl font-black text-loco-wine">{value}</strong>
+      <span className="grid h-11 w-11 place-items-center rounded-xl bg-loco-sky/20 text-loco-navy"><Icon size={22} /></span>
+      <strong className="mt-4 block text-2xl font-black text-loco-navy">{value}</strong>
       <p className="mt-0.5 text-sm text-gray-500">{label}</p>
     </>
   );
-  const className = "block rounded-2xl border border-orange-100 bg-white p-5 shadow-sm";
-  return to ? <Link to={to} className={`${className} hover:border-loco-orange`}>{content}</Link> : <div className={className}>{content}</div>;
+  const className = "block rounded-2xl border border-blue-100 bg-white p-5 shadow-sm";
+  return to ? <Link to={to} className={`${className} hover:border-loco-blue`}>{content}</Link> : <div className={className}>{content}</div>;
 }

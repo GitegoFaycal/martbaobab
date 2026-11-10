@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
   const s = stats.data?.stats;
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
         <PageHeader eyebrow="Administration" title={`Welcome, ${user.name.split(" ")[0]}`} description="Verify shops, keep the marketplace safe and watch LOCO grow." />
 
@@ -83,21 +83,21 @@ export default function AdminDashboardPage() {
 
         <div className="mt-8 flex gap-2">
           {[["shops", "Shops"], ["users", "Users"]].map(([key, label]) => (
-            <button key={key} type="button" onClick={() => setTab(key)} className={`rounded-full px-4 py-2 text-sm font-bold ${tab === key ? "bg-loco-wine text-white" : "bg-white hover:bg-loco-cream"}`}>{label}</button>
+            <button key={key} type="button" onClick={() => setTab(key)} className={`rounded-full px-4 py-2 text-sm font-bold ${tab === key ? "bg-loco-navy text-white" : "bg-white hover:bg-loco-ice"}`}>{label}</button>
           ))}
         </div>
 
-        <section className="mt-4 overflow-hidden rounded-2xl border border-orange-100 bg-white">
+        <section className="mt-4 overflow-hidden rounded-2xl border border-blue-100 bg-white">
           {tab === "shops" ? (
             shops.loading ? <Spinner /> : (
               <table className="w-full text-sm">
-                <thead className="bg-loco-cream text-left text-xs uppercase tracking-wide text-gray-500">
+                <thead className="bg-loco-ice text-left text-xs uppercase tracking-wide text-gray-500">
                   <tr><th className="px-4 py-3">Shop</th><th className="px-4 py-3">Owner</th><th className="px-4 py-3">District</th><th className="px-4 py-3">Listings</th><th className="px-4 py-3">Status</th><th className="px-4 py-3" /></tr>
                 </thead>
-                <tbody className="divide-y divide-orange-50">
+                <tbody className="divide-y divide-blue-50">
                   {(shops.data?.shops || []).map((shop) => (
                     <tr key={shop.id}>
-                      <td className="px-4 py-3"><Link to={`/shops/${shop.slug}`} className="font-bold text-loco-wine hover:underline">{shop.name}</Link><div className="text-xs text-gray-400">{formatDate(shop.createdAt)}</div></td>
+                      <td className="px-4 py-3"><Link to={`/shops/${shop.slug}`} className="font-bold text-loco-navy hover:underline">{shop.name}</Link><div className="text-xs text-gray-400">{formatDate(shop.createdAt)}</div></td>
                       <td className="px-4 py-3">{shop.owner.name}<div className="text-xs text-gray-400">{shop.owner.email}</div></td>
                       <td className="px-4 py-3">{shop.district}</td>
                       <td className="px-4 py-3">{shop._count.listings}</td>
@@ -111,10 +111,10 @@ export default function AdminDashboardPage() {
             )
           ) : users.loading ? <Spinner /> : (
             <table className="w-full text-sm">
-              <thead className="bg-loco-cream text-left text-xs uppercase tracking-wide text-gray-500">
+              <thead className="bg-loco-ice text-left text-xs uppercase tracking-wide text-gray-500">
                 <tr><th className="px-4 py-3">Name</th><th className="px-4 py-3">Contact</th><th className="px-4 py-3">Role</th><th className="px-4 py-3">District</th><th className="px-4 py-3">Status</th><th className="px-4 py-3" /></tr>
               </thead>
-              <tbody className="divide-y divide-orange-50">
+              <tbody className="divide-y divide-blue-50">
                 {(users.data?.users || []).map((item) => (
                   <tr key={item.id}>
                     <td className="px-4 py-3 font-bold">{item.name}<div className="text-xs font-normal text-gray-400">{formatDate(item.createdAt)}</div></td>
@@ -136,9 +136,9 @@ export default function AdminDashboardPage() {
 
 function Stat({ icon: Icon, label, value, sub }) {
   return (
-    <div className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
-      <span className="grid h-11 w-11 place-items-center rounded-xl bg-loco-mint/20 text-loco-wine"><Icon size={22} /></span>
-      <strong className="mt-4 block text-2xl font-black text-loco-wine">{value}</strong>
+    <div className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+      <span className="grid h-11 w-11 place-items-center rounded-xl bg-loco-sky/20 text-loco-navy"><Icon size={22} /></span>
+      <strong className="mt-4 block text-2xl font-black text-loco-navy">{value}</strong>
       <p className="text-sm font-semibold text-loco-ink">{label}</p>
       {sub && <p className="text-xs text-gray-500">{sub}</p>}
     </div>

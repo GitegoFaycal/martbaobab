@@ -30,17 +30,17 @@ export default function ShopsPage() {
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
         <PageHeader eyebrow={t("shops.eyebrow")} title={t("shops.title")} description={t("shops.text")} action={<Button as={Link} to="/register?role=SELLER" variant="orange">{t("shops.open")}</Button>} />
 
-        <form onSubmit={(event) => { event.preventDefault(); update({ search: text.trim() }); }} className="grid gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_220px_auto]">
-          <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3">
-            <Search size={18} className="text-loco-wine" />
+        <form onSubmit={(event) => { event.preventDefault(); update({ search: text.trim() }); }} className="grid gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_220px_auto]">
+          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
+            <Search size={18} className="text-loco-navy" />
             <input type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder={t("shops.searchPh")} aria-label={t("common.search")} className="w-full bg-transparent py-3 outline-none" />
           </label>
-          <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3">
-            <MapPin size={18} className="text-loco-orange" />
+          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
+            <MapPin size={18} className="text-loco-blue" />
             <DistrictSelect aria-label={t("common.district")} value={district} onChange={(e) => update({ district: e.target.value })} placeholder={t("common.allDistricts")} className="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
           </label>
           <Button type="submit" variant="orange">{t("common.search")}</Button>
@@ -53,13 +53,13 @@ export default function ShopsPage() {
             <>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {data.shops.map((shop) => (
-                  <Link key={shop.id} to={`/shops/${shop.slug}`} className="flex gap-4 rounded-2xl border border-orange-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-loco-orange">
-                    <span className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-loco-wine text-2xl font-black text-white">
+                  <Link key={shop.id} to={`/shops/${shop.slug}`} className="flex gap-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-loco-blue">
+                    <span className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-loco-navy text-2xl font-black text-white">
                       {shop.logoUrl ? <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" /> : shop.name.charAt(0)}
                     </span>
                     <span className="min-w-0">
-                      <strong className="flex items-center gap-1 text-loco-wine"><span className="truncate">{shop.name}</span>{shop.verified && <BadgeCheck size={15} className="shrink-0 text-loco-mint-dark" />}</strong>
-                      <span className="mt-0.5 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} className="text-loco-orange" /> {shop.district}{shop.sector ? `, ${shop.sector}` : ""}</span>
+                      <strong className="flex items-center gap-1 text-loco-navy"><span className="truncate">{shop.name}</span>{shop.verified && <BadgeCheck size={15} className="shrink-0 text-loco-sky-dark" />}</strong>
+                      <span className="mt-0.5 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} className="text-loco-blue" /> {shop.district}{shop.sector ? `, ${shop.sector}` : ""}</span>
                       {shop.description && <span className="mt-2 line-clamp-2 block text-sm text-gray-600">{shop.description}</span>}
                       <span className="mt-2 block text-xs font-semibold text-gray-400">{t("listing.listings", { count: shop._count?.listings ?? 0 })}</span>
                     </span>

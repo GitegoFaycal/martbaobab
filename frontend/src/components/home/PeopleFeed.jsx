@@ -51,16 +51,16 @@ export default function PeopleFeed() {
   return (
     <section>
       <div className="flex items-center justify-between gap-3">
-        <h2 className="inline-flex items-center gap-2 text-xl font-black text-loco-wine sm:text-2xl">
-          <Users size={22} className="text-loco-orange" />
+        <h2 className="inline-flex items-center gap-2 text-xl font-black text-loco-navy sm:text-2xl">
+          <Users size={22} className="text-loco-blue" />
           {district ? t("landing.communityIn", { district }) : t("landing.community")}
         </h2>
         <span className="text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>
       </div>
 
       <div className="mt-4 flex items-center gap-2">
-        <label className="flex flex-1 items-center gap-3 rounded-2xl border border-orange-100 bg-white px-4 shadow-sm focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
-          <Search size={20} className="shrink-0 text-loco-wine" />
+        <label className="flex flex-1 items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 shadow-sm focus-within:border-loco-blue focus-within:ring-4 focus-within:ring-blue-100">
+          <Search size={20} className="shrink-0 text-loco-navy" />
           <input
             type="search"
             value={text}
@@ -75,15 +75,15 @@ export default function PeopleFeed() {
           onClick={() => setShowFilters((current) => !current)}
           aria-label={t("landing.filters")}
           aria-expanded={showFilters}
-          className={`grid h-13 w-13 shrink-0 place-items-center rounded-2xl border p-3.5 ${showFilters || district ? "border-loco-orange bg-loco-wine text-white" : "border-orange-100 bg-white text-loco-wine"}`}
+          className={`grid h-13 w-13 shrink-0 place-items-center rounded-2xl border p-3.5 ${showFilters || district ? "border-loco-blue bg-loco-navy text-white" : "border-blue-100 bg-white text-loco-navy"}`}
         >
           <SlidersHorizontal size={20} />
         </button>
       </div>
 
       {showFilters && (
-        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-orange-100 bg-white p-3">
-          <MapPin size={18} className="shrink-0 text-loco-orange" />
+        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-blue-100 bg-white p-3">
+          <MapPin size={18} className="shrink-0 text-loco-blue" />
           <DistrictSelect
             aria-label={t("common.district")}
             value={district}
@@ -103,13 +103,13 @@ export default function PeopleFeed() {
             key={key}
             type="button"
             onClick={() => setKind(key)}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold ${kind === key ? "bg-loco-wine text-white" : "border border-orange-100 bg-white text-loco-ink hover:bg-loco-cream"}`}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold ${kind === key ? "bg-loco-navy text-white" : "border border-blue-100 bg-white text-loco-ink hover:bg-loco-ice"}`}
           >
             {key ? <Icon size={14} /> : null}
             {label}
           </button>
         ))}
-        <Link to="/people" className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-orange-100 bg-white px-4 py-2 text-sm font-bold text-loco-ink hover:bg-loco-cream">
+        <Link to="/people" className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-bold text-loco-ink hover:bg-loco-ice">
           ··· {t("landing.more")}
         </Link>
       </div>
@@ -141,28 +141,28 @@ function PersonRow({ person }) {
   const location = [person.district, person.sector].filter(Boolean).join(", ") || "Rwanda";
 
   return (
-    <li className="flex flex-col gap-3 rounded-2xl border border-orange-100 bg-white p-3 shadow-sm transition hover:border-loco-orange lg:flex-row lg:items-center lg:gap-4 lg:p-4">
+    <li className="flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm transition hover:border-loco-blue lg:flex-row lg:items-center lg:gap-4 lg:p-4">
       <div className="flex items-center gap-3 sm:gap-4 lg:flex-1">
-      <Link to={`/people/${person.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-loco-cream sm:h-24 sm:w-24">
+      <Link to={`/people/${person.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-loco-ice sm:h-24 sm:w-24">
         {person.avatarUrl ? (
           <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <span className="grid h-full w-full place-items-center bg-loco-mint/30 text-3xl font-black text-loco-wine">{person.name.charAt(0).toUpperCase()}</span>
+          <span className="grid h-full w-full place-items-center bg-loco-sky/30 text-3xl font-black text-loco-navy">{person.name.charAt(0).toUpperCase()}</span>
         )}
       </Link>
 
       <div className="min-w-0 flex-1">
-        <Link to={`/people/${person.id}`} className="block truncate text-base font-black text-loco-ink hover:text-loco-wine sm:text-lg">{person.name}</Link>
+        <Link to={`/people/${person.id}`} className="block truncate text-base font-black text-loco-ink hover:text-loco-navy sm:text-lg">{person.name}</Link>
         <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-gray-600">
-          {shop ? <Store size={14} className="shrink-0 text-loco-orange" /> : <Briefcase size={14} className="shrink-0 text-loco-orange" />}
+          {shop ? <Store size={14} className="shrink-0 text-loco-blue" /> : <Briefcase size={14} className="shrink-0 text-loco-blue" />}
           <span className="truncate">{person.headline}</span>
         </p>
         <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-gray-500">
-          <MapPin size={12} className="shrink-0 text-loco-orange" /> {location}
+          <MapPin size={12} className="shrink-0 text-loco-blue" /> {location}
         </p>
         <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs">
           {person.verified && <span className="inline-flex items-center gap-1 font-bold text-green-700"><BadgeCheck size={13} /> {t("landing.verified")}</span>}
-          <span className="inline-flex items-center gap-1 text-loco-mint-dark"><Link2 size={12} /> {person.connections ?? 0}</span>
+          <span className="inline-flex items-center gap-1 text-loco-sky-dark"><Link2 size={12} /> {person.connections ?? 0}</span>
           <span className="inline-flex items-center gap-1 text-gray-400"><Eye size={12} /> {person.views ?? 0}</span>
         </p>
       </div>

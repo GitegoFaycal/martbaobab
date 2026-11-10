@@ -9,10 +9,10 @@ export default function LanguageSwitcher({ light = false, className = "" }) {
       className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-bold ${
         light
           ? "border-white/30 text-white"
-          : "border-orange-100 bg-white text-loco-wine"
+          : "border-blue-100 bg-white text-loco-navy"
       } ${className}`}
     >
-      <Globe size={14} className={light ? "text-loco-mint" : "text-loco-orange"} />
+      <Globe size={14} className={light ? "text-loco-sky" : "text-loco-blue"} />
       <span className="sr-only">{t("lang.label")}</span>
       <select
         value={lang}

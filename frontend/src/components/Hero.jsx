@@ -35,12 +35,12 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-white text-loco-ink">
       {/* Market search */}
-      <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-loco-orange/10" />
-      <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-loco-mint/10" />
+      <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-loco-blue/10" />
+      <div className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-loco-sky/10" />
 
       <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-          <form role="search" onSubmit={handleSearch} className="flex-1 overflow-hidden rounded-2xl border border-orange-100 bg-white p-2 shadow-xl shadow-orange-100/60">
+          <form role="search" onSubmit={handleSearch} className="flex-1 overflow-hidden rounded-2xl border border-blue-100 bg-white p-2 shadow-xl shadow-blue-100/60">
             <div className="mb-2 flex flex-wrap gap-1 px-1">
               {tabs.map((item) => (
                 <button
@@ -48,7 +48,7 @@ export default function Hero() {
                   type="button"
                   onClick={() => setTabKey(item.key)}
                   aria-pressed={tab.key === item.key}
-                  className={`rounded-full px-3.5 py-1.5 text-sm font-bold ${tab.key === item.key ? "bg-loco-wine text-white" : "text-gray-500 hover:bg-loco-cream"}`}
+                  className={`rounded-full px-3.5 py-1.5 text-sm font-bold ${tab.key === item.key ? "bg-loco-navy text-white" : "text-gray-500 hover:bg-loco-ice"}`}
                 >
                   {item.label}
                 </button>
@@ -56,8 +56,8 @@ export default function Hero() {
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
-              <label className="flex flex-1 items-center gap-3 rounded-xl bg-loco-cream px-3">
-                <Search className="shrink-0 text-loco-wine" size={20} />
+              <label className="flex flex-1 items-center gap-3 rounded-xl bg-loco-ice px-3">
+                <Search className="shrink-0 text-loco-navy" size={20} />
                 <input
                   type="search"
                   name="search"
@@ -69,8 +69,8 @@ export default function Hero() {
                 />
               </label>
 
-              <label className="flex items-center gap-2 rounded-xl bg-loco-cream px-3 sm:w-52">
-                <MapPin size={18} className="shrink-0 text-loco-orange" />
+              <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3 sm:w-52">
+                <MapPin size={18} className="shrink-0 text-loco-blue" />
                 <DistrictSelect
                   name="district"
                   aria-label={t("common.district")}
@@ -81,17 +81,17 @@ export default function Hero() {
                 />
               </label>
 
-              <button type="submit" className="rounded-xl bg-loco-orange px-6 py-3 font-bold text-white hover:bg-loco-orange-dark">
+              <button type="submit" className="rounded-xl bg-loco-blue px-6 py-3 font-bold text-white hover:bg-loco-blue-dark">
                 {t("common.search")}
               </button>
             </div>
           </form>
 
           <div className="flex flex-wrap gap-3 lg:flex-col">
-            <Link to="/register?role=SELLER" className="inline-flex items-center justify-center gap-2 rounded-full bg-loco-wine px-6 py-3 font-bold text-white hover:bg-loco-wine-dark">
+            <Link to="/register?role=SELLER" className="inline-flex items-center justify-center gap-2 rounded-full bg-loco-navy px-6 py-3 font-bold text-white hover:bg-loco-navy-dark">
               {t("hero.openShop")} <ArrowRight size={18} />
             </Link>
-            <Link to="/jobs/new" className="inline-flex items-center justify-center rounded-full border border-loco-wine px-6 py-3 font-bold text-loco-wine hover:bg-loco-cream">
+            <Link to="/jobs/new" className="inline-flex items-center justify-center rounded-full border border-loco-navy px-6 py-3 font-bold text-loco-navy hover:bg-loco-ice">
               {t("hero.hireWorkers")}
             </Link>
           </div>

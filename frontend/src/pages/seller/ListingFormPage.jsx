@@ -123,18 +123,18 @@ export default function ListingFormPage() {
   }
 
   if (editing && loading) {
-    return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner /></main>;
+    return <main className="min-h-[75vh] bg-loco-ice py-10"><Spinner /></main>;
   }
 
   const discount = discountPercent(form.originalPrice, form.price);
   const isService = form.kind === "SERVICES";
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-10">
+    <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container className="max-w-3xl">
-        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-wine"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
+        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-navy"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
 
-        <div className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-9">
+        <div className="mt-5 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-9">
           <PageHeader eyebrow={editing ? "Edit listing" : "New listing"} title={editing ? "Update listing" : "What are you selling?"} />
 
           {error && <Message className="mb-5">{error}</Message>}
@@ -145,7 +145,7 @@ export default function ListingFormPage() {
                 { key: "GOODS", label: "A product", text: "New or second-hand item" },
                 { key: "SERVICES", label: "A service", text: "Work you do for customers" },
               ].map((option) => (
-                <button key={option.key} type="button" onClick={() => setForm((c) => ({ ...c, kind: option.key, categoryId: "" }))} aria-pressed={form.kind === option.key} className={`rounded-2xl border p-4 text-left ${form.kind === option.key ? "border-loco-orange bg-orange-50 ring-2 ring-orange-100" : "border-gray-200 hover:border-loco-orange"}`}>
+                <button key={option.key} type="button" onClick={() => setForm((c) => ({ ...c, kind: option.key, categoryId: "" }))} aria-pressed={form.kind === option.key} className={`rounded-2xl border p-4 text-left ${form.kind === option.key ? "border-loco-blue bg-blue-50 ring-2 ring-blue-100" : "border-gray-200 hover:border-loco-blue"}`}>
                   <strong className="block text-loco-ink">{option.label}</strong>
                   <span className="text-xs text-gray-500">{option.text}</span>
                 </button>
@@ -158,7 +158,7 @@ export default function ListingFormPage() {
                   { key: "NEW", label: "New", text: "Sold in your shop as new" },
                   { key: "USED", label: "Second-hand", text: "Used item at a lower price" },
                 ].map((option) => (
-                  <button key={option.key} type="button" onClick={() => setForm((c) => ({ ...c, condition: option.key }))} aria-pressed={form.condition === option.key} className={`rounded-2xl border p-4 text-left ${form.condition === option.key ? "border-loco-mint bg-emerald-50 ring-2 ring-emerald-100" : "border-gray-200 hover:border-loco-mint"}`}>
+                  <button key={option.key} type="button" onClick={() => setForm((c) => ({ ...c, condition: option.key }))} aria-pressed={form.condition === option.key} className={`rounded-2xl border p-4 text-left ${form.condition === option.key ? "border-loco-sky bg-emerald-50 ring-2 ring-emerald-100" : "border-gray-200 hover:border-loco-sky"}`}>
                     <strong className="block text-loco-ink">{option.label}</strong>
                     <span className="text-xs text-gray-500">{option.text}</span>
                   </button>
@@ -209,17 +209,17 @@ export default function ListingFormPage() {
               </Field>
               <div className="flex flex-col justify-end gap-3 pb-1">
                 <label className="flex items-center gap-3 text-sm font-semibold">
-                  <input type="checkbox" name="negotiable" checked={form.negotiable} onChange={handleChange} className="h-4 w-4 accent-loco-wine" /> {t("common.negotiable")}
+                  <input type="checkbox" name="negotiable" checked={form.negotiable} onChange={handleChange} className="h-4 w-4 accent-loco-navy" /> {t("common.negotiable")}
                 </label>
                 <label className="flex items-center gap-3 text-sm font-semibold">
-                  <input type="checkbox" name="active" checked={form.active} onChange={handleChange} className="h-4 w-4 accent-loco-wine" /> Visible to buyers
+                  <input type="checkbox" name="active" checked={form.active} onChange={handleChange} className="h-4 w-4 accent-loco-navy" /> Visible to buyers
                 </label>
               </div>
             </div>
 
             {form.price && (
-              <p className="rounded-xl bg-loco-cream p-3 text-sm text-gray-700">
-                Buyers will see <strong className="text-loco-wine">{formatRWF(form.price)}</strong>{form.unit ? ` per ${form.unit}` : ""}{discount > 0 ? ` with a ${discount}% saving badge` : ""}.
+              <p className="rounded-xl bg-loco-ice p-3 text-sm text-gray-700">
+                Buyers will see <strong className="text-loco-navy">{formatRWF(form.price)}</strong>{form.unit ? ` per ${form.unit}` : ""}{discount > 0 ? ` with a ${discount}% saving badge` : ""}.
               </p>
             )}
 

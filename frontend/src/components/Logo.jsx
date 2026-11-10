@@ -11,25 +11,25 @@ export default function Logo({ light = false, compact = false, onClick }) {
     >
       <span
         className={`relative grid h-10 w-10 place-items-center rounded-xl font-black ${
-          light ? "bg-white text-loco-wine" : "bg-loco-wine text-white"
+          light ? "bg-white text-loco-navy" : "bg-loco-navy text-white"
         }`}
       >
         <MapPin size={22} />
-        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-loco-orange ring-2 ring-white" />
+        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-loco-blue ring-2 ring-white" />
       </span>
 
       {!compact && (
         <span className="leading-none">
           <strong
             className={`block text-2xl font-black tracking-tight ${
-              light ? "text-white" : "text-loco-wine"
+              light ? "text-white" : "text-loco-navy"
             }`}
           >
             LOCO
           </strong>
           <small
             className={`text-[11px] font-semibold tracking-wide ${
-              light ? "text-loco-mint" : "text-loco-orange"
+              light ? "text-loco-sky" : "text-loco-blue"
             }`}
           >
             Local Connect · Rwanda

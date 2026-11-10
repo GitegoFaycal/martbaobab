@@ -56,7 +56,7 @@ export default function ProfileActions({ person, layout = "row", size = "sm" }) 
         </a>
       ) : null}
 
-      <Link to={visitTo} className={`${base} border border-loco-wine bg-white text-loco-wine hover:bg-loco-cream`}>
+      <Link to={visitTo} className={`${base} border border-loco-navy bg-white text-loco-navy hover:bg-loco-ice`}>
         {person.shop ? <Store size={16} /> : <UserRound size={16} />}
         {person.shop ? t("landing.visitBusiness") : t("landing.visitProfile")}
       </Link>
@@ -66,7 +66,7 @@ export default function ProfileActions({ person, layout = "row", size = "sm" }) 
           type="button"
           onClick={connect}
           disabled={busy || connected}
-          className={`${base} ${connected ? "bg-loco-mint text-loco-wine-dark" : "bg-loco-wine text-white hover:bg-loco-wine-dark"} disabled:cursor-default`}
+          className={`${base} ${connected ? "bg-loco-sky text-loco-navy-dark" : "bg-loco-navy text-white hover:bg-loco-navy-dark"} disabled:cursor-default`}
         >
           {connected ? <Check size={16} /> : <Link2 size={16} />}
           {connected ? t("landing.connected") : t("landing.connect")}

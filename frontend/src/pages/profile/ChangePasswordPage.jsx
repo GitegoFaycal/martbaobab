@@ -79,22 +79,22 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream px-4 py-12">
+    <main className="min-h-[75vh] bg-loco-ice px-4 py-12">
       <div className="mx-auto max-w-2xl">
         <Link
           to="/profile"
-          className="inline-flex items-center gap-2 font-bold text-loco-wine"
+          className="inline-flex items-center gap-2 font-bold text-loco-navy"
         >
           <ArrowLeft size={18} />
           Back to profile
         </Link>
 
         <div className="mt-6 rounded-3xl bg-white p-6 shadow-lg sm:p-9">
-          <p className="font-bold text-loco-orange">
+          <p className="font-bold text-loco-blue">
             Account security
           </p>
 
-          <h1 className="mt-2 text-3xl font-black text-loco-wine">
+          <h1 className="mt-2 text-3xl font-black text-loco-navy">
             Change password
           </h1>
 
@@ -147,7 +147,7 @@ export default function ChangePasswordPage() {
                   (current) => !current
                 )
               }
-              className="inline-flex items-center gap-2 text-sm font-bold text-loco-wine"
+              className="inline-flex items-center gap-2 text-sm font-bold text-loco-navy"
             >
               {showPasswords ? (
                 <EyeOff size={17} />
@@ -163,7 +163,7 @@ export default function ChangePasswordPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-loco-wine px-5 py-3.5 font-bold text-white disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-loco-navy px-5 py-3.5 font-bold text-white disabled:opacity-60"
             >
               {submitting && (
                 <LoaderCircle
@@ -199,7 +199,7 @@ function PasswordInput({
         {label}
       </label>
 
-      <div className="flex items-center rounded-xl border border-gray-200 px-4 focus-within:border-loco-orange focus-within:ring-4 focus-within:ring-orange-100">
+      <div className="flex items-center rounded-xl border border-gray-200 px-4 focus-within:border-loco-blue focus-within:ring-4 focus-within:ring-blue-100">
         <LockKeyhole
           size={19}
           className="text-gray-400"

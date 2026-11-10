@@ -70,13 +70,13 @@ export async function sendPasswordResetEmail({
       "If you did not request this change, you can ignore this email.",
     ].join("\n"),
     html: `
-      <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#24171a">
-        <div style="background:#7a0019;padding:24px;border-radius:16px 16px 0 0">
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#0a1a3f">
+        <div style="background:#0b2a6f;padding:24px;border-radius:16px 16px 0 0">
           <h1 style="color:#ffffff;margin:0">LOCO</h1>
         </div>
 
         <div style="padding:28px;border:1px solid #f3ded6;border-top:0">
-          <h2 style="color:#7a0019">Reset your password</h2>
+          <h2 style="color:#0b2a6f">Reset your password</h2>
 
           <p>Hello ${recipientName},</p>
 
@@ -87,7 +87,7 @@ export async function sendPasswordResetEmail({
           <p style="margin:28px 0">
             <a
               href="${resetUrl}"
-              style="display:inline-block;background:#f36b21;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px"
+              style="display:inline-block;background:#1e7ff5;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px"
             >
               Reset password
             </a>
@@ -95,7 +95,7 @@ export async function sendPasswordResetEmail({
 
           <p style="font-size:13px;color:#6b6b6b">
             If the button does not work, copy this link into your browser:<br />
-            <a href="${resetUrl}" style="color:#7a0019">${resetUrl}</a>
+            <a href="${resetUrl}" style="color:#0b2a6f">${resetUrl}</a>
           </p>
 
           <p>This link expires in 30 minutes.</p>

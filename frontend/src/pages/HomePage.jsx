@@ -53,7 +53,7 @@ export default function HomePage() {
   const districtQuery = district ? `&district=${encodeURIComponent(district)}` : "";
 
   return (
-    <main className="bg-loco-cream">
+    <main className="bg-loco-ice">
       <div className="bg-white">
         <Container className="pb-6 pt-5">
           <HomeTabs active={tab} onChange={changeTab} />

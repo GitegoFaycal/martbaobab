@@ -17,12 +17,12 @@ export default function ListingDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
 
   if (loading) {
-    return <main className="min-h-[75vh] bg-loco-cream py-10"><Spinner label={t("common.loading")} /></main>;
+    return <main className="min-h-[75vh] bg-loco-ice py-10"><Spinner label={t("common.loading")} /></main>;
   }
 
   if (error || !data?.listing) {
     return (
-      <main className="min-h-[75vh] bg-loco-cream py-10">
+      <main className="min-h-[75vh] bg-loco-ice py-10">
         <Container><EmptyState title={t("listing.notFound")} description={t("listing.notFoundText")} action={<Button as={Link} to="/shop">{t("listing.backToShop")}</Button>} /></Container>
       </main>
     );
@@ -41,27 +41,27 @@ export default function ListingDetailPage() {
   const sectionLabel = listing.condition === "USED" ? t("nav.secondHand") : isService ? t("nav.services") : t("nav.shop");
 
   return (
-    <main className="min-h-[75vh] bg-loco-cream py-8">
+    <main className="min-h-[75vh] bg-loco-ice py-8">
       <Container>
         <Breadcrumbs items={[{ label: t("common.home"), to: "/" }, { label: sectionLabel, to: sectionPath }, ...(listing.category ? [{ label: listing.category.name, to: `${sectionPath}?category=${listing.category.slug}` }] : []), { label: listing.name }]} />
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <div className="relative overflow-hidden rounded-3xl border border-orange-100 bg-white">
+            <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-white">
               <div className="aspect-4/3 w-full">
-                {image ? <img src={image} alt={listing.name} className="h-full w-full object-cover" /> : <div className="grid h-full w-full place-items-center text-loco-wine/30"><ImageOff size={64} /></div>}
+                {image ? <img src={image} alt={listing.name} className="h-full w-full object-cover" /> : <div className="grid h-full w-full place-items-center text-loco-navy/30"><ImageOff size={64} /></div>}
               </div>
               <div className="absolute left-4 top-4 flex gap-2">
-                {listing.condition === "USED" && <span className="rounded-full bg-loco-wine px-3 py-1 text-xs font-bold text-white">{t("common.secondHand")}</span>}
-                {isService && <span className="rounded-full bg-loco-mint px-3 py-1 text-xs font-bold text-loco-wine-dark">{t("common.service")}</span>}
-                {discount > 0 && <span className="rounded-full bg-loco-orange px-3 py-1 text-xs font-bold text-white">{t("common.save_pct", { pct: discount })}</span>}
+                {listing.condition === "USED" && <span className="rounded-full bg-loco-navy px-3 py-1 text-xs font-bold text-white">{t("common.secondHand")}</span>}
+                {isService && <span className="rounded-full bg-loco-sky px-3 py-1 text-xs font-bold text-loco-navy-dark">{t("common.service")}</span>}
+                {discount > 0 && <span className="rounded-full bg-loco-blue px-3 py-1 text-xs font-bold text-white">{t("common.save_pct", { pct: discount })}</span>}
               </div>
             </div>
 
             {images.length > 1 && (
               <div className="mt-3 flex gap-2 overflow-x-auto">
                 {images.map((item, index) => (
-                  <button key={item.id} type="button" onClick={() => setActiveImage(index)} className={`h-20 w-24 shrink-0 overflow-hidden rounded-xl border-2 ${index === activeImage ? "border-loco-orange" : "border-transparent"}`}>
+                  <button key={item.id} type="button" onClick={() => setActiveImage(index)} className={`h-20 w-24 shrink-0 overflow-hidden rounded-xl border-2 ${index === activeImage ? "border-loco-blue" : "border-transparent"}`}>
                     <img src={item.url} alt="" className="h-full w-full object-cover" />
                   </button>
                 ))}
@@ -69,11 +69,11 @@ export default function ListingDetailPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
             <h1 className="text-2xl font-black text-loco-ink sm:text-3xl">{listing.name}</h1>
 
             <div className="mt-4 flex flex-wrap items-baseline gap-3">
-              <strong className="text-3xl font-black text-loco-wine">{formatRWF(listing.price)}</strong>
+              <strong className="text-3xl font-black text-loco-navy">{formatRWF(listing.price)}</strong>
               {listing.unit && <span className="text-sm text-gray-500">{t("listing.per", { unit: listing.unit })}</span>}
               {listing.originalPrice && discount > 0 && <span className="text-gray-400 line-through">{formatRWF(listing.originalPrice)}</span>}
             </div>
@@ -103,7 +103,7 @@ export default function ListingDetailPage() {
               )}
               <p className="mt-3 text-center text-sm text-gray-600">{t("listing.dealText")}</p>
               {(listing.sellerConnections ?? 0) > 0 && (
-                <p className="mt-2 inline-flex w-full items-center justify-center gap-1 text-center text-xs font-semibold text-loco-mint-dark">
+                <p className="mt-2 inline-flex w-full items-center justify-center gap-1 text-center text-xs font-semibold text-loco-sky-dark">
                   <Link2 size={13} /> {t("connections.sellerConnected", { count: listing.sellerConnections })}
                 </p>
               )}
@@ -115,14 +115,14 @@ export default function ListingDetailPage() {
               </Button>
             )}
 
-            <div className="mt-6 rounded-2xl bg-loco-cream p-4">
+            <div className="mt-6 rounded-2xl bg-loco-ice p-4">
               <Link to={`/shops/${listing.shop.slug}`} className="flex items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-full bg-loco-wine text-white">
+                <span className="grid h-12 w-12 place-items-center overflow-hidden rounded-full bg-loco-navy text-white">
                   {listing.shop.logoUrl ? <img src={listing.shop.logoUrl} alt="" className="h-full w-full object-cover" /> : <Store size={22} />}
                 </span>
                 <span className="min-w-0">
-                  <strong className="flex items-center gap-1 text-loco-wine">{listing.shop.name}{listing.shop.verified && <BadgeCheck size={16} className="text-loco-mint-dark" />}</strong>
-                  <span className="flex items-center gap-1 text-sm text-gray-500"><MapPin size={13} className="text-loco-orange" />{district}{listing.shop.sector ? `, ${listing.shop.sector}` : ""}</span>
+                  <strong className="flex items-center gap-1 text-loco-navy">{listing.shop.name}{listing.shop.verified && <BadgeCheck size={16} className="text-loco-sky-dark" />}</strong>
+                  <span className="flex items-center gap-1 text-sm text-gray-500"><MapPin size={13} className="text-loco-blue" />{district}{listing.shop.sector ? `, ${listing.shop.sector}` : ""}</span>
                 </span>
               </Link>
             </div>
@@ -137,7 +137,7 @@ export default function ListingDetailPage() {
 
         {related?.length > 0 && (
           <section className="mt-12">
-            <h2 className="mb-5 text-2xl font-black text-loco-wine">{t("listing.youMayAlsoLike")}</h2>
+            <h2 className="mb-5 text-2xl font-black text-loco-navy">{t("listing.youMayAlsoLike")}</h2>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">{related.map((item) => <ListingCard key={item.id} listing={item} />)}</div>
           </section>
         )}

@@ -28,41 +28,41 @@ export default function ListingCard({ listing }) {
   const whatsapp = listingWhatsapp(listing, t);
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-loco-orange hover:shadow-md">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-loco-blue hover:shadow-md">
       <Link to={`/listings/${listing.slug}`} className="relative block">
-        <div className="aspect-4/3 w-full overflow-hidden bg-loco-cream">
+        <div className="aspect-4/3 w-full overflow-hidden bg-loco-ice">
           {image ? (
             <img src={image} alt={listing.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
           ) : (
-            <div className="grid h-full w-full place-items-center text-loco-wine/40"><ImageOff size={36} /></div>
+            <div className="grid h-full w-full place-items-center text-loco-navy/40"><ImageOff size={36} /></div>
           )}
         </div>
 
         <div className="absolute left-3 top-3 flex gap-2">
-          {listing.condition === "USED" && <span className="rounded-full bg-loco-wine px-2.5 py-1 text-xs font-bold text-white">{t("common.secondHand")}</span>}
-          {listing.type === "SERVICE" && <span className="rounded-full bg-loco-mint px-2.5 py-1 text-xs font-bold text-loco-wine-dark">{t("common.service")}</span>}
-          {discount > 0 && <span className="rounded-full bg-loco-orange px-2.5 py-1 text-xs font-bold text-white">-{discount}%</span>}
+          {listing.condition === "USED" && <span className="rounded-full bg-loco-navy px-2.5 py-1 text-xs font-bold text-white">{t("common.secondHand")}</span>}
+          {listing.type === "SERVICE" && <span className="rounded-full bg-loco-sky px-2.5 py-1 text-xs font-bold text-loco-navy-dark">{t("common.service")}</span>}
+          {discount > 0 && <span className="rounded-full bg-loco-blue px-2.5 py-1 text-xs font-bold text-white">-{discount}%</span>}
         </div>
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
-        <Link to={`/listings/${listing.slug}`} className="line-clamp-2 font-bold leading-snug text-loco-ink hover:text-loco-wine">{listing.name}</Link>
+        <Link to={`/listings/${listing.slug}`} className="line-clamp-2 font-bold leading-snug text-loco-ink hover:text-loco-navy">{listing.name}</Link>
 
         <div className="mt-2 flex items-baseline gap-2">
-          <strong className="text-lg text-loco-wine">{formatRWF(listing.price)}</strong>
+          <strong className="text-lg text-loco-navy">{formatRWF(listing.price)}</strong>
           {listing.unit && <span className="text-xs text-gray-500">/ {listing.unit}</span>}
           {listing.originalPrice && discount > 0 && <span className="text-xs text-gray-400 line-through">{formatRWF(listing.originalPrice)}</span>}
         </div>
 
-        {listing.negotiable && <span className="mt-1 text-xs font-semibold text-loco-orange">{t("common.negotiable")}</span>}
+        {listing.negotiable && <span className="mt-1 text-xs font-semibold text-loco-blue">{t("common.negotiable")}</span>}
 
         <div className="mt-3 flex items-center gap-1 text-xs text-gray-500">
-          <MapPin size={13} className="text-loco-orange" />
+          <MapPin size={13} className="text-loco-blue" />
           <span className="truncate">{listing.shop?.name}{district ? ` · ${district}` : ""}</span>
-          {listing.shop?.verified && <BadgeCheck size={14} className="shrink-0 text-loco-mint-dark" />}
+          {listing.shop?.verified && <BadgeCheck size={14} className="shrink-0 text-loco-sky-dark" />}
         </div>
         {(listing._count?.connections ?? 0) > 0 && (
-          <p className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-loco-mint-dark">
+          <p className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-loco-sky-dark">
             <Link2 size={12} /> {t("connections.connectionsShort", { count: listing._count.connections })}
           </p>
         )}
@@ -80,7 +80,7 @@ export default function ListingCard({ listing }) {
               {t("listing.whatsappMe")}
             </a>
           ) : (
-            <Link to={`/listings/${listing.slug}`} className="flex w-full items-center justify-center rounded-xl border border-loco-mint py-2.5 text-sm font-bold text-loco-wine hover:bg-loco-mint/10">
+            <Link to={`/listings/${listing.slug}`} className="flex w-full items-center justify-center rounded-xl border border-loco-sky py-2.5 text-sm font-bold text-loco-navy hover:bg-loco-sky/10">
               {t("listing.contactProvider")}
             </Link>
           )}
