@@ -21,11 +21,26 @@ if (!url) {
 
 console.log(`Applying migrations to ${describeDatabaseUrl(url)}`);
 
+// Two builds can overlap on Vercel and fight for Prisma's advisory lock
+// (P1002); retry a few times before giving up.
+function migrateDeploy() {
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    try {
+      execFileSync(process.execPath, [prismaCli, "migrate", "deploy"], {
+        stdio: "inherit",
+        env: process.env,
+      });
+      return;
+    } catch (error) {
+      if (attempt === 5) throw error;
+      console.log(`migrate deploy failed (attempt ${attempt}); retrying in 20s...`);
+      execFileSync(process.execPath, ["-e", "setTimeout(() => {}, 20000)"]);
+    }
+  }
+}
+
 try {
-  execFileSync(process.execPath, [prismaCli, "migrate", "deploy"], {
-    stdio: "inherit",
-    env: process.env,
-  });
+  migrateDeploy();
 
   execFileSync(process.execPath, ["prisma/seed.js"], {
     stdio: "inherit",
