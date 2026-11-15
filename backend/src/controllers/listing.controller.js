@@ -179,6 +179,33 @@ async function requireMyShop(userId) {
   return shop;
 }
 
+// Sellers always work on their own shop. Admins may pass ?shopId= to manage
+// any shop on behalf of its owner.
+async function resolveShop(req) {
+  const shopId = req.query?.shopId;
+
+  if (req.user.role === "ADMIN" && shopId) {
+    const shop = await prisma.shop.findUnique({ where: { id: String(shopId) } });
+    if (!shop) throw httpError(404, "Shop not found");
+    return shop;
+  }
+
+  return requireMyShop(req.user.id);
+}
+
+async function findEditableListing(req) {
+  const existing = await prisma.listing.findUnique({
+    where: { id: req.params.id },
+    include: { shop: true },
+  });
+
+  if (!existing || (req.user.role !== "ADMIN" && existing.shop.ownerId !== req.user.id)) {
+    throw httpError(404, "Listing not found");
+  }
+
+  return existing;
+}
+
 function listingData(body, shop) {
   return {
     name: body.name,
@@ -197,7 +224,7 @@ function listingData(body, shop) {
 }
 
 export const listMyListings = asyncHandler(async (req, res) => {
-  const shop = await requireMyShop(req.user.id);
+  const shop = await resolveShop(req);
 
   const listings = await prisma.listing.findMany({
     where: { shopId: shop.id },
@@ -213,7 +240,7 @@ export const listMyListings = asyncHandler(async (req, res) => {
 });
 
 export const createListing = asyncHandler(async (req, res) => {
-  const shop = await requireMyShop(req.user.id);
+  const shop = await resolveShop(req);
   const body = req.validated.body;
 
   const category = await prisma.category.findUnique({
@@ -252,16 +279,9 @@ export const createListing = asyncHandler(async (req, res) => {
 });
 
 export const updateListing = asyncHandler(async (req, res) => {
-  const shop = await requireMyShop(req.user.id);
   const body = req.validated.body;
-
-  const existing = await prisma.listing.findFirst({
-    where: { id: req.params.id, shopId: shop.id },
-  });
-
-  if (!existing) {
-    throw httpError(404, "Listing not found");
-  }
+  const existing = await findEditableListing(req);
+  const shop = existing.shop;
 
   const listing = await prisma.listing.update({
     where: { id: existing.id },
@@ -287,15 +307,7 @@ export const updateListing = asyncHandler(async (req, res) => {
 });
 
 export const deleteListing = asyncHandler(async (req, res) => {
-  const shop = await requireMyShop(req.user.id);
-
-  const existing = await prisma.listing.findFirst({
-    where: { id: req.params.id, shopId: shop.id },
-  });
-
-  if (!existing) {
-    throw httpError(404, "Listing not found");
-  }
+  const existing = await findEditableListing(req);
 
   await prisma.orderItem.deleteMany({ where: { listingId: existing.id } });
   await prisma.listing.delete({ where: { id: existing.id } });

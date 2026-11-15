@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import AuthLayout from "./components/layout/AuthLayout";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminShopPage from "./pages/admin/AdminShopPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
@@ -95,6 +96,11 @@ export default function App() {
       {/* Administrators */}
       <Route element={<RoleRoute allowedRoles={["ADMIN"]} />}>
         <Route path="/admin" element={page(<AdminDashboardPage />)} />
+        <Route path="/admin/shops/new" element={page(<ShopFormPage admin />)} />
+        <Route path="/admin/shops/:id" element={page(<AdminShopPage />)} />
+        <Route path="/admin/shops/:id/edit" element={page(<ShopFormPage admin />)} />
+        <Route path="/admin/shops/:shopId/listings/new" element={page(<ListingFormPage admin />)} />
+        <Route path="/admin/shops/:shopId/listings/:id/edit" element={page(<ListingFormPage admin />)} />
       </Route>
 
       <Route path="*" element={page(<NotFoundPage />)} />

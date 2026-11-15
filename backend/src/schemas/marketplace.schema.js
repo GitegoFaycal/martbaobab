@@ -24,8 +24,7 @@ const imageUrls = z
   .optional()
   .default([]);
 
-export const shopSchema = z.object({
-  body: z.object({
+const shopFields = {
     name: z.string().trim().min(2, "Shop name is too short").max(80),
     description: optionalText(1000),
     phone,
@@ -35,7 +34,37 @@ export const shopSchema = z.object({
     address: optionalText(200),
     logoUrl: optionalText(500),
     coverUrl: optionalText(500),
-  }),
+};
+
+export const shopSchema = z.object({ body: z.object(shopFields) });
+
+// Admins create a shop for an existing user (ownerId) or for a brand-new
+// seller account (owner).
+export const adminShopSchema = z.object({
+  body: z
+    .object({
+      ...shopFields,
+      ownerId: z.string().trim().optional().or(z.literal("")),
+      owner: z
+        .object({
+          name: z.string().trim().min(2, "Owner name is too short").max(100),
+          email: z.string().trim().toLowerCase().email("Enter a valid email address"),
+          phone,
+          password: z
+            .string()
+            .min(8, "Password must contain at least 8 characters")
+            .max(72)
+            .regex(/[A-Z]/, "Password must contain an uppercase letter")
+            .regex(/[a-z]/, "Password must contain a lowercase letter")
+            .regex(/[0-9]/, "Password must contain a number"),
+          district: district.optional().or(z.literal("")),
+        })
+        .optional(),
+    })
+    .refine((data) => data.ownerId || data.owner, {
+      message: "Choose an existing user or create the seller account",
+      path: ["ownerId"],
+    }),
 });
 
 export const listingSchema = z.object({

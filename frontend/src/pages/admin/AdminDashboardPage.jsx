@@ -3,8 +3,9 @@ import {
   Briefcase,
   Link2,
   Package,
+  Plus,
   Recycle,
-  ShieldCheck,
+  Settings2,
   Store,
   Users,
 } from "lucide-react";
@@ -64,7 +65,7 @@ export default function AdminDashboardPage() {
   return (
     <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container>
-        <PageHeader eyebrow="Administration" title={`Welcome, ${user.name.split(" ")[0]}`} description="Verify shops, keep the marketplace safe and watch LOCO grow." />
+        <PageHeader eyebrow="Administration" title={`Welcome, ${user.name.split(" ")[0]}`} description="Add shops for local sellers, verify them, keep the marketplace safe and watch LOCO grow." action={<Button as={Link} to="/admin/shops/new" variant="orange"><Plus size={17} /> Add a shop</Button>} />
 
         {error && <Message className="mb-4">{error}</Message>}
 
@@ -102,7 +103,10 @@ export default function AdminDashboardPage() {
                       <td className="px-4 py-3">{shop.district}</td>
                       <td className="px-4 py-3">{shop._count.listings}</td>
                       <td className="px-4 py-3">{shop.verified ? <Badge tone="green"><BadgeCheck size={12} /> Verified</Badge> : <Badge tone="amber">Pending</Badge>}</td>
-                      <td className="px-4 py-3 text-right"><Button size="sm" variant={shop.verified ? "ghost" : "mint"} loading={busy === shop.id} onClick={() => verifyShop(shop)}>{shop.verified ? "Unverify" : "Verify"}</Button></td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <Button as={Link} to={`/admin/shops/${shop.id}`} size="sm" variant="outline"><Settings2 size={14} /> Manage</Button>
+                        <Button size="sm" variant={shop.verified ? "ghost" : "mint"} className="ml-1" loading={busy === shop.id} onClick={() => verifyShop(shop)}>{shop.verified ? "Unverify" : "Verify"}</Button>
+                      </td>
                     </tr>
                   ))}
                   {shops.data?.shops?.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">No shops yet.</td></tr>}

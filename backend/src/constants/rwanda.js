@@ -43,7 +43,9 @@ export function provinceOf(district) {
 }
 
 // Rwandan mobile numbers: 07X XXX XXXX, optionally with +250 / 250 prefix.
-export const RWANDA_PHONE_PATTERN = /^(\+?250|0)?7[2389]\d{7}$/;
+// Spaces, dashes and brackets between digits are allowed (the forms show
+// numbers as "078 123 4567"); normalizePhone strips them.
+export const RWANDA_PHONE_PATTERN = /^(\+?250|0)?[\s-]*7[2389](?:[\s()-]*\d){7}$/;
 
 export function normalizePhone(value) {
   if (!value) {

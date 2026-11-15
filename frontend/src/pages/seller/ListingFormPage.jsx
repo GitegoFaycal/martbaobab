@@ -35,11 +35,16 @@ const initial = {
   imageUrls: [],
 };
 
-export default function ListingFormPage() {
+// Sellers add listings to their own shop. With `admin`, the route carries a
+// shopId and the administrator manages that shop's listings instead.
+export default function ListingFormPage({ admin = false }) {
   const t = useT();
-  const { id } = useParams();
+  const { id, shopId } = useParams();
   const editing = Boolean(id);
   const navigate = useNavigate();
+
+  const scope = admin && shopId ? `?shopId=${shopId}` : "";
+  const backTo = admin ? `/admin/shops/${shopId}` : "/seller";
 
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState({});
@@ -48,7 +53,8 @@ export default function ListingFormPage() {
 
   const { data: goods } = useFetch("/categories?kind=GOODS");
   const { data: services } = useFetch("/categories?kind=SERVICES");
-  const { data: mine, loading } = useFetch("/listings/mine", { enabled: editing });
+  const { data: mine, loading } = useFetch(`/listings/mine${scope}`, { enabled: editing });
+  const { data: shopData } = useFetch(`/admin/shops/${shopId}`, { enabled: admin && Boolean(shopId) });
 
   const categories = useMemo(
     () => (form.kind === "SERVICES" ? services?.categories : goods?.categories) || [],
@@ -59,7 +65,7 @@ export default function ListingFormPage() {
     if (!editing || !mine) return;
     const listing = mine.listings.find((item) => item.id === id);
     if (!listing) {
-      navigate("/seller", { replace: true });
+      navigate(backTo, { replace: true });
       return;
     }
     setForm({
@@ -77,7 +83,7 @@ export default function ListingFormPage() {
       active: listing.active,
       imageUrls: (listing.images || []).map((image) => image.url),
     });
-  }, [editing, mine, id, navigate]);
+  }, [editing, mine, id, navigate, backTo]);
 
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
@@ -110,9 +116,9 @@ export default function ListingFormPage() {
       if (editing) {
         await apiRequest(`/listings/${id}`, { method: "PATCH", body });
       } else {
-        await apiRequest("/listings", { method: "POST", body });
+        await apiRequest(`/listings${scope}`, { method: "POST", body });
       }
-      navigate("/seller", { replace: true });
+      navigate(backTo, { replace: true });
     } catch (requestError) {
       setErrors(fieldErrorsFrom(requestError));
       setError(requestError.message);
@@ -128,14 +134,18 @@ export default function ListingFormPage() {
 
   const discount = discountPercent(form.originalPrice, form.price);
   const isService = form.kind === "SERVICES";
+  const shopName = shopData?.shop?.name;
 
   return (
     <main className="min-h-[75vh] bg-loco-ice py-10">
       <Container className="max-w-3xl">
-        <Link to="/seller" className="inline-flex items-center gap-2 font-bold text-loco-navy"><ArrowLeft size={18} /> {t("nav.sellerDashboard")}</Link>
+        <Link to={backTo} className="inline-flex items-center gap-2 font-bold text-loco-navy"><ArrowLeft size={18} /> {admin ? shopName || "Shop" : t("nav.sellerDashboard")}</Link>
 
         <div className="mt-5 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-9">
-          <PageHeader eyebrow={editing ? "Edit listing" : "New listing"} title={editing ? "Update listing" : "What are you selling?"} />
+          <PageHeader
+            eyebrow={admin ? `Administration · ${shopName || ""}` : editing ? "Edit listing" : "New listing"}
+            title={editing ? "Update listing" : admin ? `Add a product to ${shopName || "this shop"}` : "What are you selling?"}
+          />
 
           {error && <Message className="mb-5">{error}</Message>}
 
@@ -143,7 +153,7 @@ export default function ListingFormPage() {
             <div className="grid grid-cols-2 gap-3">
               {[
                 { key: "GOODS", label: "A product", text: "New or second-hand item" },
-                { key: "SERVICES", label: "A service", text: "Work you do for customers" },
+                { key: "SERVICES", label: "A service", text: "Work done for customers" },
               ].map((option) => (
                 <button key={option.key} type="button" onClick={() => setForm((c) => ({ ...c, kind: option.key, categoryId: "" }))} aria-pressed={form.kind === option.key} className={`rounded-2xl border p-4 text-left ${form.kind === option.key ? "border-loco-blue bg-blue-50 ring-2 ring-blue-100" : "border-gray-200 hover:border-loco-blue"}`}>
                   <strong className="block text-loco-ink">{option.label}</strong>
@@ -155,7 +165,7 @@ export default function ListingFormPage() {
             {!isService && (
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { key: "NEW", label: "New", text: "Sold in your shop as new" },
+                  { key: "NEW", label: "New", text: "Sold in the shop as new" },
                   { key: "USED", label: "Second-hand", text: "Used item at a lower price" },
                 ].map((option) => (
                   <button key={option.key} type="button" onClick={() => setForm((c) => ({ ...c, condition: option.key }))} aria-pressed={form.condition === option.key} className={`rounded-2xl border p-4 text-left ${form.condition === option.key ? "border-loco-sky bg-emerald-50 ring-2 ring-emerald-100" : "border-gray-200 hover:border-loco-sky"}`}>
@@ -180,7 +190,7 @@ export default function ListingFormPage() {
             </Field>
 
             <Field label="Description" htmlFor="description" optional error={errors.description}>
-              <Textarea id="description" name="description" rows={4} value={form.description} onChange={handleChange} placeholder={form.condition === "USED" ? "How old is it? Any scratches or faults? Why are you selling?" : "Size, brand, what is included, opening hours..."} />
+              <Textarea id="description" name="description" rows={4} value={form.description} onChange={handleChange} placeholder={form.condition === "USED" ? "How old is it? Any scratches or faults? Why is it being sold?" : "Size, brand, what is included, opening hours..."} />
             </Field>
 
             <div className="grid gap-5 sm:grid-cols-3">
@@ -204,7 +214,7 @@ export default function ListingFormPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label={t("common.district")} htmlFor="district" optional error={errors.district} hint="Leave empty to use your shop's district.">
+              <Field label={t("common.district")} htmlFor="district" optional error={errors.district} hint="Leave empty to use the shop's district.">
                 <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} placeholder={t("common.sameAsShop")} />
               </Field>
               <div className="flex flex-col justify-end gap-3 pb-1">

@@ -104,13 +104,14 @@ All routes are under `/api`. "cookie" means the httpOnly session cookie set at l
 | GET | /shops · /shops/:slug | none |
 | GET, POST, PATCH | /shops/me · /shops · /shops/me | seller |
 | GET | /listings?search&category&district&condition&type&minPrice&maxPrice&sort&page · /listings/:slug | none |
-| GET, POST, PATCH, DELETE | /listings/mine · /listings · /listings/:id | seller |
+| GET, POST, PATCH, DELETE | /listings/mine · /listings · /listings/:id (admins may add `?shopId=` to manage any shop) | seller |
 | GET | /jobs?search&category&district&jobType&page · /jobs/:slug | none |
 | POST, PATCH | /jobs · /jobs/:id · /jobs/:id/toggle | cookie (owner) |
 | GET | /jobs/mine · /applications/mine | cookie |
 | POST | /jobs/:id/apply | cookie |
 | GET, PATCH | /jobs/:id/applications · /jobs/:id/applications/:applicationId | cookie (owner) |
-| GET, PATCH | /admin/stats · /admin/users · /admin/users/:id/active · /admin/shops · /admin/shops/:id/verify | admin |
+| GET, PATCH | /admin/stats · /admin/users?q · /admin/users/:id/active · /admin/shops · /admin/shops/:id/verify | admin |
+| POST, GET, PATCH | /admin/shops (for an existing user or a new seller account) · /admin/shops/:id · /admin/shops/:id | admin |
 
 ## Deploy to Vercel
 
