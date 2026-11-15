@@ -44,6 +44,8 @@ function publicPeopleWhere(q = {}) {
   const base = {
     active: true,
     OR: [{ shops: { some: {} } }, { headline: { not: null } }],
+    // Placeholder accounts behind seeded shops belong on "Shop nearby", not here.
+    NOT: { email: { endsWith: "@shops.loco.rw" } },
   };
 
   const filters = [];

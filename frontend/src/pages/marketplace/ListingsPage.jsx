@@ -2,6 +2,7 @@ import { Filter, MapPin, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ListingCard from "../../components/ListingCard";
+import ShopsNearby from "../../components/ShopsNearby";
 import {
   Button,
   Container,
@@ -112,6 +113,7 @@ export default function ListingsPage({ mode = "shop" }) {
           </aside>
 
           <section>
+            {mode === "shop" && <ShopsNearby district={filters.district} search={filters.search} />}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-gray-600">
                 {loading ? t("common.searching") : t("common.results", { count: data?.pagination?.total ?? 0 })} {filters.district ? t("common.in", { district: filters.district }) : t("common.acrossRwanda")}

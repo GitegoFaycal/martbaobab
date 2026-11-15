@@ -211,6 +211,7 @@ export default {
   },
 
   shops: {
+    nearby: "Boutiques près de vous",
     eyebrow: "Boutiques locales",
     title: "Les boutiques sur LOCO",
     text: "Kiosques, boutiques, quincailleries, garages et prestataires de services dans tout le Rwanda.",

@@ -211,6 +211,7 @@ export default {
   },
 
   shops: {
+    nearby: "Amaduka hafi yawe",
     eyebrow: "Amaduka yo hafi",
     title: "Amaduka kuri LOCO",
     text: "Utubari, butike, amaduka y'ibikoresho byo kubaka, garage n'abatanga serivisi mu Rwanda hose.",

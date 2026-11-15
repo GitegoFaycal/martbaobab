@@ -211,6 +211,7 @@ export default {
   },
 
   shops: {
+    nearby: "Shops nearby",
     eyebrow: "Local shops",
     title: "Shops on LOCO",
     text: "Kiosks, boutiques, hardware stores, garages and service providers across Rwanda.",
