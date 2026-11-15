@@ -55,6 +55,13 @@ try {
       env: process.env,
     });
   }
+
+  // Real shops entered by the LOCO team (idempotent, never overwrites edits).
+  // Runs after the demo step, which skips itself once real shops exist.
+  execFileSync(process.execPath, ["prisma/shops.js"], {
+    stdio: "inherit",
+    env: process.env,
+  });
 } catch (error) {
   console.error("");
   console.error("==================================================");
