@@ -4,10 +4,24 @@
 // (<slug>@shops.loco.rw) that the real owner can take over later.
 import "dotenv/config";
 import { randomBytes } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { applyDatabaseUrl } from "../src/config/database-url.js";
 import { normalizePhone } from "../src/constants/rwanda.js";
+import { storeImage } from "./demo-images.js";
+
+// Cover (<slug>.jpg, 480x360) and optional logo (<slug>-logo.jpg, 256x256).
+// Brand marks were taken from the shops' own websites; the others use the
+// category photos. Owners can replace them from their seller portal.
+const IMAGE_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "shop-images");
+
+function bundledImage(file) {
+  const full = path.join(IMAGE_DIR, file);
+  return existsSync(full) ? readFileSync(full) : null;
+}
 
 const prisma = new PrismaClient({ datasourceUrl: applyDatabaseUrl() || undefined });
 
@@ -145,12 +159,39 @@ const SHOPS = [
   },
 ];
 
+// Gives a shop its bundled cover and logo when it has none yet.
+async function seedShopImages(db, shop) {
+  const data = {};
+
+  if (!shop.coverUrl) {
+    const buffer = bundledImage(`${shop.slug}.jpg`);
+    if (buffer) data.coverUrl = await storeImage(db, { buffer, mime: "image/jpeg", width: 480, height: 360 }, shop.ownerId);
+  }
+  if (!shop.logoUrl) {
+    const buffer = bundledImage(`${shop.slug}-logo.jpg`);
+    if (buffer) data.logoUrl = await storeImage(db, { buffer, mime: "image/jpeg", width: 256, height: 256 }, shop.ownerId);
+  }
+
+  if (Object.keys(data).length) {
+    await db.shop.update({ where: { id: shop.id }, data });
+    return true;
+  }
+  return false;
+}
+
 export async function seedShops(db = prisma) {
   let created = 0;
+  let pictured = 0;
 
   for (const entry of SHOPS) {
-    const existing = await db.shop.findUnique({ where: { slug: entry.slug }, select: { id: true } });
-    if (existing) continue;
+    const existing = await db.shop.findUnique({
+      where: { slug: entry.slug },
+      select: { id: true, slug: true, ownerId: true, coverUrl: true, logoUrl: true },
+    });
+    if (existing) {
+      if (await seedShopImages(db, existing)) pictured += 1;
+      continue;
+    }
 
     const email = `${entry.slug}@shops.loco.rw`;
     const owner = await db.user.upsert({
@@ -168,7 +209,8 @@ export async function seedShops(db = prisma) {
       select: { id: true },
     });
 
-    await db.shop.create({
+    const shop = await db.shop.create({
+      select: { id: true, slug: true, ownerId: true, coverUrl: true, logoUrl: true },
       data: {
         name: entry.name,
         slug: entry.slug,
@@ -184,9 +226,10 @@ export async function seedShops(db = prisma) {
       },
     });
     created += 1;
+    if (await seedShopImages(db, shop)) pictured += 1;
   }
 
-  console.log(`Real shops ready: ${SHOPS.length} listed, ${created} created.`);
+  console.log(`Real shops ready: ${SHOPS.length} listed, ${created} created, ${pictured} given images.`);
 }
 
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop());

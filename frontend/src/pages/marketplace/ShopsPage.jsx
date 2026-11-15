@@ -2,6 +2,7 @@ import { BadgeCheck, MapPin, Search, Store } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button, Container, DistrictSelect, EmptyState, PageHeader, Pagination, Spinner } from "../../components/ui";
+import ShopTile from "../../components/ShopTile";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
@@ -52,19 +53,7 @@ export default function ShopsPage() {
           ) : data?.shops?.length ? (
             <>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {data.shops.map((shop) => (
-                  <Link key={shop.id} to={`/shops/${shop.slug}`} className="flex gap-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-loco-blue">
-                    <span className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-loco-navy text-2xl font-black text-white">
-                      {shop.logoUrl ? <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" /> : shop.name.charAt(0)}
-                    </span>
-                    <span className="min-w-0">
-                      <strong className="flex items-center gap-1 text-loco-navy"><span className="truncate">{shop.name}</span>{shop.verified && <BadgeCheck size={15} className="shrink-0 text-loco-sky-dark" />}</strong>
-                      <span className="mt-0.5 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} className="text-loco-blue" /> {shop.district}{shop.sector ? `, ${shop.sector}` : ""}</span>
-                      {shop.description && <span className="mt-2 line-clamp-2 block text-sm text-gray-600">{shop.description}</span>}
-                      <span className="mt-2 block text-xs font-semibold text-gray-400">{t("listing.listings", { count: shop._count?.listings ?? 0 })}</span>
-                    </span>
-                  </Link>
-                ))}
+                {data.shops.map((shop) => <ShopTile key={shop.id} shop={shop} />)}
               </div>
               <Pagination pagination={data.pagination} onPage={(p) => update({ page: p })} />
             </>

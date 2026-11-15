@@ -40,6 +40,28 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+/* Continuous sideways scroll for the shops strip. The track holds the list
+   twice, so moving by half its width loops seamlessly. */
+@keyframes loco-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.loco-marquee {
+  animation: loco-marquee var(--marquee-duration, 40s) linear infinite;
+}
+
+.loco-marquee:hover,
+.loco-marquee:focus-within {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loco-marquee {
+    animation: none;
+  }
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
