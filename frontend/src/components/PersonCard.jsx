@@ -2,7 +2,6 @@ import { BadgeCheck, Briefcase, Eye, Link2, MapPin, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
 import ProfileActions from "./ProfileActions";
-import { Badge } from "./ui";
 
 export function Avatar({ person, size = "h-16 w-16", textSize = "text-2xl" }) {
   return person.avatarUrl ? (
@@ -14,9 +13,12 @@ export function Avatar({ person, size = "h-16 w-16", textSize = "text-2xl" }) {
   );
 }
 
+// Full-bleed portrait with the name, details and the three actions laid over it.
 export default function PersonCard({ person, compact = false }) {
   const t = useT();
   const shop = person.shop;
+  const location = [person.district, person.sector || shop?.sector].filter(Boolean).join(", ") || "Rwanda";
+  const verified = person.verified ?? Boolean(shop?.verified);
 
   if (compact) {
     return (
@@ -32,50 +34,34 @@ export default function PersonCard({ person, compact = false }) {
   }
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-loco-blue hover:shadow-md">
-      <Link to={`/people/${person.id}`} className="block aspect-4/3 w-full overflow-hidden bg-loco-ice">
+    <article className="group relative flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-3xl bg-loco-navy shadow-md transition hover:-translate-y-1 hover:shadow-xl">
+      <Link to={`/people/${person.id}`} className="absolute inset-0" aria-label={person.name}>
         {person.avatarUrl ? (
-          <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+          <img src={person.avatarUrl} alt="" loading="lazy" className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105" />
         ) : (
-          <div className="grid h-full w-full place-items-center bg-loco-sky/30 text-6xl font-black text-loco-navy">{person.name.charAt(0).toUpperCase()}</div>
+          <span className="grid h-full w-full place-items-center bg-loco-sky/40 text-8xl font-black text-loco-navy">{person.name.charAt(0).toUpperCase()}</span>
         )}
+        <span className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/55 to-transparent" />
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
-        <Link to={`/people/${person.id}`} className="flex items-center gap-1 font-black text-loco-ink hover:text-loco-navy">
-          <span className="truncate">{person.name}</span>
-          {shop?.verified && <BadgeCheck size={16} className="shrink-0 text-loco-sky-dark" />}
-        </Link>
-        <p className="mt-0.5 line-clamp-2 text-sm font-semibold text-loco-navy">{person.headline}</p>
-        <p className="mt-1 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} className="text-loco-blue" /> {person.district || "Rwanda"}{shop?.sector ? `, ${shop.sector}` : ""}</p>
+      <div className="pointer-events-none relative p-4 text-white">
+        <div className="pointer-events-auto flex flex-wrap items-center gap-2 text-[11px] font-bold">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 backdrop-blur">
+            {shop ? <><Store size={11} /> {t("people.shopOwner")}</> : <><Briefcase size={11} /> {t("people.specialist")}</>}
+          </span>
+          {verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2 py-0.5"><BadgeCheck size={11} /> {t("landing.verified")}</span>}
+        </div>
 
-        {person.bio && <p className="mt-3 line-clamp-2 text-sm text-gray-600">{person.bio}</p>}
+        <Link to={`/people/${person.id}`} className="pointer-events-auto mt-2 block truncate text-xl font-black drop-shadow">{person.name}</Link>
+        <p className="line-clamp-2 text-sm font-semibold text-loco-sky">{person.headline}</p>
+        <p className="mt-1 flex items-center gap-1 truncate text-xs text-white/80"><MapPin size={12} /> {location}</p>
 
-        {person.skills?.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {person.skills.slice(0, 4).map((skill) => (
-              <span key={skill} className="rounded-full bg-loco-ice px-2.5 py-1 text-xs font-semibold text-loco-navy">{skill}</span>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-3 text-xs text-white/80">
+          <span className="inline-flex items-center gap-1 font-semibold text-loco-sky"><Link2 size={12} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>
           <span className="inline-flex items-center gap-1"><Eye size={12} /> {t("connections.viewers", { count: person.views ?? 0 })}</span>
-          <span className="inline-flex items-center gap-1 font-semibold text-loco-sky-dark"><Link2 size={12} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>
-        </div>
+        </p>
 
-        <div className="mt-4"><ProfileActions person={person} /></div>
-
-        <div className="mt-auto flex items-center justify-between pt-4 text-xs text-gray-500">
-          <Badge tone={shop ? "blue" : "mint"}>
-            {shop ? <><Store size={12} /> {t("people.shopOwner")}</> : <><Briefcase size={12} /> {t("people.specialist")}</>}
-          </Badge>
-          {shop ? (
-            <span>{t("listing.listings", { count: shop._count?.listings ?? 0 })}</span>
-          ) : person.openJobs > 0 ? (
-            <span>{t("people.openJobs", { count: person.openJobs })}</span>
-          ) : null}
-        </div>
+        <div className="pointer-events-auto mt-3"><ProfileActions person={person} tone="dark" /></div>
       </div>
     </article>
   );

@@ -9,7 +9,7 @@ import { whatsappLink } from "../lib/rwanda";
 import WhatsAppIcon from "./WhatsAppIcon";
 
 // The three actions every profile offers: WhatsApp me, Visit, Connect.
-export default function ProfileActions({ person, layout = "row", size = "sm" }) {
+export default function ProfileActions({ person, layout = "row", size = "sm", tone = "light" }) {
   const t = useT();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ export default function ProfileActions({ person, layout = "row", size = "sm" }) 
         </a>
       ) : null}
 
-      <Link to={visitTo} className={`${base} border border-loco-navy bg-white text-loco-navy hover:bg-loco-ice`}>
+      <Link to={visitTo} className={`${base} ${tone === "dark" ? "border border-white/70 bg-white/15 text-white backdrop-blur hover:bg-white/30" : "border border-loco-navy bg-white text-loco-navy hover:bg-loco-ice"}`}>
         {person.shop ? <Store size={16} /> : <UserRound size={16} />}
         {person.shop ? t("landing.visitBusiness") : t("landing.visitProfile")}
       </Link>
@@ -66,7 +66,7 @@ export default function ProfileActions({ person, layout = "row", size = "sm" }) 
           type="button"
           onClick={connect}
           disabled={busy || connected}
-          className={`${base} ${connected ? "bg-loco-sky text-loco-navy-dark" : "bg-loco-navy text-white hover:bg-loco-navy-dark"} disabled:cursor-default`}
+          className={`${base} ${connected ? "bg-loco-sky text-loco-navy-dark" : tone === "dark" ? "bg-loco-blue text-white hover:bg-loco-blue-dark" : "bg-loco-navy text-white hover:bg-loco-navy-dark"} disabled:cursor-default`}
         >
           {connected ? <Check size={16} /> : <Link2 size={16} />}
           {connected ? t("landing.connected") : t("landing.connect")}

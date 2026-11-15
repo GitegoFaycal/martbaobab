@@ -1,14 +1,4 @@
-import {
-  BadgeCheck,
-  Briefcase,
-  Eye,
-  Link2,
-  MapPin,
-  Search,
-  SlidersHorizontal,
-  Store,
-  Users,
-} from "lucide-react";
+import { Briefcase, Search, SlidersHorizontal, Store, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { buildQuery } from "../../api/api";
@@ -16,7 +6,7 @@ import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
 import { Button, DistrictSelect, EmptyState, Spinner } from "../ui";
-import ProfileActions from "../ProfileActions";
+import PersonCard from "../PersonCard";
 
 const PAGE = 10;
 
@@ -120,9 +110,9 @@ export default function PeopleFeed() {
         ) : people.length === 0 ? (
           <EmptyState icon={Users} title={t("people.none")} description={t("landing.noPeople")} action={district ? <Button variant="outline" onClick={() => { setDistrict(""); saveDistrict(""); }}>{t("common.allDistricts")}</Button> : null} />
         ) : (
-          <ul className="space-y-3">
-            {people.map((person) => <PersonRow key={person.id} person={person} />)}
-          </ul>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {people.map((person) => <PersonCard key={person.id} person={person} />)}
+          </div>
         )}
 
         {people.length < total && (
@@ -132,45 +122,5 @@ export default function PeopleFeed() {
         )}
       </div>
     </section>
-  );
-}
-
-function PersonRow({ person }) {
-  const t = useT();
-  const shop = person.shop;
-  const location = [person.district, person.sector].filter(Boolean).join(", ") || "Rwanda";
-
-  return (
-    <li className="flex flex-col gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm transition hover:border-loco-blue lg:flex-row lg:items-center lg:gap-4 lg:p-4">
-      <div className="flex items-center gap-3 sm:gap-4 lg:flex-1">
-      <Link to={`/people/${person.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-loco-ice sm:h-24 sm:w-24">
-        {person.avatarUrl ? (
-          <img src={person.avatarUrl} alt={person.name} loading="lazy" className="h-full w-full object-cover" />
-        ) : (
-          <span className="grid h-full w-full place-items-center bg-loco-sky/30 text-3xl font-black text-loco-navy">{person.name.charAt(0).toUpperCase()}</span>
-        )}
-      </Link>
-
-      <div className="min-w-0 flex-1">
-        <Link to={`/people/${person.id}`} className="block truncate text-base font-black text-loco-ink hover:text-loco-navy sm:text-lg">{person.name}</Link>
-        <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-gray-600">
-          {shop ? <Store size={14} className="shrink-0 text-loco-blue" /> : <Briefcase size={14} className="shrink-0 text-loco-blue" />}
-          <span className="truncate">{person.headline}</span>
-        </p>
-        <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-gray-500">
-          <MapPin size={12} className="shrink-0 text-loco-blue" /> {location}
-        </p>
-        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs">
-          {person.verified && <span className="inline-flex items-center gap-1 font-bold text-green-700"><BadgeCheck size={13} /> {t("landing.verified")}</span>}
-          <span className="inline-flex items-center gap-1 text-loco-sky-dark"><Link2 size={12} /> {person.connections ?? 0}</span>
-          <span className="inline-flex items-center gap-1 text-gray-400"><Eye size={12} /> {person.views ?? 0}</span>
-        </p>
-      </div>
-      </div>
-
-      <div className="shrink-0">
-        <ProfileActions person={person} />
-      </div>
-    </li>
   );
 }

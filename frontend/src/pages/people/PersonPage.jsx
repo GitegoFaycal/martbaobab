@@ -3,7 +3,6 @@ import ProfileActions from "../../components/ProfileActions";
 import { Link, useParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
 import ListingCard from "../../components/ListingCard";
-import { Avatar } from "../../components/PersonCard";
 import { Badge, Breadcrumbs, Button, Container, EmptyState, Spinner } from "../../components/ui";
 import useFetch from "../../hooks/useFetch";
 import { useI18n } from "../../i18n";
@@ -42,24 +41,36 @@ export default function PersonPage() {
 
   return (
     <main className="min-h-[75vh] bg-loco-ice pb-12">
-      <div className="h-40 bg-linear-to-r from-loco-navy to-loco-blue sm:h-48">
-        {shop?.coverUrl && <img src={shop.coverUrl} alt="" className="h-full w-full object-cover opacity-80" />}
-      </div>
-
       <Container>
-        <div className="-mt-14 rounded-3xl border border-blue-100 bg-white p-6 shadow-lg sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-            <Avatar person={person} size="h-28 w-28" textSize="text-4xl" />
+        <section className="relative mt-6 flex min-h-[28rem] flex-col justify-end overflow-hidden rounded-3xl bg-loco-navy shadow-lg sm:min-h-[30rem]">
+          {person.avatarUrl ? (
+            <img src={person.avatarUrl} alt="" className="absolute inset-0 h-full w-full object-cover object-top" />
+          ) : shop?.coverUrl ? (
+            <img src={shop.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          ) : null}
+          <div className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/50 to-transparent" />
 
-            <div className="min-w-0 flex-1">
-              <h1 className="flex flex-wrap items-center gap-2 text-2xl font-black text-loco-navy sm:text-3xl">
+          <div className="relative flex flex-col gap-5 p-6 text-white sm:flex-row sm:items-end sm:justify-between sm:p-8">
+            <div className="min-w-0">
+              <h1 className="flex flex-wrap items-center gap-2 text-3xl font-black drop-shadow sm:text-4xl">
                 {person.name}
-                {shop?.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700"><BadgeCheck size={14} /> {t("common.verified")}</span>}
+                {shop?.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2.5 py-1 text-xs font-bold"><BadgeCheck size={14} /> {t("common.verified")}</span>}
               </h1>
-              <p className="mt-1 text-lg font-semibold text-loco-blue">{person.headline}</p>
-              <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" />{person.district || "Rwanda"}{shop?.sector ? `, ${shop.sector}` : ""}</p>
+              <p className="mt-1 text-lg font-semibold text-loco-sky">{person.headline}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-white/80"><MapPin size={14} />{person.district || "Rwanda"}{shop?.sector ? `, ${shop.sector}` : ""}</p>
+            </div>
 
-              <div className="mt-3 flex flex-wrap gap-2">
+            <div className="flex shrink-0 flex-col gap-2 sm:w-56">
+              <ProfileActions person={{ ...person, whatsapp: person.whatsapp || person.phone }} layout="column" size="lg" tone="dark" />
+              {person.phone && <a href={`tel:${person.phone}`} onClick={() => recordConnection({ personId: person.id, channel: "CALL" })} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-bold text-white hover:bg-white/15"><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</a>}
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-6 rounded-3xl border border-blue-100 bg-white p-6 shadow-lg sm:p-8">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap gap-2">
                 <Badge tone={shop ? "blue" : "mint"}>{shop ? <><Store size={12} /> {t("people.shopOwner")}</> : <><Briefcase size={12} /> {t("people.specialist")}</>}</Badge>
                 {person.skills?.map((skill) => <span key={skill} className="rounded-full bg-loco-ice px-2.5 py-1 text-xs font-semibold text-loco-navy">{skill}</span>)}
               </div>
@@ -80,11 +91,6 @@ export default function PersonPage() {
               <p className="mt-4 text-xs text-gray-400">{t("people.memberSince", { date: formatDate(person.createdAt, { month: "long", year: "numeric" }, lang) })}</p>
             </div>
 
-            <div className="flex shrink-0 flex-col gap-2 sm:w-56">
-              <h2 className="text-xs font-bold uppercase tracking-wide text-gray-400">{t("people.contact")}</h2>
-              <ProfileActions person={{ ...person, whatsapp: person.whatsapp || person.phone }} layout="column" size="lg" />
-              {person.phone && <Button as="a" href={`tel:${person.phone}`} variant="ghost" onClick={() => recordConnection({ personId: person.id, channel: "CALL" })}><Phone size={17} /> {formatPhoneForDisplay(person.phone)}</Button>}
-            </div>
           </div>
         </div>
 
