@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import WhatsAppIcon from "./WhatsAppIcon";
 import useFetch from "../hooks/useFetch";
 import { useT } from "../i18n";
-import CategoryIcon from "./CategoryIcon";
+import { categoryImage } from "../lib/categoryImages";
 import JobCard from "./JobCard";
 import ListingCard from "./ListingCard";
 import { Container, Spinner } from "./ui";
@@ -49,13 +49,21 @@ export function CategoryStrip({ kind = "GOODS", basePath = "/shop", title, eyebr
         {loading ? (
           <Spinner />
         ) : (
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
             {categories.map((category) => (
-              <Link key={category.id} to={`${basePath}?category=${category.slug}`} className="group rounded-2xl border border-blue-100 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-loco-blue">
-                <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-loco-ice text-loco-navy group-hover:bg-loco-blue group-hover:text-white">
-                  <CategoryIcon name={category.icon} />
-                </span>
-                <b className="line-clamp-2 text-xs sm:text-sm">{category.name}</b>
+              <Link
+                key={category.id}
+                to={`${basePath}?category=${category.slug}`}
+                className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-loco-navy shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              >
+                <img
+                  src={categoryImage(category.slug)}
+                  alt=""
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                />
+                <span className="absolute inset-0 bg-linear-to-t from-loco-navy/90 via-loco-navy/30 to-transparent" />
+                <b className="absolute inset-x-0 bottom-0 line-clamp-2 p-3 text-sm leading-tight text-white drop-shadow sm:text-[15px]">{category.name}</b>
               </Link>
             ))}
           </div>
@@ -146,23 +154,24 @@ export function HowItWorks() {
 export function PillarStrip() {
   const t = useT();
   const pillars = [
-    { to: "/shop", title: t("hero.pillarShop"), text: t("hero.pillarShopText"), accent: "bg-loco-blue" },
-    { to: "/second-hand", title: t("hero.pillarSecondHand"), text: t("hero.pillarSecondHandText"), accent: "bg-loco-sky" },
-    { to: "/jobs", title: t("hero.pillarJobs"), text: t("hero.pillarJobsText"), accent: "bg-loco-navy" },
-    { to: "/services", title: t("hero.pillarServices"), text: t("hero.pillarServicesText"), accent: "bg-loco-blue" },
+    { to: "/shop", title: t("hero.pillarShop"), text: t("hero.pillarShopText"), image: "/pillars/shop.jpg" },
+    { to: "/second-hand", title: t("hero.pillarSecondHand"), text: t("hero.pillarSecondHandText"), image: "/pillars/second-hand.jpg" },
+    { to: "/jobs", title: t("hero.pillarJobs"), text: t("hero.pillarJobsText"), image: "/pillars/jobs.jpg" },
+    { to: "/services", title: t("hero.pillarServices"), text: t("hero.pillarServicesText"), image: "/pillars/services.jpg" },
   ];
 
   return (
     <section className="py-10">
       <Container>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {pillars.map(({ to, title, text, accent }) => (
-            <Link key={to} to={to} className="group flex items-start gap-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-loco-blue">
-              <span className={`mt-1 h-10 w-1.5 shrink-0 rounded-full ${accent}`} />
-              <span>
-                <strong className="block text-loco-ink">{title}</strong>
-                <span className="mt-0.5 block text-sm text-gray-500">{text}</span>
-                <span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-loco-navy group-hover:gap-2">{t("hero.explore")} <ArrowRight size={14} /></span>
+          {pillars.map(({ to, title, text, image }) => (
+            <Link key={to} to={to} className="group relative flex min-h-44 flex-col justify-end overflow-hidden rounded-2xl bg-loco-navy p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+              <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <span className="absolute inset-0 bg-linear-to-t from-loco-navy/95 via-loco-navy/50 to-loco-navy/10" />
+              <span className="relative">
+                <strong className="block text-lg text-white drop-shadow">{title}</strong>
+                <span className="mt-0.5 block text-sm text-white/80">{text}</span>
+                <span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-loco-sky group-hover:gap-2">{t("hero.explore")} <ArrowRight size={14} /></span>
               </span>
             </Link>
           ))}
