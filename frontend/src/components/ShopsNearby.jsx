@@ -25,7 +25,7 @@ export default function ShopsNearby({ district = "", search = "" }) {
         <Link to={`/shops${buildQuery({ district })}`} className="inline-flex items-center gap-1 text-sm font-bold text-loco-navy hover:gap-2">{t("home.allShops")} <ArrowRight size={14} /></Link>
       </div>
 
-      <div className="-mx-4 overflow-hidden px-4 sm:mx-0 sm:px-0" style={{ maskImage: scrolls ? "linear-gradient(to right, transparent, black 4%, black 96%, transparent)" : undefined }}>
+      <div className="-mx-4 max-w-[calc(100%+2rem)] overflow-hidden px-4 sm:mx-0 sm:max-w-full sm:px-0" style={{ maskImage: scrolls ? "linear-gradient(to right, transparent, black 4%, black 96%, transparent)" : undefined }}>
         <div className={`flex w-max gap-3 pb-2 ${scrolls ? "loco-marquee" : ""}`} style={{ "--marquee-duration": `${Math.max(24, shops.length * 5)}s` }}>
           {track.map((shop, index) => (
             <ShopTile key={`${shop.id}-${index}`} shop={shop} className="w-56 shrink-0" />

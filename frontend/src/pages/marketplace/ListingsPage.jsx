@@ -112,7 +112,7 @@ export default function ListingsPage({ mode = "shop" }) {
             </div>
           </aside>
 
-          <section>
+          <section className="min-w-0">
             {mode === "shop" && <ShopsNearby district={filters.district} search={filters.search} />}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-gray-600">
