@@ -1,7 +1,8 @@
-import { ArrowLeft, BadgeCheck, ExternalLink, ImageOff, Link2, MapPin, Package, Pencil, Plus, Trash2, UserRound } from "lucide-react";
+import { ArrowLeft, BadgeCheck, ExternalLink, ImageOff, Link2, MapPin, Package, Pencil, Plus, Trash2, UserRound, UserRoundCog } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { apiRequest } from "../../api/api";
+import { apiRequest, fieldErrorsFrom } from "../../api/api";
+import OwnerPicker from "../../components/admin/OwnerPicker";
 import { Badge, Button, Container, EmptyState, Message, Spinner } from "../../components/ui";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
@@ -17,9 +18,13 @@ export default function AdminShopPage() {
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [assigning, setAssigning] = useState(false);
+  const [ownerChoice, setOwnerChoice] = useState({ mode: "new", ownerId: "", owner: null, ready: false });
+  const [ownerErrors, setOwnerErrors] = useState({});
 
   const shop = data?.shop;
   const listings = shop?.listings || [];
+  const isPlaceholder = Boolean(shop?.owner?.email?.endsWith("@shops.loco.rw"));
 
   async function toggleVerified() {
     setBusy("verify");
@@ -28,6 +33,25 @@ export default function AdminShopPage() {
       await apiRequest(`/admin/shops/${id}/verify`, { method: "PATCH", body: { verified: !shop.verified } });
       refetch();
     } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function assignOwner(event) {
+    event.preventDefault();
+    setBusy("owner");
+    setError("");
+    setOwnerErrors({});
+    try {
+      const body = ownerChoice.mode === "existing" ? { ownerId: ownerChoice.ownerId } : { owner: ownerChoice.owner };
+      const response = await apiRequest(`/admin/shops/${id}/owner`, { method: "PATCH", body });
+      setNotice(response.message);
+      setAssigning(false);
+      refetch();
+    } catch (requestError) {
+      setOwnerErrors(fieldErrorsFrom(requestError));
       setError(requestError.message);
     } finally {
       setBusy("");
@@ -90,8 +114,18 @@ export default function AdminShopPage() {
               <div className="mt-4 rounded-2xl bg-loco-ice p-4 text-sm">
                 <p className="flex items-center gap-2 font-bold text-loco-navy"><UserRound size={16} /> Owner</p>
                 <p className="mt-1 text-loco-ink">{shop.owner.name} <span className="text-gray-500">· {shop.owner.email} · {formatPhoneForDisplay(shop.owner.phone)}</span></p>
-                <p className="mt-1 text-xs text-gray-500">The owner manages this same shop from their seller portal after logging in.</p>
+                <p className="mt-1 text-xs text-gray-500">{isPlaceholder ? "Placeholder account from the shop list. Assign the real owner so they can log in and add products." : "The owner manages this same shop from their seller portal after logging in."}</p>
+                <Button variant={isPlaceholder ? "orange" : "outline"} size="sm" className="mt-3" onClick={() => setAssigning((current) => !current)}><UserRoundCog size={15} /> {assigning ? "Cancel" : "Assign owner"}</Button>
               </div>
+
+              {assigning && (
+                <form onSubmit={assignOwner} className="mt-4 rounded-2xl border border-blue-100 bg-white p-4">
+                  <h2 className="mb-3 text-sm font-black text-loco-navy">New owner of {shop.name}</h2>
+                  <OwnerPicker onChange={setOwnerChoice} errors={ownerErrors} excludeUserId={shop.owner.id} />
+                  <p className="mt-3 text-xs text-gray-500">{isPlaceholder ? "The placeholder account is disabled once the shop is handed over." : `${shop.owner.name} keeps their account but no longer manages this shop.`}</p>
+                  <Button type="submit" variant="orange" className="mt-3" loading={busy === "owner"} disabled={!ownerChoice.ready}>Hand over the shop</Button>
+                </form>
+              )}
             </div>
 
             <div className="flex shrink-0 flex-col gap-2 sm:w-52">

@@ -111,7 +111,7 @@ All routes are under `/api`. "cookie" means the httpOnly session cookie set at l
 | POST | /jobs/:id/apply | cookie |
 | GET, PATCH | /jobs/:id/applications · /jobs/:id/applications/:applicationId | cookie (owner) |
 | GET, PATCH | /admin/stats · /admin/users?q · /admin/users/:id/active · /admin/shops · /admin/shops/:id/verify | admin |
-| POST, GET, PATCH | /admin/shops (for an existing user or a new seller account) · /admin/shops/:id · /admin/shops/:id | admin |
+| POST, GET, PATCH | /admin/shops (for an existing user or a new seller account) · /admin/shops/:id · /admin/shops/:id · /admin/shops/:id/owner (hand the shop to another person) | admin |
 
 ## Deploy to Vercel
 

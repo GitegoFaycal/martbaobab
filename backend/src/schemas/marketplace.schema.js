@@ -38,33 +38,37 @@ const shopFields = {
 
 export const shopSchema = z.object({ body: z.object(shopFields) });
 
-// Admins create a shop for an existing user (ownerId) or for a brand-new
-// seller account (owner).
-export const adminShopSchema = z.object({
-  body: z
+// Who owns a shop: an existing user (ownerId) or a brand-new seller
+// account (owner). Shared by shop creation and ownership transfer.
+const ownerFields = {
+  ownerId: z.string().trim().optional().or(z.literal("")),
+  owner: z
     .object({
-      ...shopFields,
-      ownerId: z.string().trim().optional().or(z.literal("")),
-      owner: z
-        .object({
-          name: z.string().trim().min(2, "Owner name is too short").max(100),
-          email: z.string().trim().toLowerCase().email("Enter a valid email address"),
-          phone,
-          password: z
-            .string()
-            .min(8, "Password must contain at least 8 characters")
-            .max(72)
-            .regex(/[A-Z]/, "Password must contain an uppercase letter")
-            .regex(/[a-z]/, "Password must contain a lowercase letter")
-            .regex(/[0-9]/, "Password must contain a number"),
-          district: district.optional().or(z.literal("")),
-        })
-        .optional(),
+      name: z.string().trim().min(2, "Owner name is too short").max(100),
+      email: z.string().trim().toLowerCase().email("Enter a valid email address"),
+      phone,
+      password: z
+        .string()
+        .min(8, "Password must contain at least 8 characters")
+        .max(72)
+        .regex(/[A-Z]/, "Password must contain an uppercase letter")
+        .regex(/[a-z]/, "Password must contain a lowercase letter")
+        .regex(/[0-9]/, "Password must contain a number"),
+      district: district.optional().or(z.literal("")),
     })
-    .refine((data) => data.ownerId || data.owner, {
-      message: "Choose an existing user or create the seller account",
-      path: ["ownerId"],
-    }),
+    .optional(),
+};
+const requireOwner = {
+  message: "Choose an existing user or create the seller account",
+  path: ["ownerId"],
+};
+
+export const adminShopSchema = z.object({
+  body: z.object({ ...shopFields, ...ownerFields }).refine((data) => data.ownerId || data.owner, requireOwner),
+});
+
+export const assignOwnerSchema = z.object({
+  body: z.object(ownerFields).refine((data) => data.ownerId || data.owner, requireOwner),
 });
 
 export const listingSchema = z.object({

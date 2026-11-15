@@ -167,13 +167,10 @@ function shopData(body) {
   };
 }
 
-// Admin creates a shop on behalf of a seller: either an existing user
+// Resolves the owner an admin picked: an existing user without a shop
 // (promoted to SELLER if needed) or a new seller account created here.
-export const createShopForOwner = asyncHandler(async (req, res) => {
-  const body = req.validated.body;
-  let ownerId = body.ownerId || null;
-
-  if (!ownerId) {
+async function resolveOwnerId(body, fallbackDistrict) {
+  if (!body.ownerId) {
     const phone = normalizePhone(body.owner.phone);
     const clash = await prisma.user.findFirst({
       where: { OR: [{ email: body.owner.email }, { phone }] },
@@ -188,24 +185,33 @@ export const createShopForOwner = asyncHandler(async (req, res) => {
         name: body.owner.name,
         email: body.owner.email,
         phone,
-        district: body.owner.district || body.district,
+        district: body.owner.district || fallbackDistrict || null,
         passwordHash: await bcrypt.hash(body.owner.password, 12),
         role: "SELLER",
       },
       select: { id: true },
     });
-    ownerId = owner.id;
-  } else {
-    const owner = await prisma.user.findUnique({
-      where: { id: ownerId },
-      select: { id: true, role: true, shops: { select: { id: true, name: true }, take: 1 } },
-    });
-    if (!owner) throw httpError(404, "Owner not found");
-    if (owner.shops.length) throw httpError(409, `This user already owns "${owner.shops[0].name}". Edit that shop instead.`);
-    if (owner.role === "CUSTOMER") {
-      await prisma.user.update({ where: { id: ownerId }, data: { role: "SELLER" } });
-    }
+    return owner.id;
   }
+
+  const owner = await prisma.user.findUnique({
+    where: { id: body.ownerId },
+    select: { id: true, role: true, shops: { select: { id: true, name: true }, take: 1 } },
+  });
+  if (!owner) throw httpError(404, "Owner not found");
+  if (owner.shops.length) throw httpError(409, `This user already owns "${owner.shops[0].name}". Edit that shop instead.`);
+  if (owner.role === "CUSTOMER") {
+    await prisma.user.update({ where: { id: owner.id }, data: { role: "SELLER" } });
+  }
+  return owner.id;
+}
+
+// Placeholder accounts created by the shop seed, not real people.
+const PLACEHOLDER_SUFFIX = "@shops.loco.rw";
+
+export const createShopForOwner = asyncHandler(async (req, res) => {
+  const body = req.validated.body;
+  const ownerId = await resolveOwnerId(body, body.district);
 
   const baseSlug = slugify(body.name);
   const taken = await prisma.shop.findUnique({ where: { slug: baseSlug } });
@@ -221,6 +227,30 @@ export const createShopForOwner = asyncHandler(async (req, res) => {
   });
 
   return res.status(201).json({ success: true, message: "Shop created", shop: serialize(shop) });
+});
+
+// Hands a shop to a different person. The previous owner keeps their
+// account unless it was a seed placeholder, which is disabled.
+export const assignShopOwner = asyncHandler(async (req, res) => {
+  const shop = await prisma.shop.findUnique({
+    where: { id: req.params.id },
+    select: { id: true, district: true, owner: { select: { id: true, email: true } } },
+  });
+  if (!shop) throw httpError(404, "Shop not found");
+
+  const ownerId = await resolveOwnerId(req.validated.body, shop.district);
+
+  const updated = await prisma.shop.update({
+    where: { id: shop.id },
+    data: { ownerId },
+    select: adminShopSelect,
+  });
+
+  if (shop.owner.email.endsWith(PLACEHOLDER_SUFFIX)) {
+    await prisma.user.update({ where: { id: shop.owner.id }, data: { active: false } });
+  }
+
+  return res.status(200).json({ success: true, message: `${updated.owner.name} now owns this shop`, shop: serialize(updated) });
 });
 
 export const getShopForAdmin = asyncHandler(async (req, res) => {

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  assignShopOwner,
   createShopForOwner,
   getShopForAdmin,
   getStats,
@@ -12,7 +13,7 @@ import {
 import authenticate from "../middleware/authenticate.js";
 import authorize from "../middleware/authorize.js";
 import validate from "../middleware/validate.js";
-import { adminShopSchema, shopSchema } from "../schemas/marketplace.schema.js";
+import { adminShopSchema, assignOwnerSchema, shopSchema } from "../schemas/marketplace.schema.js";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.post("/shops", validate(adminShopSchema), createShopForOwner);
 router.get("/shops/:id", getShopForAdmin);
 router.patch("/shops/:id", validate(shopSchema), updateShopForAdmin);
 router.patch("/shops/:id/verify", setShopVerified);
+router.patch("/shops/:id/owner", validate(assignOwnerSchema), assignShopOwner);
 
 export default router;
