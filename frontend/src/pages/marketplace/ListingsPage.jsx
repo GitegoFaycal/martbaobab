@@ -1,4 +1,4 @@
-import { Filter, MapPin, Search } from "lucide-react";
+import { ChevronDown, Filter, MapPin, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ListingCard from "../../components/ListingCard";
@@ -67,6 +67,7 @@ export default function ListingsPage({ mode = "shop" }) {
   }
 
   const activeFilterCount = [filters.category, filters.minPrice, filters.maxPrice].filter(Boolean).length;
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
     <main className="min-h-[75vh] bg-loco-ice py-10">
@@ -85,8 +86,13 @@ export default function ListingsPage({ mode = "shop" }) {
           <Button type="submit" variant="orange">{t("common.search")}</Button>
         </form>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[250px_1fr]">
-          <aside className="space-y-5 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:self-start">
+        <button type="button" onClick={() => setFiltersOpen((current) => !current)} aria-expanded={filtersOpen} className="mt-4 inline-flex w-full items-center justify-between rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm font-black text-loco-navy shadow-sm lg:hidden">
+          <span className="inline-flex items-center gap-2"><Filter size={16} /> {t("common.filters")}{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}</span>
+          <ChevronDown size={18} className={`transition ${filtersOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        <div className="mt-4 grid gap-6 lg:mt-6 lg:grid-cols-[250px_1fr]">
+          <aside className={`${filtersOpen ? "" : "hidden "}space-y-5 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:block lg:self-start`}>
             <div className="flex items-center justify-between">
               <h2 className="inline-flex items-center gap-2 font-black text-loco-navy"><Filter size={17} /> {t("common.filters")}</h2>
               {activeFilterCount > 0 && <button type="button" onClick={() => update({ category: "", minPrice: "", maxPrice: "" })} className="text-xs font-bold text-loco-blue">{t("common.clear")} ({activeFilterCount})</button>}

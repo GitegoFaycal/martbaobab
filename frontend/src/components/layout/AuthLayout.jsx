@@ -20,7 +20,7 @@ export default function AuthLayout() {
         <div className="absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-loco-sky/20" />
 
         <div className="relative flex items-center justify-between">
-          <Logo light />
+          <Logo full light />
           <LanguageSwitcher light />
         </div>
 

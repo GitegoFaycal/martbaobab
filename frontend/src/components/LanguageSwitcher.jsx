@@ -1,12 +1,12 @@
 import { Globe } from "lucide-react";
 import { LANGUAGES, useI18n } from "../i18n";
 
-export default function LanguageSwitcher({ light = false, className = "" }) {
+export default function LanguageSwitcher({ light = false, className = "inline-flex" }) {
   const { lang, setLang, t } = useI18n();
 
   return (
     <label
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-bold ${
+      className={`items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-bold ${
         light
           ? "border-white/30 text-white"
           : "border-blue-100 bg-white text-loco-navy"

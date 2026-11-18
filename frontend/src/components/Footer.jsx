@@ -41,7 +41,7 @@ export default function Footer() {
     <footer className="border-t border-blue-100 bg-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
-          <Logo />
+          <Logo full />
           <p className="mt-4 max-w-sm text-sm leading-6 text-gray-500">{t("footer.tagline")}</p>
           <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-loco-blue">{t("footer.pay")}</p>
           <div className="mt-4"><LanguageSwitcher /></div>

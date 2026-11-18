@@ -49,7 +49,7 @@ export default function ListingCard({ listing }) {
         <Link to={`/listings/${listing.slug}`} className="line-clamp-2 font-bold leading-snug text-loco-ink hover:text-loco-navy">{listing.name}</Link>
 
         <div className="mt-2 flex items-baseline gap-2">
-          <strong className="text-lg text-loco-navy">{formatRWF(listing.price)}</strong>
+          <strong className="whitespace-nowrap text-lg text-loco-navy">{formatRWF(listing.price)}</strong>
           {listing.unit && <span className="text-xs text-gray-500">/ {listing.unit}</span>}
           {listing.originalPrice && discount > 0 && <span className="text-xs text-gray-400 line-through">{formatRWF(listing.originalPrice)}</span>}
         </div>

@@ -1,4 +1,4 @@
-import { Briefcase, MapPin, Search } from "lucide-react";
+import { Briefcase, MapPin, Search, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
@@ -22,6 +22,7 @@ export default function JobsPage() {
   };
 
   const [text, setText] = useState(filters.search);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   useEffect(() => setText(filters.search), [filters.search]);
 
   const { data, loading } = useFetch(`/jobs${buildQuery({ ...filters, perPage: 20 })}`);
@@ -61,8 +62,13 @@ export default function JobsPage() {
           <Button type="submit" variant="orange">{t("common.search")}</Button>
         </form>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
-          <aside className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:self-start">
+        <button type="button" onClick={() => setFiltersOpen((current) => !current)} aria-expanded={filtersOpen} className="mt-4 inline-flex w-full items-center justify-between rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm font-black text-loco-navy shadow-sm lg:hidden">
+          <span>{t("jobs.typeOfWork")}{filters.category ? ` · ${categories.find((c) => c.slug === filters.category)?.name || ""}` : ""}</span>
+          <ChevronDown size={18} className={`transition ${filtersOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        <div className="mt-4 grid gap-6 lg:mt-6 lg:grid-cols-[240px_1fr]">
+          <aside className={`${filtersOpen ? "" : "hidden "}rounded-2xl border border-blue-100 bg-white p-4 shadow-sm lg:sticky lg:top-24 lg:block lg:self-start`}>
             <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">{t("jobs.typeOfWork")}</h2>
             <ul className="space-y-1 text-sm">
               <li><button type="button" onClick={() => update({ category: "" })} className={`w-full rounded-lg px-3 py-2 text-left font-semibold ${!filters.category ? "bg-loco-ice text-loco-navy" : "hover:bg-loco-ice"}`}>{t("jobs.allWork")}</button></li>

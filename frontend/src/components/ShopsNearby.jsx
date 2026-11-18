@@ -22,7 +22,7 @@ export default function ShopsNearby({ district = "", search = "" }) {
     <section className="mb-6">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-lg font-black text-loco-navy"><Store size={18} className="text-loco-blue" /> {t("shops.nearby")}{district ? ` · ${district}` : ""}</h2>
-        <Link to={`/shops${buildQuery({ district })}`} className="inline-flex items-center gap-1 text-sm font-bold text-loco-navy hover:gap-2">{t("home.allShops")} <ArrowRight size={14} /></Link>
+        <Link to={`/shops${buildQuery({ district })}`} className="inline-flex items-center gap-1 text-sm font-bold text-loco-navy hover:gap-2">{t("listing.allShops")} <ArrowRight size={14} /></Link>
       </div>
 
       <div className="-mx-4 max-w-[calc(100%+2rem)] overflow-hidden px-4 sm:mx-0 sm:max-w-full sm:px-0" style={{ maskImage: scrolls ? "linear-gradient(to right, transparent, black 4%, black 96%, transparent)" : undefined }}>

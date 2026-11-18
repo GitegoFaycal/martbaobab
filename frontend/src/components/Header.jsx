@@ -109,7 +109,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-blue-100 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-7xl min-w-0 items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3">
         <Logo onClick={() => setMobileOpen(false)} />
 
         <nav className="ml-4 hidden items-center gap-1 lg:flex">
@@ -121,7 +121,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <LanguageSwitcher className="hidden md:inline-flex" />
 
           <Link
@@ -199,7 +199,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setMobileOpen((current) => !current)}
-            className="rounded-lg p-2 text-loco-navy lg:hidden"
+            className="shrink-0 rounded-lg p-2 text-loco-navy lg:hidden"
             aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.openMenu")}
             aria-expanded={mobileOpen}
           >
