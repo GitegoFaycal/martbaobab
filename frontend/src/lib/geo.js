@@ -1,9 +1,39 @@
 // Finding the visitor's place. Everything stays on this device: the place is
 // kept in localStorage and never attached to the account.
 import { apiRequest } from "../api/api";
-import { EMPTY_LOCATION, saveLocation } from "./locations";
+import { EMPTY_LOCATION, getSavedLocation, saveLocation } from "./locations";
 
 const SOURCE_KEY = "loco.locationSource"; // "gps" | "ip" | "manual"
+const COORDS_KEY = "loco.coords";
+
+export function getSavedCoords() {
+  try {
+    const raw = localStorage.getItem(COORDS_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw);
+    return Number.isFinite(c.lat) && Number.isFinite(c.lng) ? { lat: c.lat, lng: c.lng } : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveCoords(coords) {
+  try {
+    if (coords) localStorage.setItem(COORDS_KEY, JSON.stringify({ lat: coords.lat, lng: coords.lng, at: Date.now() }));
+    else localStorage.removeItem(COORDS_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+// "lat,lng" for ?near=, only when it makes sense: the device has GPS
+// coordinates and the visitor is not browsing a different district on purpose.
+export function nearFor(place) {
+  const coords = getSavedCoords();
+  if (!coords) return null;
+  if (place?.district && place.district !== getSavedLocation().district) return null;
+  return `${coords.lat.toFixed(5)},${coords.lng.toFixed(5)}`;
+}
 
 export function getLocationSource() {
   try {
@@ -58,6 +88,7 @@ export function detectByDevice() {
           }
           const place = { ...EMPTY_LOCATION, ...response.place };
           saveLocation(place);
+          saveCoords({ lat: latitude, lng: longitude });
           setLocationSource("gps");
           resolve(place);
         } catch {

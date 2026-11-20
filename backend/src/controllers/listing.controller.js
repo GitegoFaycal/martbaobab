@@ -9,6 +9,7 @@ import {
   uniqueSlug,
   placeWhere,
 } from "../utils/helpers.js";
+import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, rankByDistance } from "../services/geo.service.js";
 
 const listingInclude = {
   _count: { select: { connections: true } },
@@ -23,6 +24,8 @@ const listingInclude = {
       sector: true,
       cell: true,
       village: true,
+      lat: true,
+      lng: true,
       phone: true,
       whatsapp: true,
       verified: true,
@@ -44,6 +47,25 @@ function sortFor(sort) {
       return { createdAt: "desc" };
   }
 }
+
+const listInclude = {
+  _count: { select: { connections: true } },
+  images: { orderBy: { position: "asc" }, take: 1 },
+  category: { select: { name: true, slug: true } },
+  shop: {
+    select: {
+      name: true,
+      slug: true,
+      district: true,
+      sector: true,
+      cell: true,
+      village: true,
+      lat: true,
+      lng: true,
+      verified: true,
+    },
+  },
+};
 
 export const listListings = asyncHandler(async (req, res) => {
   const q = req.validated.query;
@@ -91,25 +113,24 @@ export const listListings = asyncHandler(async (req, res) => {
     delete where.OR;
   }
 
+  const near = parseNear(q);
+  if (near) {
+    // Nearest first: bounding box on the shop in SQL, exact distance after.
+    const { is, ...shopRest } = where.shop || {};
+    const nearWhere = { ...where, shop: { ...shopRest, ...(is || {}), ...bboxWhere(near) } };
+    const rows = await prisma.listing.findMany({ where: nearWhere, include: listInclude, take: NEAR_SCAN_LIMIT });
+    const ranked = rankByDistance(rows, near, (row) => row.shop);
+    return res.status(200).json({
+      success: true,
+      listings: serialize(ranked.slice(paging.skip, paging.skip + paging.take)),
+      pagination: paginationMeta(ranked.length, paging),
+    });
+  }
+
   const [listings, total] = await Promise.all([
     prisma.listing.findMany({
       where,
-      include: {
-        _count: { select: { connections: true } },
-        images: { orderBy: { position: "asc" }, take: 1 },
-        category: { select: { name: true, slug: true } },
-        shop: {
-          select: {
-            name: true,
-            slug: true,
-            district: true,
-            sector: true,
-            cell: true,
-            village: true,
-            verified: true,
-          },
-        },
-      },
+      include: listInclude,
       orderBy: sortFor(q.sort),
       skip: paging.skip,
       take: paging.take,

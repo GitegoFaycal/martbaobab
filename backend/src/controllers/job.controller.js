@@ -9,6 +9,7 @@ import {
   slugify,
   uniqueSlug,
 } from "../utils/helpers.js";
+import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, placeCentre, rankByDistance } from "../services/geo.service.js";
 
 const jobCardInclude = {
   category: { select: { id: true, name: true, slug: true } },
@@ -35,6 +36,17 @@ export const listJobs = asyncHandler(async (req, res) => {
         }
       : {}),
   };
+
+  const near = parseNear(q);
+  if (near) {
+    const rows = await prisma.job.findMany({ where: { ...where, ...bboxWhere(near) }, include: jobCardInclude, take: NEAR_SCAN_LIMIT });
+    const ranked = rankByDistance(rows, near, (job) => job);
+    return res.status(200).json({
+      success: true,
+      jobs: serialize(ranked.slice(paging.skip, paging.skip + paging.take)),
+      pagination: paginationMeta(ranked.length, paging),
+    });
+  }
 
   const [jobs, total] = await Promise.all([
     prisma.job.findMany({
@@ -109,6 +121,9 @@ function jobData(body) {
     categoryId: body.categoryId || null,
     district: body.district,
     sector: body.sector || null,
+    ...(Number.isFinite(body.lat) && Number.isFinite(body.lng)
+      ? { lat: body.lat, lng: body.lng }
+      : (() => { const c = placeCentre({ district: body.district, sector: body.sector }); return { lat: c?.lat ?? null, lng: c?.lng ?? null }; })()),
     jobType: body.jobType,
     payPeriod: body.payPeriod,
     payMin: body.payMin ?? null,

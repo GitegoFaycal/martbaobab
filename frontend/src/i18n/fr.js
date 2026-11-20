@@ -102,6 +102,16 @@ export default {
   },
 
   geo: {
+    kmAway: "à {km} km",
+    pinHere: "Épingler ma position actuelle",
+    clearPin: "Retirer l'épingle",
+    pinHint: "Touchez la carte pour poser une épingle, puis déplacez-la à l'endroit exact.",
+    pinSet: "Épinglé à {lat}, {lng}",
+    mapFailed: "La carte n'a pas pu se charger.",
+    exactSpot: "Épingler l'endroit exact",
+    exactSpotHint: "Les personnes à proximité voient la distance. Facultatif : sans épingle, le centre de votre secteur ou cellule est utilisé.",
+    directions: "Itinéraire",
+    nearest: "Les plus proches d'abord",
     useMyLocation: "Utiliser ma position",
     update: "Mettre à jour ma position",
     locating: "Localisation…",

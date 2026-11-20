@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiRequest, fieldErrorsFrom } from "../../api/api";
 import OwnerPicker from "../../components/admin/OwnerPicker";
 import LocationPicker from "../../components/LocationPicker";
+import { MapPicker } from "../../components/LeafletMap";
 import { SingleImageUploader } from "../../components/ImageUploader";
 import {
   Button,
@@ -42,6 +43,8 @@ export default function ShopFormPage({ admin = false }) {
     sector: "",
     cell: "",
     village: "",
+    lat: "",
+    lng: "",
     address: "",
     logoUrl: "",
     coverUrl: "",
@@ -62,6 +65,8 @@ export default function ShopFormPage({ admin = false }) {
         sector: existing.sector || "",
         cell: existing.cell || "",
         village: existing.village || "",
+        lat: existing.lat ?? "",
+        lng: existing.lng ?? "",
         address: existing.address || "",
         logoUrl: existing.logoUrl || "",
         coverUrl: existing.coverUrl || "",
@@ -156,6 +161,10 @@ export default function ShopFormPage({ admin = false }) {
 
             <Field label="Where is the shop?" htmlFor="district" error={errors.district || errors.sector || errors.cell || errors.village} hint="District, then sector, cell and village, so buyers nearby find you.">
               <LocationPicker value={form} onChange={(place) => { setForm((c) => ({ ...c, ...place })); setErrors((c) => ({ ...c, district: "" })); }} className="sm:grid-cols-2" />
+            </Field>
+
+            <Field label={t("geo.exactSpot")} htmlFor="map" optional hint={t("geo.exactSpotHint")}>
+              <MapPicker place={form} value={form.lat !== "" && form.lat != null ? { lat: Number(form.lat), lng: Number(form.lng) } : null} onChange={(c) => setForm((f) => ({ ...f, lat: c ? c.lat : "", lng: c ? c.lng : "" }))} />
             </Field>
 
             <Field label="Address or landmark" htmlFor="address" optional error={errors.address}>

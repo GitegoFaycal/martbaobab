@@ -92,6 +92,8 @@ model User {
   sector              String?
   cell                String?
   village             String?
+  lat                 Float?
+  lng                 Float?
   headline            String?
   bio                 String?
   skills              String[]  @default([])
@@ -113,6 +115,7 @@ model User {
   connectionsAsBuyer  Connection[] @relation("ConnectionBuyer")
 
   @@index([district, sector])
+  @@index([lat, lng])
 }
 
 model Address {
@@ -144,6 +147,8 @@ model Shop {
   sector      String?
   cell        String?
   village     String?
+  lat         Float?
+  lng         Float?
   address     String?
   verified    Boolean  @default(false)
   ownerId     String
@@ -156,6 +161,7 @@ model Shop {
 
   @@index([district])
   @@index([district, sector])
+  @@index([lat, lng])
 }
 
 model Category {
@@ -221,6 +227,8 @@ model Job {
   requirements  String?
   district      String
   sector        String?
+  lat           Float?
+  lng           Float?
   jobType       JobType   @default(DAILY)
   payPeriod     PayPeriod @default(PER_DAY)
   payMin        Decimal?  @db.Decimal(12, 2)
@@ -242,6 +250,7 @@ model Job {
 
   @@index([status, district])
   @@index([categoryId])
+  @@index([lat, lng])
 }
 
 model JobApplication {

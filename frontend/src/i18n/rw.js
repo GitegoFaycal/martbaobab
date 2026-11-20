@@ -102,6 +102,16 @@ export default {
   },
 
   geo: {
+    kmAway: "km {km} uvuye aho uri",
+    pinHere: "Shyira ikimenyetso aho ndi ubu",
+    clearPin: "Kura ikimenyetso",
+    pinHint: "Kanda ku ikarita ushyire ikimenyetso, hanyuma ugikurure ahantu nyaho.",
+    pinSet: "Ikimenyetso kiri kuri {lat}, {lng}",
+    mapFailed: "Ikarita ntiyabashije gufungura.",
+    exactSpot: "Shyira ikimenyetso ahantu nyaho",
+    exactSpotHint: "Abaturanyi babona intera bari. Si itegeko: nta kimenyetso, hakoreshwa hagati y'umurenge cyangwa akagari kawe.",
+    directions: "Reba inzira",
+    nearest: "Hafi mbere",
     useMyLocation: "Koresha aho ndi",
     update: "Vugurura aho ndi",
     locating: "Turimo kugushakisha…",

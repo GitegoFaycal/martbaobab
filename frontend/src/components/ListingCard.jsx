@@ -61,6 +61,7 @@ export default function ListingCard({ listing }) {
           <MapPin size={12} className="shrink-0 text-loco-sky" />
           <span className="truncate">{listing.shop?.name}{district ? ` · ${district}` : ""}</span>
           {listing.shop?.verified && <BadgeCheck size={13} className="shrink-0 text-loco-sky" />}
+          {listing.distanceKm != null && <span className="ml-auto shrink-0 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold">{t("geo.kmAway", { km: listing.distanceKm })}</span>}
         </p>
         {connections > 0 && (
           <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-loco-sky">

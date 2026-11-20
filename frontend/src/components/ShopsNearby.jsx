@@ -5,6 +5,7 @@ import { useT } from "../i18n";
 import { buildQuery } from "../api/api";
 import ShopTile from "./ShopTile";
 import { locationLabel } from "../lib/locations";
+import { nearFor } from "../lib/geo";
 
 // Shops matching the current district / search, scrolling sideways at the
 // top of "Shop nearby" so shops are visible even before they list items.
@@ -12,7 +13,7 @@ import { locationLabel } from "../lib/locations";
 export default function ShopsNearby({ place = {}, search = "" }) {
   const { district = "", sector = "", cell = "", village = "" } = place;
   const t = useT();
-  const { data, loading } = useFetch(`/shops${buildQuery({ district, sector, cell, village, search, perPage: 16 })}`);
+  const { data, loading } = useFetch(`/shops${buildQuery({ district, sector, cell, village, near: nearFor(place), search, perPage: 16 })}`);
   const shops = data?.shops || [];
 
   if (loading || shops.length === 0) return null;

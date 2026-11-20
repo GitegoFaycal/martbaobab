@@ -23,6 +23,8 @@ export const updateProfileSchema = z.object({
     sector: z.string().trim().max(60).optional().or(z.literal("")),
     cell: z.string().trim().max(60).optional().or(z.literal("")),
     village: z.string().trim().max(60).optional().or(z.literal("")),
+    lat: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(-3).max(-1).optional()),
+    lng: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(28.5).max(31).optional()),
 
     avatarUrl: z
       .string()

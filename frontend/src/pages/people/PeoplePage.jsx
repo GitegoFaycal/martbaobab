@@ -9,6 +9,7 @@ import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
 import LocationPicker from "../../components/LocationPicker";
 import { getSavedLocation, locationFromParams, locationLabel, saveLocation } from "../../lib/locations";
+import { nearFor } from "../../lib/geo";
 
 export default function PeoplePage() {
   const t = useT();
@@ -25,7 +26,7 @@ export default function PeoplePage() {
   const [text, setText] = useState(filters.search);
   useEffect(() => setText(filters.search), [filters.search]);
 
-  const { data, loading } = useFetch(`/people${buildQuery({ ...filters, perPage: 24 })}`);
+  const { data, loading } = useFetch(`/people${buildQuery({ ...filters, near: nearFor(filters), perPage: 24 })}`);
 
   function update(changes) {
     const next = new URLSearchParams(params);

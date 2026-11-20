@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import prisma from "../config/prisma.js";
 import { normalizePhone } from "../constants/rwanda.js";
+import { placeCentre } from "../services/geo.service.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { httpError, serialize, slugify, uniqueSlug } from "../utils/helpers.js";
 
@@ -147,6 +148,8 @@ const adminShopSelect = {
   sector: true,
   cell: true,
   village: true,
+  lat: true,
+  lng: true,
   address: true,
   verified: true,
   createdAt: true,
@@ -165,6 +168,9 @@ function shopData(body) {
     sector: body.sector || null,
     cell: body.cell || null,
     village: body.village || null,
+    ...(Number.isFinite(body.lat) && Number.isFinite(body.lng)
+      ? { lat: body.lat, lng: body.lng }
+      : (() => { const c = placeCentre({ district: body.district, sector: body.sector, cell: body.cell }); return { lat: c?.lat ?? null, lng: c?.lng ?? null }; })()),
     address: body.address || null,
     logoUrl: body.logoUrl || null,
     coverUrl: body.coverUrl || null,

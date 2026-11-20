@@ -6,6 +6,7 @@ import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { EMPTY_LOCATION, getSavedLocation, locationLabel, saveLocation } from "../../lib/locations";
 import LocationPicker from "../LocationPicker";
+import { nearFor } from "../../lib/geo";
 import { Button, EmptyState, Spinner, Container } from "../ui";
 import PersonCard from "../PersonCard";
 
@@ -40,7 +41,7 @@ export default function PeopleFeed({ toolbar = null, place: placeProp = null, on
 
   useEffect(() => setLimit(PAGE), [place, search, kind]);
 
-  const query = useMemo(() => buildQuery({ ...place, search, kind, perPage: limit }), [place, search, kind, limit]);
+  const query = useMemo(() => buildQuery({ ...place, near: nearFor(place), search, kind, perPage: limit }), [place, search, kind, limit]);
   const { data, loading } = useFetch(`/people${query}`);
   const people = data?.people || [];
   const total = data?.pagination?.total ?? 0;

@@ -14,7 +14,9 @@ import {
   Spinner,
   Textarea,
 } from "../../components/ui";
+import { MapPicker } from "../../components/LeafletMap";
 import { useAuth } from "../../context/AuthContext";
+import { useT } from "../../i18n";
 import useFetch from "../../hooks/useFetch";
 import { JOB_TYPES, PAY_PERIODS } from "../../lib/format";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
@@ -26,6 +28,8 @@ const empty = (user) => ({
   categoryId: "",
   district: user?.district || "",
   sector: "",
+  lat: "",
+  lng: "",
   jobType: "DAILY",
   payPeriod: "PER_DAY",
   payMin: "",
@@ -42,6 +46,7 @@ export default function JobFormPage() {
   const editing = Boolean(id);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const t = useT();
 
   const [form, setForm] = useState(() => empty(user));
   const [errors, setErrors] = useState({});
@@ -65,6 +70,8 @@ export default function JobFormPage() {
       categoryId: job.categoryId || "",
       district: job.district,
       sector: job.sector || "",
+      lat: job.lat ?? "",
+      lng: job.lng ?? "",
       jobType: job.jobType,
       payPeriod: job.payPeriod,
       payMin: job.payMin ?? "",
@@ -155,6 +162,10 @@ export default function JobFormPage() {
                 <Input id="sector" name="sector" value={form.sector} onChange={handleChange} placeholder="e.g. Kagarama, near the market" />
               </Field>
             </div>
+
+            <Field label={t("geo.exactSpot")} htmlFor="map" optional hint={t("geo.exactSpotHint")}>
+              <MapPicker place={{ district: form.district, sector: form.sector }} value={form.lat !== "" && form.lat != null ? { lat: Number(form.lat), lng: Number(form.lng) } : null} onChange={(c) => setForm((f) => ({ ...f, lat: c ? c.lat : "", lng: c ? c.lng : "" }))} />
+            </Field>
 
             <Field label="Describe the work" htmlFor="description" error={errors.description}>
               <Textarea id="description" name="description" rows={5} value={form.description} onChange={handleChange} placeholder="What will the workers do each day? Where? For how long? Is food or transport provided?" error={errors.description} required />

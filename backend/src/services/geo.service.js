@@ -13,7 +13,7 @@ export function insideRwanda(lat, lng) {
 }
 
 // Equirectangular distance in km: fine at Rwanda's scale.
-function distanceKm(a, b) {
+export function distanceKm(a, b) {
   const toRad = Math.PI / 180;
   const x = (b.lng - a.lng) * toRad * Math.cos(((a.lat + b.lat) / 2) * toRad);
   const y = (b.lat - a.lat) * toRad;
@@ -69,3 +69,38 @@ export function placeCentre(place = {}) {
   }
   return null;
 }
+
+// ?near=lat,lng&radius=km on list endpoints.
+export function parseNear(query = {}, defaultRadius = 25) {
+  const raw = String(query.near || "");
+  if (!raw) return null;
+  const [a, b] = raw.split(",");
+  const lat = Number(a);
+  const lng = Number(b);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || !insideRwanda(lat, lng)) return null;
+  const radius = Math.min(150, Math.max(1, Number(query.radius) || defaultRadius));
+  return { lat, lng, radius };
+}
+
+// Bounding box for a first pass in SQL; the exact distance is computed after.
+export function bboxWhere(near) {
+  const dLat = near.radius / 111;
+  const dLng = near.radius / (111 * Math.cos((near.lat * Math.PI) / 180));
+  return { lat: { gte: near.lat - dLat, lte: near.lat + dLat }, lng: { gte: near.lng - dLng, lte: near.lng + dLng } };
+}
+
+// Sorts rows by distance from `near`, drops those outside the radius, and
+// attaches distanceKm. coordsOf(row) returns {lat,lng} or null.
+export function rankByDistance(rows, near, coordsOf) {
+  return rows
+    .map((row) => {
+      const c = coordsOf(row);
+      const km = c && Number.isFinite(c.lat) && Number.isFinite(c.lng) ? distanceKm(near, c) : null;
+      return { row, km };
+    })
+    .filter((x) => x.km !== null && x.km <= near.radius)
+    .sort((a, b) => a.km - b.km)
+    .map((x) => ({ ...x.row, distanceKm: Math.round(x.km * 10) / 10 }));
+}
+
+export const NEAR_SCAN_LIMIT = 400;

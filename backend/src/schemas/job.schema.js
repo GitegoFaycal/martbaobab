@@ -19,6 +19,8 @@ export const jobSchema = z.object({
       categoryId: optionalText(80),
       district: z.enum(DISTRICTS, { message: "Choose a district in Rwanda" }),
       sector: optionalText(60),
+      lat: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(-3).max(-1).optional()),
+      lng: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(28.5).max(31).optional()),
       jobType: z
         .enum(["DAILY", "CONTRACT", "PART_TIME", "FULL_TIME"])
         .default("DAILY"),
@@ -61,6 +63,8 @@ export const jobQuerySchema = z.object({
     search: optionalText(100),
     category: optionalText(80),
     district: optionalText(40),
+    near: optionalText(40),
+    radius: z.coerce.number().min(1).max(150).optional(),
     jobType: z
       .enum(["DAILY", "CONTRACT", "PART_TIME", "FULL_TIME"])
       .optional()

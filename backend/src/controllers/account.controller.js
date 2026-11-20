@@ -8,6 +8,7 @@ import { sendPasswordResetEmail } from "../services/email.service.js";
 import { normalizePhone } from "../constants/rwanda.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { clearAuthenticationCookie } from "../utils/token.js";
+import { placeCentre } from "../services/geo.service.js";
 
 const publicUserFields = {
   id: true,
@@ -19,6 +20,8 @@ const publicUserFields = {
   sector: true,
   cell: true,
   village: true,
+  lat: true,
+  lng: true,
   headline: true,
   bio: true,
   skills: true,
@@ -37,7 +40,8 @@ function hashResetToken(token) {
 
 export const updateProfile = asyncHandler(
   async (req, res) => {
-    const { name, phone, district, sector, cell, village, avatarUrl, headline, bio, skills } = req.validated.body;
+    const { name, phone, district, sector, cell, village, lat, lng, avatarUrl, headline, bio, skills } = req.validated.body;
+    const centre = Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : placeCentre({ district, sector, cell }) || { lat: null, lng: null };
     const normalizedPhone = normalizePhone(phone);
 
     if (normalizedPhone) {
@@ -71,6 +75,8 @@ export const updateProfile = asyncHandler(
         sector: sector || null,
         cell: cell || null,
         village: village || null,
+        lat: centre.lat,
+        lng: centre.lng,
         avatarUrl: avatarUrl || null,
         headline: headline || null,
         bio: bio || null,

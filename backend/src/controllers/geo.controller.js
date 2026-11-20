@@ -1,5 +1,5 @@
 import asyncHandler from "../utils/asyncHandler.js";
-import { insideRwanda, snapDistrict, snapPrecise } from "../services/geo.service.js";
+import { insideRwanda, placeCentre, snapDistrict, snapPrecise } from "../services/geo.service.js";
 
 // GET /api/whereami            -> coarse place from the visitor's network (Vercel geo headers)
 // GET /api/whereami?lat=&lng=  -> precise place from device coordinates
@@ -37,4 +37,11 @@ export const whereAmI = asyncHandler(async (req, res) => {
     approximate: true,
     city: req.headers["x-vercel-ip-city"] ? decodeURIComponent(String(req.headers["x-vercel-ip-city"])) : null,
   });
+});
+
+// GET /api/whereami/centre?district&sector&cell -> centre point of a place
+export const centreOfPlace = asyncHandler(async (req, res) => {
+  res.set("Cache-Control", "public, max-age=86400");
+  const centre = placeCentre({ district: req.query.district, sector: req.query.sector, cell: req.query.cell });
+  return res.status(200).json({ success: true, centre });
 });

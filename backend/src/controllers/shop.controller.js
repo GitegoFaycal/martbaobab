@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { normalizePhone } from "../constants/rwanda.js";
+import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, placeCentre, rankByDistance } from "../services/geo.service.js";
 import {
   httpError,
   paginate,
@@ -25,6 +26,8 @@ const shopSelect = {
   sector: true,
   cell: true,
   village: true,
+  lat: true,
+  lng: true,
   address: true,
   verified: true,
   createdAt: true,
@@ -43,10 +46,18 @@ function shopData(body) {
     sector: body.sector || null,
     cell: body.cell || null,
     village: body.village || null,
+    ...coordsFor(body),
     address: body.address || null,
     logoUrl: body.logoUrl || null,
     coverUrl: body.coverUrl || null,
   };
+}
+
+// Pinned spot if given, otherwise the centre of the place.
+function coordsFor(body) {
+  if (Number.isFinite(body.lat) && Number.isFinite(body.lng)) return { lat: body.lat, lng: body.lng };
+  const centre = placeCentre({ district: body.district, sector: body.sector, cell: body.cell });
+  return { lat: centre?.lat ?? null, lng: centre?.lng ?? null };
 }
 
 export const listShops = asyncHandler(async (req, res) => {
@@ -59,6 +70,17 @@ export const listShops = asyncHandler(async (req, res) => {
       ? { name: { contains: String(search), mode: "insensitive" } }
       : {}),
   };
+
+  const near = parseNear(req.query);
+  if (near) {
+    const rows = await prisma.shop.findMany({ where: { ...where, ...bboxWhere(near) }, select: shopSelect, take: NEAR_SCAN_LIMIT });
+    const ranked = rankByDistance(rows, near, (shop) => shop);
+    return res.status(200).json({
+      success: true,
+      shops: serialize(ranked.slice(paging.skip, paging.skip + paging.take)),
+      pagination: paginationMeta(ranked.length, paging),
+    });
+  }
 
   const [shops, total] = await Promise.all([
     prisma.shop.findMany({

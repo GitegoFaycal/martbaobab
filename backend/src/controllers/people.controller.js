@@ -6,6 +6,7 @@ import {
   paginationMeta,
   serialize,
 } from "../utils/helpers.js";
+import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, rankByDistance } from "../services/geo.service.js";
 
 const personSelect = {
   id: true,
@@ -15,6 +16,8 @@ const personSelect = {
   sector: true,
   cell: true,
   village: true,
+  lat: true,
+  lng: true,
   headline: true,
   bio: true,
   skills: true,
@@ -31,6 +34,8 @@ const personSelect = {
       sector: true,
       cell: true,
       village: true,
+      lat: true,
+      lng: true,
       verified: true,
       logoUrl: true,
       description: true,
@@ -104,6 +109,24 @@ export const listPeople = asyncHandler(async (req, res) => {
   };
   const paging = paginate(req.query, { perPage: 24 });
   const where = publicPeopleWhere(q);
+
+  const near = parseNear(req.query);
+  if (near) {
+    const box = bboxWhere(near);
+    const rows = await prisma.user.findMany({
+      where: { AND: [where, { OR: [box, { shops: { some: box } }] }] },
+      select: personSelect,
+      take: NEAR_SCAN_LIMIT,
+    });
+    const ranked = rankByDistance(rows, near, (user) => (Number.isFinite(user.lat) ? user : user.shops?.[0] || null));
+    const page = ranked.slice(paging.skip, paging.skip + paging.take);
+    const connectedNear = await connectedSet(req.user?.id, page.map((person) => person.id));
+    return res.status(200).json({
+      success: true,
+      people: serialize(page.map((person) => ({ ...shapePerson(person), distanceKm: person.distanceKm, connected: connectedNear.has(person.id) }))),
+      pagination: paginationMeta(ranked.length, paging),
+    });
+  }
 
   const [people, total] = await Promise.all([
     prisma.user.findMany({
@@ -196,6 +219,8 @@ function shapePerson(user) {
     name: user.name,
     avatarUrl: user.avatarUrl,
     district: user.district,
+    lat: user.lat ?? shop?.lat ?? null,
+    lng: user.lng ?? shop?.lng ?? null,
     sector: user.sector || shop?.sector || null,
     cell: user.cell || shop?.cell || null,
     village: user.village || shop?.village || null,

@@ -15,7 +15,7 @@ import {
 import { Container } from "../components/ui";
 import { useT } from "../i18n";
 import UseMyLocation from "../components/UseMyLocation";
-import { detectByNetwork } from "../lib/geo";
+import { detectByNetwork, nearFor } from "../lib/geo";
 import { buildQuery } from "../api/api";
 import { getSavedLocation, locationLabel, saveLocation } from "../lib/locations";
 
@@ -54,7 +54,8 @@ export default function HomePage() {
 
   const [place, setPlace] = useState(getSavedLocation);
   const district = place.district;
-  const placeQuery = buildQuery(place).replace(/^\?/, "&");
+  const near = nearFor(place);
+  const placeQuery = buildQuery({ ...place, ...(near ? { near, sort: "nearest" } : {}) }).replace(/^\?/, "&");
 
   // First visit on this device: open on the district the network suggests.
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function HomePage() {
             to="/second-hand"
             emptyText={t("home.noSecondHand")}
           />
-          <JobStrip place={place} />
+          <JobStrip place={place} near={near} />
           <CategoryStrip kind="SERVICES" basePath="/services" eyebrow={t("home.skilledNearby")} title={t("home.localServices")} />
         </>
       )}

@@ -24,6 +24,12 @@ const imageUrls = z
   .optional()
   .default([]);
 
+
+// Optional coordinates inside Rwanda; blank strings mean "not set".
+const coord = (min, max) => z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(min).max(max).optional());
+const latSchema = coord(-3, -1);
+const lngSchema = coord(28.5, 31);
+
 const shopFields = {
     name: z.string().trim().min(2, "Shop name is too short").max(80),
     description: optionalText(1000),
@@ -33,6 +39,8 @@ const shopFields = {
     sector: optionalText(60),
     cell: optionalText(60),
     village: optionalText(60),
+    lat: latSchema,
+    lng: lngSchema,
     address: optionalText(200),
     logoUrl: optionalText(500),
     coverUrl: optionalText(500),
@@ -110,13 +118,15 @@ export const listingQuerySchema = z.object({
     sector: optionalText(60),
     cell: optionalText(60),
     village: optionalText(60),
+    near: optionalText(40),
+    radius: z.coerce.number().min(1).max(150).optional(),
     condition: z.enum(["NEW", "USED"]).optional().or(z.literal("")),
     type: z.enum(["PRODUCT", "SERVICE"]).optional().or(z.literal("")),
     shop: optionalText(80),
     minPrice: z.coerce.number().min(0).optional(),
     maxPrice: z.coerce.number().min(0).optional(),
     sort: z
-      .enum(["newest", "price_asc", "price_desc", "popular"])
+      .enum(["newest", "price_asc", "price_desc", "popular", "nearest"])
       .optional()
       .or(z.literal("")),
     page: z.coerce.number().int().min(1).optional(),

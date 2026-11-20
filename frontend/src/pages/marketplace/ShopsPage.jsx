@@ -8,6 +8,7 @@ import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
 import { getSavedLocation, locationFromParams, saveLocation } from "../../lib/locations";
+import { nearFor } from "../../lib/geo";
 
 export default function ShopsPage() {
   const t = useT();
@@ -18,7 +19,7 @@ export default function ShopsPage() {
   const page = Number(params.get("page")) || 1;
   const [text, setText] = useState(search);
 
-  const { data, loading } = useFetch(`/shops${buildQuery({ ...place, search, page, perPage: 24 })}`);
+  const { data, loading } = useFetch(`/shops${buildQuery({ ...place, near: nearFor(place), search, page, perPage: 24 })}`);
 
   function update(changes) {
     const next = new URLSearchParams(params);

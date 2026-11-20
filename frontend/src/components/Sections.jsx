@@ -95,9 +95,9 @@ export function ListingStrip({ query, title, eyebrow, to, emptyText }) {
   );
 }
 
-export function JobStrip({ place = null }) {
+export function JobStrip({ place = null, near = null }) {
   const t = useT();
-  const { data, loading } = useFetch(`/jobs?perPage=6${place?.district ? `&district=${encodeURIComponent(place.district)}` : ""}`);
+  const { data, loading } = useFetch(`/jobs?perPage=6${place?.district ? `&district=${encodeURIComponent(place.district)}` : ""}${near ? `&near=${near}` : ""}`);
   const jobs = data?.jobs || [];
 
   return (

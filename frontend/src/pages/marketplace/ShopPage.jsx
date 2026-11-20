@@ -9,6 +9,7 @@ import { formatDate } from "../../lib/format";
 import { recordConnection } from "../../lib/connect";
 import { formatPhoneForDisplay, whatsappLink } from "../../lib/rwanda";
 import { placeLabel } from "../../lib/locations";
+import { StaticMap } from "../../components/LeafletMap";
 
 export default function ShopPage() {
   const { t, lang } = useI18n();
@@ -68,6 +69,16 @@ export default function ShopPage() {
           <div className="mt-6 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
             <p className="max-w-3xl leading-7 text-gray-700">{shop.description}</p>
             <p className="mt-3 text-xs text-gray-500">{t("listing.onLocoSince", { date: formatDate(shop.createdAt, { month: "long", year: "numeric" }, lang) })}</p>
+          </div>
+        )}
+
+        {shop.lat != null && shop.lng != null && (
+          <div className="mt-6 overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-sm">
+            <StaticMap lat={shop.lat} lng={shop.lng} className="rounded-none!" />
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <span className="flex items-center gap-1 text-sm text-gray-600"><MapPin size={14} className="text-loco-blue" /> {placeLabel(shop)}{shop.address ? ` · ${shop.address}` : ""}</span>
+              <Button as="a" href={`https://www.google.com/maps/dir/?api=1&destination=${shop.lat},${shop.lng}`} target="_blank" rel="noreferrer" variant="outline" size="sm">{t("geo.directions")}</Button>
+            </div>
           </div>
         )}
 

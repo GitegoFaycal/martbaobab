@@ -55,7 +55,7 @@ export default function PersonCard({ person, compact = false }) {
 
         <Link to={`/people/${person.id}`} className="pointer-events-auto mt-2 block truncate text-xl font-black drop-shadow">{person.name}</Link>
         <p className="line-clamp-2 text-sm font-semibold text-loco-sky">{person.headline}</p>
-        <p className="mt-1 flex items-center gap-1 truncate text-xs text-white/80"><MapPin size={12} /> {location}</p>
+        <p className="mt-1 flex items-center gap-1 truncate text-xs text-white/80"><MapPin size={12} /> {location}{person.distanceKm != null ? ` · ${t("geo.kmAway", { km: person.distanceKm })}` : ""}</p>
 
         <p className="mt-1.5 flex flex-wrap items-center gap-x-3 text-xs text-white/80">
           <span className="inline-flex items-center gap-1 font-semibold text-loco-sky"><Link2 size={12} /> {t("connections.connections", { count: person.connections ?? 0 })}</span>

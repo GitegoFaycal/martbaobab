@@ -102,6 +102,16 @@ export default {
   },
 
   geo: {
+    kmAway: "{km} km away",
+    pinHere: "Pin my current position",
+    clearPin: "Remove pin",
+    pinHint: "Tap the map to drop a pin, then drag it to the exact spot.",
+    pinSet: "Pinned at {lat}, {lng}",
+    mapFailed: "The map could not load.",
+    exactSpot: "Pin the exact spot",
+    exactSpotHint: "People nearby see how far you are. Optional: without a pin, the centre of your sector or cell is used.",
+    directions: "Get directions",
+    nearest: "Nearest first",
     useMyLocation: "Use my location",
     update: "Update my location",
     locating: "Finding you…",

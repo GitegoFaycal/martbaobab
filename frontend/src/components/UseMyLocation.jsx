@@ -1,7 +1,7 @@
 import { LoaderCircle, LocateFixed, MapPin, X } from "lucide-react";
 import { useState } from "react";
 import { useT } from "../i18n";
-import { detectByDevice, getLocationSource, setLocationSource } from "../lib/geo";
+import { detectByDevice, getLocationSource, saveCoords, setLocationSource } from "../lib/geo";
 import { EMPTY_LOCATION, locationLabel, saveLocation } from "../lib/locations";
 
 // "Use my location" pill. Shows the current place when one is known, with a
@@ -28,6 +28,7 @@ export default function UseMyLocation({ place, onChange, className = "" }) {
 
   function clear() {
     saveLocation(EMPTY_LOCATION);
+    saveCoords(null);
     setLocationSource("");
     setError("");
     onChange({ ...EMPTY_LOCATION });

@@ -2,6 +2,7 @@ import { Briefcase, MapPin, Search, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import JobCard from "../../components/JobCard";
+import { nearFor } from "../../lib/geo";
 import { Button, Container, DistrictSelect, EmptyState, PageHeader, Pagination, Select, Spinner } from "../../components/ui";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
@@ -25,7 +26,7 @@ export default function JobsPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   useEffect(() => setText(filters.search), [filters.search]);
 
-  const { data, loading } = useFetch(`/jobs${buildQuery({ ...filters, perPage: 20 })}`);
+  const { data, loading } = useFetch(`/jobs${buildQuery({ ...filters, near: nearFor(filters), perPage: 20 })}`);
   const { data: categoryData } = useFetch("/categories?kind=JOBS");
   const categories = categoryData?.categories || [];
 

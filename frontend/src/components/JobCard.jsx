@@ -28,7 +28,7 @@ export default function JobCard({ job, compact = false }) {
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-white/85">
           <span className="inline-flex items-center gap-1 font-bold text-loco-sky"><Banknote size={14} />{formatPay(job, t)}</span>
-          <span className="inline-flex items-center gap-1"><MapPin size={14} className="text-loco-sky" />{job.district}{job.sector ? `, ${job.sector}` : ""}</span>
+          <span className="inline-flex items-center gap-1"><MapPin size={14} className="text-loco-sky" />{job.district}{job.sector ? `, ${job.sector}` : ""}{job.distanceKm != null ? ` · ${t("geo.kmAway", { km: job.distanceKm })}` : ""}</span>
           <span className="inline-flex items-center gap-1"><Users size={14} className="text-loco-sky" />{job.workersNeeded} {job.workersNeeded === 1 ? t("jobs.worker") : t("jobs.workers")}</span>
           <span className="inline-flex items-center gap-1"><CalendarDays size={14} className="text-loco-sky" />{timeAgo(job.createdAt, t)}</span>
         </div>

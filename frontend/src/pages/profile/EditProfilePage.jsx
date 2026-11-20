@@ -5,6 +5,7 @@ import { fieldErrorsFrom } from "../../api/api";
 import { SingleImageUploader } from "../../components/ImageUploader";
 import { Button, Container, Field, Input, Message, Textarea } from "../../components/ui";
 import LocationPicker from "../../components/LocationPicker";
+import { MapPicker } from "../../components/LeafletMap";
 import { useAuth } from "../../context/AuthContext";
 import { useT } from "../../i18n";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
@@ -21,6 +22,8 @@ export default function EditProfilePage() {
     sector: user.sector || "",
     cell: user.cell || "",
     village: user.village || "",
+    lat: user.lat ?? "",
+    lng: user.lng ?? "",
     avatarUrl: user.avatarUrl || "",
     headline: user.headline || "",
     bio: user.bio || "",
@@ -53,6 +56,8 @@ export default function EditProfilePage() {
         sector: form.sector,
         cell: form.cell,
         village: form.village,
+        lat: form.lat === "" ? undefined : form.lat,
+        lng: form.lng === "" ? undefined : form.lng,
         avatarUrl: form.avatarUrl,
         headline: form.headline.trim(),
         bio: form.bio.trim(),
@@ -91,6 +96,9 @@ export default function EditProfilePage() {
             </Field>
             <Field label={t("location.where")} htmlFor="district" error={errors.district} hint={t("location.whereHint")}>
               <LocationPicker value={form} onChange={(place) => { setForm((c) => ({ ...c, ...place })); setErrors((c) => ({ ...c, district: "" })); }} className="sm:grid-cols-2" />
+            </Field>
+            <Field label={t("geo.exactSpot")} htmlFor="map" optional hint={t("geo.exactSpotHint")}>
+              <MapPicker place={form} value={form.lat !== "" && form.lat != null ? { lat: Number(form.lat), lng: Number(form.lng) } : null} onChange={(c) => setForm((f) => ({ ...f, lat: c ? c.lat : "", lng: c ? c.lng : "" }))} />
             </Field>
             <Field label={t("auth.email")} htmlFor="email">
               <Input id="email" value={user.email} disabled />

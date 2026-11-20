@@ -19,6 +19,7 @@ import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
 import LocationPicker from "../../components/LocationPicker";
 import { getSavedLocation, locationFromParams, locationLabel, saveLocation } from "../../lib/locations";
+import { getSavedCoords, nearFor } from "../../lib/geo";
 
 const MODES = {
   shop: { key: "shop", fixed: { condition: "NEW", type: "PRODUCT" }, categoryKind: "GOODS" },
@@ -35,7 +36,7 @@ export default function ListingsPage({ mode = "shop" }) {
     search: params.get("search") || "",
     category: params.get("category") || "",
     ...(params.has("district") ? locationFromParams(params) : getSavedLocation()),
-    sort: params.get("sort") || "newest",
+    sort: params.get("sort") || (getSavedCoords() ? "nearest" : "newest"),
     minPrice: params.get("minPrice") || "",
     maxPrice: params.get("maxPrice") || "",
     page: Number(params.get("page")) || 1,
@@ -45,7 +46,7 @@ export default function ListingsPage({ mode = "shop" }) {
   useEffect(() => setSearchText(filters.search), [filters.search]);
 
   const query = useMemo(
-    () => buildQuery({ ...config.fixed, ...filters, perPage: 24 }),
+    () => buildQuery({ ...config.fixed, ...filters, ...(filters.sort === "nearest" ? { near: nearFor(filters) } : {}), perPage: 24 }),
     [config, filters.search, filters.category, filters.district, filters.sector, filters.cell, filters.village, filters.sort, filters.minPrice, filters.maxPrice, filters.page]
   );
 
@@ -127,6 +128,7 @@ export default function ListingsPage({ mode = "shop" }) {
               <label className="flex items-center gap-2 text-sm">
                 <span className="text-gray-500">{t("common.sort")}</span>
                 <Select value={filters.sort} onChange={(event) => update({ sort: event.target.value })} className="w-auto! py-2! text-sm">
+                  {getSavedCoords() && <option value="nearest">{t("geo.nearest")}</option>}
                   <option value="newest">{t("common.newest")}</option>
                   <option value="price_asc">{t("common.priceAsc")}</option>
                   <option value="price_desc">{t("common.priceDesc")}</option>

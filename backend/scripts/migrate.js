@@ -62,6 +62,12 @@ try {
     stdio: "inherit",
     env: process.env,
   });
+
+  // Coordinates from place centres for rows that have none (idempotent).
+  execFileSync(process.execPath, ["prisma/geocode.js"], {
+    stdio: "inherit",
+    env: process.env,
+  });
 } catch (error) {
   console.error("");
   console.error("==================================================");
