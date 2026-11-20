@@ -54,19 +54,16 @@ export default function HomePage() {
 
   return (
     <main className="bg-loco-ice">
-      <div className="bg-white">
-        <Container className="flex flex-col gap-4 pb-6 pt-5 lg:flex-row lg:items-center">
-          <HomeTabs active={tab} onChange={changeTab} />
-          {tab === "market" && <div className="min-w-0 flex-1"><Hero /></div>}
-        </Container>
-      </div>
-
       {tab === "people" ? (
-        <Container className="py-8">
-          <PeopleFeed />
-        </Container>
+        <PeopleFeed toolbar={<HomeTabs active={tab} onChange={changeTab} />} />
       ) : (
         <>
+          <div className="bg-white">
+            <Container className="flex flex-col gap-4 pb-6 pt-5 lg:flex-row lg:items-center">
+              <HomeTabs active={tab} onChange={changeTab} />
+              <div className="min-w-0 flex-1"><Hero /></div>
+            </Container>
+          </div>
           <PillarStrip />
           <CategoryStrip kind="GOODS" basePath="/shop" eyebrow={t("home.browseLocally")} title={t("landing.marketTitle")} />
           <ListingStrip

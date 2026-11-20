@@ -5,12 +5,22 @@ import { buildQuery } from "../../api/api";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
-import { Button, DistrictSelect, EmptyState, Spinner } from "../ui";
+import { Button, DistrictSelect, EmptyState, Spinner, Container } from "../ui";
 import PersonCard from "../PersonCard";
 
 const PAGE = 10;
 
-export default function PeopleFeed() {
+function Band({ embedded, children }) {
+  return embedded ? <div className="bg-white"><Container className="pb-5 pt-5">{children}</Container></div> : children;
+}
+
+function ListWrap({ embedded, children }) {
+  return embedded ? <Container className="py-8">{children}</Container> : <div className="mt-4">{children}</div>;
+}
+
+// `toolbar` (e.g. the Market/People switch) puts the feed in landing mode: the
+// switch, search and chips share one white band and the heading is dropped.
+export default function PeopleFeed({ toolbar = null }) {
   const t = useT();
   const [district, setDistrict] = useState(getSavedDistrict);
   const [text, setText] = useState("");
@@ -40,15 +50,20 @@ export default function PeopleFeed() {
 
   return (
     <section>
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="inline-flex items-center gap-2 text-xl font-black text-loco-navy sm:text-2xl">
-          <Users size={22} className="text-loco-blue" />
-          {district ? t("landing.communityIn", { district }) : t("landing.community")}
-        </h2>
-        <span className="text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>
-      </div>
+      <Band embedded={Boolean(toolbar)}>
+      {!toolbar && (
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="inline-flex items-center gap-2 text-xl font-black text-loco-navy sm:text-2xl">
+            <Users size={22} className="text-loco-blue" />
+            {district ? t("landing.communityIn", { district }) : t("landing.community")}
+          </h2>
+          <span className="text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>
+        </div>
+      )}
 
-      <div className="mt-4 flex items-center gap-2">
+      <div className={`flex flex-col gap-3 ${toolbar ? "lg:flex-row lg:items-center" : ""}`}>
+      {toolbar && <div className="shrink-0">{toolbar}</div>}
+      <div className={`flex items-center gap-2 ${toolbar ? "min-w-0 flex-1" : "mt-4"}`}>
         <label className="flex flex-1 items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 shadow-sm focus-within:border-loco-blue focus-within:ring-4 focus-within:ring-blue-100">
           <Search size={20} className="shrink-0 text-loco-navy" />
           <input
@@ -86,8 +101,9 @@ export default function PeopleFeed() {
           />
         </div>
       )}
+      </div>
 
-      <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+      <div className="-mx-4 mt-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
         {chips.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -102,9 +118,11 @@ export default function PeopleFeed() {
         <Link to="/people" className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-bold text-loco-ink hover:bg-loco-ice">
           ··· {t("landing.more")}
         </Link>
+        {toolbar && <span className="ml-auto shrink-0 pl-2 text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>}
       </div>
+      </Band>
 
-      <div className="mt-4">
+      <ListWrap embedded={Boolean(toolbar)}>
         {loading && people.length === 0 ? (
           <Spinner label={t("common.loading")} />
         ) : people.length === 0 ? (
@@ -120,7 +138,7 @@ export default function PeopleFeed() {
             <Button variant="outline" onClick={() => setLimit((current) => current + PAGE)} loading={loading}>{t("landing.showMore")}</Button>
           </div>
         )}
-      </div>
+      </ListWrap>
     </section>
   );
 }
