@@ -7,11 +7,13 @@ import LocationPicker from "./LocationPicker";
 
 // One search bar for the market. Sections live in the header, so there are
 // no tabs or extra buttons here.
-export default function Hero() {
+export default function Hero({ place: placeProp = null, onPlaceChange = null }) {
   const t = useT();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [place, setPlace] = useState(getSavedLocation);
+  const [ownPlace, setOwnPlace] = useState(getSavedLocation);
+  const place = placeProp || ownPlace;
+  const setPlace = (next) => { if (onPlaceChange) onPlaceChange(next); else setOwnPlace(next); };
 
   function handleSearch(event) {
     event.preventDefault();

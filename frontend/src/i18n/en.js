@@ -101,6 +101,20 @@ export default {
     motto: "Turi kumwe. Shop local, hire local, grow local.",
   },
 
+  geo: {
+    useMyLocation: "Use my location",
+    update: "Update my location",
+    locating: "Finding you…",
+    near: "Near {place}",
+    approx: "approximate",
+    clear: "Forget my location",
+    denied: "Location permission was refused. You can still pick a place above.",
+    unsupported: "This browser cannot share your location.",
+    outside: "You seem to be outside Rwanda. Pick a place instead.",
+    timeout: "Finding your location took too long. Try again.",
+    unavailable: "Your location is not available right now.",
+    failed: "Could not work out where you are. Pick a place instead.",
+  },
   location: {
     where: "Where are you?",
     whereHint: "District, then sector, cell and village, so neighbours find you first.",

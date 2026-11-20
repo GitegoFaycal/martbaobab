@@ -17,6 +17,7 @@ import { applicationRouter, jobRouter } from "./routes/job.routes.js";
 import { imageRouter, uploadRouter } from "./routes/upload.routes.js";
 import peopleRoutes from "./routes/people.routes.js";
 import { connectionRouter, statsRouter } from "./routes/connection.routes.js";
+import geoRoutes from "./routes/geo.routes.js";
 import prisma from "./config/prisma.js";
 import {
   errorHandler,
@@ -137,6 +138,7 @@ app.use("/api/listings", writeRateLimit, listingRouter);
 app.use("/api/jobs", writeRateLimit, jobRouter);
 app.use("/api/applications", applicationRouter);
 app.use("/api/people", peopleRoutes);
+app.use("/api/whereami", geoRoutes);
 app.use("/api/connections", connectionRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/uploads", uploadRouter);

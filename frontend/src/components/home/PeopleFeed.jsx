@@ -21,9 +21,11 @@ function ListWrap({ embedded, children }) {
 
 // `toolbar` (e.g. the Market/People switch) puts the feed in landing mode: the
 // switch, search and chips share one white band and the heading is dropped.
-export default function PeopleFeed({ toolbar = null }) {
+export default function PeopleFeed({ toolbar = null, place: placeProp = null, onPlaceChange = null, locator = null }) {
   const t = useT();
-  const [place, setPlace] = useState(getSavedLocation);
+  const [ownPlace, setOwnPlace] = useState(getSavedLocation);
+  const place = placeProp || ownPlace;
+  const setPlace = (next) => { if (onPlaceChange) onPlaceChange(next); else setOwnPlace(next); };
   const district = place.district;
   const [text, setText] = useState("");
   const [search, setSearch] = useState("");
@@ -121,6 +123,7 @@ export default function PeopleFeed({ toolbar = null }) {
         </Link>
         {toolbar && <span className="ml-auto shrink-0 pl-2 text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>}
       </div>
+      {locator && <div className="mt-3">{locator}</div>}
       </Band>
 
       <ListWrap embedded={Boolean(toolbar)}>

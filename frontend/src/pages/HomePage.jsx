@@ -14,7 +14,10 @@ import {
 } from "../components/Sections";
 import { Container } from "../components/ui";
 import { useT } from "../i18n";
-import { getSavedDistrict } from "../lib/rwanda";
+import UseMyLocation from "../components/UseMyLocation";
+import { detectByNetwork } from "../lib/geo";
+import { buildQuery } from "../api/api";
+import { getSavedLocation, locationLabel, saveLocation } from "../lib/locations";
 
 const TAB_KEY = "loco.homeTab";
 
@@ -49,38 +52,54 @@ export default function HomePage() {
     setParams(search, { replace: true });
   }
 
-  const district = getSavedDistrict();
-  const districtQuery = district ? `&district=${encodeURIComponent(district)}` : "";
+  const [place, setPlace] = useState(getSavedLocation);
+  const district = place.district;
+  const placeQuery = buildQuery(place).replace(/^\?/, "&");
+
+  // First visit on this device: open on the district the network suggests.
+  useEffect(() => {
+    if (place.district) return;
+    let cancelled = false;
+    detectByNetwork().then((found) => { if (found && !cancelled) setPlace(found); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function changePlace(next) {
+    saveLocation(next);
+    setPlace(next);
+  }
 
   return (
     <main className="bg-loco-ice">
       {tab === "people" ? (
-        <PeopleFeed toolbar={<HomeTabs active={tab} onChange={changeTab} />} />
+        <PeopleFeed toolbar={<HomeTabs active={tab} onChange={changeTab} />} place={place} onPlaceChange={changePlace} locator={<UseMyLocation place={place} onChange={changePlace} />} />
       ) : (
         <>
           <div className="bg-white">
             <Container className="flex flex-col gap-4 pb-6 pt-5 lg:flex-row lg:items-center">
               <HomeTabs active={tab} onChange={changeTab} />
-              <div className="min-w-0 flex-1"><Hero /></div>
+              <div className="min-w-0 flex-1"><Hero place={place} onPlaceChange={changePlace} /></div>
             </Container>
+            <Container className="pb-5"><UseMyLocation place={place} onChange={changePlace} /></Container>
           </div>
           <PillarStrip />
           <CategoryStrip kind="GOODS" basePath="/shop" eyebrow={t("home.browseLocally")} title={t("landing.marketTitle")} />
           <ListingStrip
-            query={`?condition=NEW&type=PRODUCT&perPage=8${districtQuery}`}
-            eyebrow={district ? t("home.freshIn", { district }) : t("home.freshNearby")}
+            query={`?condition=NEW&type=PRODUCT&perPage=8${placeQuery}`}
+            eyebrow={district ? t("home.freshIn", { district: locationLabel(place) }) : t("home.freshNearby")}
             title={t("home.everydayGoods")}
             to="/shop"
             emptyText={t("home.noProducts")}
           />
           <ListingStrip
-            query={`?condition=USED&perPage=8${districtQuery}`}
+            query={`?condition=USED&perPage=8${placeQuery}`}
             eyebrow={t("home.saveMoney")}
             title={t("home.secondHandDeals")}
             to="/second-hand"
             emptyText={t("home.noSecondHand")}
           />
-          <JobStrip />
+          <JobStrip place={place} />
           <CategoryStrip kind="SERVICES" basePath="/services" eyebrow={t("home.skilledNearby")} title={t("home.localServices")} />
         </>
       )}

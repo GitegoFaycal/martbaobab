@@ -101,6 +101,20 @@ export default {
     motto: "Turi kumwe. Gura iwacu, koresha abo iwacu, tere imbere twese.",
   },
 
+  geo: {
+    useMyLocation: "Koresha aho ndi",
+    update: "Vugurura aho ndi",
+    locating: "Turimo kugushakisha…",
+    near: "Hafi ya {place}",
+    approx: "hafi aho",
+    clear: "Wibagirwe aho ndi",
+    denied: "Uburenganzira bwo kumenya aho uri bwanzwe. Ushobora guhitamo ahantu haruguru.",
+    unsupported: "Iyi mushakisha ntishobora gutanga aho uri.",
+    outside: "Usa n'uri hanze y'u Rwanda. Hitamo ahantu.",
+    timeout: "Kumenya aho uri byatinze. Ongera ugerageze.",
+    unavailable: "Aho uri ntihaboneka ubu.",
+    failed: "Ntitwabashije kumenya aho uri. Hitamo ahantu.",
+  },
   location: {
     where: "Uherereye he?",
     whereHint: "Akarere, umurenge, akagari n'umudugudu, kugira ngo abaturanyi bakubone mbere.",
