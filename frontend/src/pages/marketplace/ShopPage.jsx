@@ -33,9 +33,9 @@ export default function ShopPage() {
   return (
     <main className="min-h-[75vh] bg-loco-ice pb-12">
       <Container>
-        <section className="relative mt-6 flex min-h-[22rem] flex-col justify-end overflow-hidden rounded-3xl bg-loco-navy shadow-lg sm:min-h-[26rem]">
+        <section className="relative mt-6 flex min-h-[22rem] flex-col justify-end overflow-hidden rounded-3xl bg-gray-900 shadow-lg sm:min-h-[26rem]">
           {(shop.coverUrl || shop.logoUrl) && <img src={shop.coverUrl || shop.logoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-          <div className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/55 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/40 to-transparent" />
 
           <div className="relative flex flex-col gap-5 p-6 text-white sm:flex-row sm:items-end sm:justify-between sm:p-8">
             <div className="flex min-w-0 items-end gap-4">

@@ -31,14 +31,14 @@ export default function ListingCard({ listing }) {
   const connections = listing._count?.connections ?? 0;
 
   return (
-    <article className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-2xl bg-loco-navy shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <article className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-2xl bg-gray-900 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <Link to={`/listings/${listing.slug}`} className="absolute inset-0" aria-label={listing.name}>
         {image ? (
           <img src={image} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
         ) : (
           <span className="grid h-full w-full place-items-center bg-loco-sky/30 text-loco-navy/40"><ImageOff size={48} /></span>
         )}
-        <span className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/55 to-transparent" />
+        <span className="absolute inset-0 bg-linear-to-t from-black/85 via-black/40 to-transparent" />
       </Link>
 
       <div className="pointer-events-none absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">

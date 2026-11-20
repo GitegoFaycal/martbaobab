@@ -54,7 +54,7 @@ export function CategoryStrip({ kind = "GOODS", basePath = "/shop", title, eyebr
               <Link
                 key={category.id}
                 to={`${basePath}?category=${category.slug}`}
-                className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-loco-navy shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-900 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <img
                   src={categoryImage(category.slug)}
@@ -62,7 +62,7 @@ export function CategoryStrip({ kind = "GOODS", basePath = "/shop", title, eyebr
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110"
                 />
-                <span className="absolute inset-0 bg-linear-to-t from-loco-navy/90 via-loco-navy/30 to-transparent" />
+                <span className="absolute inset-0 bg-linear-to-t from-black/85 via-black/30 to-transparent" />
                 <b className="absolute inset-x-0 bottom-0 line-clamp-2 p-3 text-sm leading-tight text-white drop-shadow sm:text-[15px]">{category.name}</b>
               </Link>
             ))}
@@ -167,7 +167,7 @@ export function PillarStrip() {
           {pillars.map(({ to, title, text, image }) => (
             <Link key={to} to={to} className="group relative flex min-h-44 flex-col justify-end overflow-hidden rounded-2xl bg-loco-navy p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
               <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-              <span className="absolute inset-0 bg-linear-to-t from-loco-navy/95 via-loco-navy/50 to-loco-navy/10" />
+              <span className="absolute inset-0 bg-linear-to-t from-black/85 via-black/45 to-black/10" />
               <span className="relative">
                 <strong className="block text-lg text-white drop-shadow">{title}</strong>
                 <span className="mt-0.5 block text-sm text-white/80">{text}</span>

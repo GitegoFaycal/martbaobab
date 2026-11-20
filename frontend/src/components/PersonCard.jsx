@@ -35,14 +35,14 @@ export default function PersonCard({ person, compact = false }) {
   }
 
   return (
-    <article className="group relative flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-3xl bg-loco-navy shadow-md transition hover:-translate-y-1 hover:shadow-xl">
+    <article className="group relative flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-3xl bg-gray-900 shadow-md transition hover:-translate-y-1 hover:shadow-xl">
       <Link to={`/people/${person.id}`} className="absolute inset-0" aria-label={person.name}>
         {person.avatarUrl ? (
           <img src={person.avatarUrl} alt="" loading="lazy" className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105" />
         ) : (
           <span className="grid h-full w-full place-items-center bg-loco-sky/40 text-8xl font-black text-loco-navy">{person.name.charAt(0).toUpperCase()}</span>
         )}
-        <span className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/55 to-transparent" />
+        <span className="absolute inset-0 bg-linear-to-t from-black/85 via-black/40 to-transparent" />
       </Link>
 
       <div className="pointer-events-none relative p-4 text-white">
