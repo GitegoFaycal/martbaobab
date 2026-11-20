@@ -20,6 +20,9 @@ export const updateProfileSchema = z.object({
     phone: phoneSchema,
 
     district: districtSchema,
+    sector: z.string().trim().max(60).optional().or(z.literal("")),
+    cell: z.string().trim().max(60).optional().or(z.literal("")),
+    village: z.string().trim().max(60).optional().or(z.literal("")),
 
     avatarUrl: z
       .string()

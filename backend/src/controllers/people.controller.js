@@ -12,6 +12,9 @@ const personSelect = {
   name: true,
   avatarUrl: true,
   district: true,
+  sector: true,
+  cell: true,
+  village: true,
   headline: true,
   bio: true,
   skills: true,
@@ -26,6 +29,8 @@ const personSelect = {
       slug: true,
       district: true,
       sector: true,
+      cell: true,
+      village: true,
       verified: true,
       logoUrl: true,
       description: true,
@@ -52,6 +57,15 @@ function publicPeopleWhere(q = {}) {
 
   if (q.district) {
     filters.push({ district: q.district });
+  }
+
+  // Finer place: the person's own sector/cell/village, or their shop's.
+  const finer = {};
+  for (const level of ["sector", "cell", "village"]) {
+    if (q[level]) finer[level] = { equals: q[level], mode: "insensitive" };
+  }
+  if (Object.keys(finer).length) {
+    filters.push({ OR: [finer, { shops: { some: finer } }] });
   }
 
   if (q.kind === "sellers") {
@@ -82,6 +96,9 @@ function publicPeopleWhere(q = {}) {
 export const listPeople = asyncHandler(async (req, res) => {
   const q = {
     district: req.query.district ? String(req.query.district) : "",
+    sector: req.query.sector ? String(req.query.sector).slice(0, 60) : "",
+    cell: req.query.cell ? String(req.query.cell).slice(0, 60) : "",
+    village: req.query.village ? String(req.query.village).slice(0, 60) : "",
     search: req.query.search ? String(req.query.search).trim().slice(0, 80) : "",
     kind: ["sellers", "specialists", "hiring"].includes(req.query.kind) ? req.query.kind : "",
   };
@@ -179,6 +196,9 @@ function shapePerson(user) {
     name: user.name,
     avatarUrl: user.avatarUrl,
     district: user.district,
+    sector: user.sector || shop?.sector || null,
+    cell: user.cell || shop?.cell || null,
+    village: user.village || shop?.village || null,
     headline: user.headline || (shop ? shop.name : null),
     bio: user.bio,
     skills: user.skills || [],

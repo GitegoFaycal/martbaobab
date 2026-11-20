@@ -9,6 +9,7 @@ import { useI18n } from "../../i18n";
 import { formatDate } from "../../lib/format";
 import { recordConnection } from "../../lib/connect";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
+import { placeLabel } from "../../lib/locations";
 
 function Stat({ icon: Icon, label, value, accent = false }) {
   return (
@@ -57,7 +58,7 @@ export default function PersonPage() {
                 {shop?.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2.5 py-1 text-xs font-bold"><BadgeCheck size={14} /> {t("common.verified")}</span>}
               </h1>
               <p className="mt-1 text-lg font-semibold text-loco-sky">{person.headline}</p>
-              <p className="mt-1 flex items-center gap-1 text-sm text-white/80"><MapPin size={14} />{person.district || "Rwanda"}{shop?.sector ? `, ${shop.sector}` : ""}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-white/80"><MapPin size={14} />{placeLabel({ district: person.district, sector: person.sector || shop?.sector, cell: person.cell || shop?.cell, village: person.village || shop?.village })}</p>
             </div>
 
             <div className="flex shrink-0 flex-col gap-2 sm:w-56">

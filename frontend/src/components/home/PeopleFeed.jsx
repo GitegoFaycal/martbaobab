@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import { buildQuery } from "../../api/api";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
-import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
-import { Button, DistrictSelect, EmptyState, Spinner, Container } from "../ui";
+import { EMPTY_LOCATION, getSavedLocation, locationLabel, saveLocation } from "../../lib/locations";
+import LocationPicker from "../LocationPicker";
+import { Button, EmptyState, Spinner, Container } from "../ui";
 import PersonCard from "../PersonCard";
 
 const PAGE = 10;
@@ -22,7 +23,8 @@ function ListWrap({ embedded, children }) {
 // switch, search and chips share one white band and the heading is dropped.
 export default function PeopleFeed({ toolbar = null }) {
   const t = useT();
-  const [district, setDistrict] = useState(getSavedDistrict);
+  const [place, setPlace] = useState(getSavedLocation);
+  const district = place.district;
   const [text, setText] = useState("");
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState("");
@@ -34,9 +36,9 @@ export default function PeopleFeed({ toolbar = null }) {
     return () => clearTimeout(timer);
   }, [text]);
 
-  useEffect(() => setLimit(PAGE), [district, search, kind]);
+  useEffect(() => setLimit(PAGE), [place, search, kind]);
 
-  const query = useMemo(() => buildQuery({ district, search, kind, perPage: limit }), [district, search, kind, limit]);
+  const query = useMemo(() => buildQuery({ ...place, search, kind, perPage: limit }), [place, search, kind, limit]);
   const { data, loading } = useFetch(`/people${query}`);
   const people = data?.people || [];
   const total = data?.pagination?.total ?? 0;
@@ -55,7 +57,7 @@ export default function PeopleFeed({ toolbar = null }) {
         <div className="flex items-center justify-between gap-3">
           <h2 className="inline-flex items-center gap-2 text-xl font-black text-loco-navy sm:text-2xl">
             <Users size={22} className="text-loco-blue" />
-            {district ? t("landing.communityIn", { district }) : t("landing.community")}
+            {district ? t("landing.communityIn", { district: locationLabel(place) }) : t("landing.community")}
           </h2>
           <span className="text-sm text-gray-500">{!loading && t("people.count", { count: total })}</span>
         </div>
@@ -89,15 +91,14 @@ export default function PeopleFeed({ toolbar = null }) {
       {showFilters && (
         <div className="mt-3 flex items-center gap-2 rounded-2xl border border-blue-100 bg-white p-3">
           <MapPin size={18} className="shrink-0 text-loco-blue" />
-          <DistrictSelect
-            aria-label={t("common.district")}
-            value={district}
-            onChange={(event) => {
-              setDistrict(event.target.value);
-              saveDistrict(event.target.value);
+          <LocationPicker
+            layout="inline"
+            value={place}
+            onChange={(next) => {
+              setPlace(next);
+              saveLocation(next);
             }}
-            placeholder={t("common.allDistricts")}
-            className="border-0! bg-transparent! px-0! py-2! focus:ring-0!"
+            selectClassName="border-0! bg-transparent! px-1! py-2! text-sm focus:ring-0!"
           />
         </div>
       )}
@@ -126,7 +127,7 @@ export default function PeopleFeed({ toolbar = null }) {
         {loading && people.length === 0 ? (
           <Spinner label={t("common.loading")} />
         ) : people.length === 0 ? (
-          <EmptyState icon={Users} title={t("people.none")} description={t("landing.noPeople")} action={district ? <Button variant="outline" onClick={() => { setDistrict(""); saveDistrict(""); }}>{t("common.allDistricts")}</Button> : null} />
+          <EmptyState icon={Users} title={t("people.none")} description={t("landing.noPeople")} action={district ? <Button variant="outline" onClick={() => { setPlace(EMPTY_LOCATION); saveLocation(EMPTY_LOCATION); }}>{t("common.allDistricts")}</Button> : null} />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {people.map((person) => <PersonCard key={person.id} person={person} />)}

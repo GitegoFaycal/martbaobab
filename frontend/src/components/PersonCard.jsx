@@ -2,6 +2,7 @@ import { BadgeCheck, Briefcase, Eye, Link2, MapPin, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
 import ProfileActions from "./ProfileActions";
+import { placeLabel } from "../lib/locations";
 
 export function Avatar({ person, size = "h-16 w-16", textSize = "text-2xl" }) {
   return person.avatarUrl ? (
@@ -17,7 +18,7 @@ export function Avatar({ person, size = "h-16 w-16", textSize = "text-2xl" }) {
 export default function PersonCard({ person, compact = false }) {
   const t = useT();
   const shop = person.shop;
-  const location = [person.district, person.sector || shop?.sector].filter(Boolean).join(", ") || "Rwanda";
+  const location = placeLabel({ district: person.district, sector: person.sector || shop?.sector, cell: person.cell || shop?.cell, village: person.village || shop?.village });
   const verified = person.verified ?? Boolean(shop?.verified);
 
   if (compact) {

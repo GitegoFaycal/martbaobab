@@ -9,7 +9,7 @@ LOCO is a Rwandan web app that connects buyers, sellers, workers and employers i
 | **Jobs** (`/jobs`) | Employers post daily or contract work (building sites, factories, farms, shops, homes). Workers apply with their phone number and get called. |
 | **People** (`/people`) | Profiles of the people behind LOCO: shop owners and specialists with a photo, what they do, skills and district. The landing page opens with people nearby. Anyone can add a headline, bio and skills to their profile to appear here. |
 
-Everything is local to Rwanda: the 30 districts, Rwandan phone numbers, RWF prices, and deals closed directly between people on WhatsApp. Shops carry their full place (district, sector, cell, village) and the search forms let buyers narrow down to their own village. The administrative tree (416 sectors, 2,149 cells, 14,837 villages) ships with the frontend in `frontend/src/data/rwanda-locations.json` (from the MIT-licensed `rwanda` dataset) and loads on demand.
+Everything is local to Rwanda: the 30 districts, Rwandan phone numbers, RWF prices, and deals closed directly between people on WhatsApp. Shops and people carry their full place (district, sector, cell, village) and the search forms let buyers narrow down to their own village; a shop owner matches through their shop's place, a specialist through their profile. The administrative tree (416 sectors, 2,149 cells, 14,837 villages) ships with the frontend in `frontend/src/data/rwanda-locations.json` (from the MIT-licensed `rwanda` dataset) and loads on demand.
 
 ## Stack
 

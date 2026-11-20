@@ -3,10 +3,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { fieldErrorsFrom } from "../../api/api";
 import { SingleImageUploader } from "../../components/ImageUploader";
-import { Button, Container, DistrictSelect, Field, Input, Message, Textarea } from "../../components/ui";
+import { Button, Container, Field, Input, Message, Textarea } from "../../components/ui";
+import LocationPicker from "../../components/LocationPicker";
 import { useAuth } from "../../context/AuthContext";
 import { useT } from "../../i18n";
-import { formatPhoneForDisplay, saveDistrict } from "../../lib/rwanda";
+import { formatPhoneForDisplay } from "../../lib/rwanda";
+import { saveLocation } from "../../lib/locations";
 
 export default function EditProfilePage() {
   const t = useT();
@@ -16,6 +18,9 @@ export default function EditProfilePage() {
     name: user.name || "",
     phone: formatPhoneForDisplay(user.phone) || "",
     district: user.district || "",
+    sector: user.sector || "",
+    cell: user.cell || "",
+    village: user.village || "",
     avatarUrl: user.avatarUrl || "",
     headline: user.headline || "",
     bio: user.bio || "",
@@ -45,12 +50,15 @@ export default function EditProfilePage() {
         name: form.name.trim(),
         phone: form.phone.trim(),
         district: form.district,
+        sector: form.sector,
+        cell: form.cell,
+        village: form.village,
         avatarUrl: form.avatarUrl,
         headline: form.headline.trim(),
         bio: form.bio.trim(),
         skills: form.skills.split(",").map((skill) => skill.trim()).filter(Boolean).slice(0, 8),
       });
-      saveDistrict(form.district);
+      saveLocation(form);
       setSuccess(response.message);
     } catch (requestError) {
       setErrors(fieldErrorsFrom(requestError));
@@ -81,8 +89,8 @@ export default function EditProfilePage() {
             <Field label={t("checkout.phone")} htmlFor="phone" error={errors.phone}>
               <Input id="phone" name="phone" type="tel" value={form.phone} onChange={handleChange} placeholder="078 123 4567" error={errors.phone} required />
             </Field>
-            <Field label={t("common.district")} htmlFor="district" error={errors.district}>
-              <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} error={errors.district} placeholder={t("common.chooseDistrict")} required />
+            <Field label={t("location.where")} htmlFor="district" error={errors.district} hint={t("location.whereHint")}>
+              <LocationPicker value={form} onChange={(place) => { setForm((c) => ({ ...c, ...place })); setErrors((c) => ({ ...c, district: "" })); }} className="sm:grid-cols-2" />
             </Field>
             <Field label={t("auth.email")} htmlFor="email">
               <Input id="email" value={user.email} disabled />

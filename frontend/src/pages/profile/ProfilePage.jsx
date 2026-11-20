@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import { Button, Container } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { useI18n } from "../../i18n";
+import { placeLabel } from "../../lib/locations";
 import { formatDate } from "../../lib/format";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
 
@@ -61,7 +62,7 @@ export default function ProfilePage() {
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <Item icon={Mail} label={t("auth.email")} value={user.email} />
               <Item icon={Phone} label={t("checkout.phone")} value={formatPhoneForDisplay(user.phone) || "–"} />
-              <Item icon={MapPin} label={t("common.district")} value={user.district || "–"} />
+              <Item icon={MapPin} label={t("location.where")} value={placeLabel(user, "–")} />
               <Item icon={ShieldCheck} label={t("common.status")} value={t(`labels.roles.${user.role}`)} />
               <Item icon={CalendarDays} label="LOCO" value={formatDate(user.createdAt, { day: "numeric", month: "long", year: "numeric" }, lang)} />
             </div>

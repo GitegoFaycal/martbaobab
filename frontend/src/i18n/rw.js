@@ -102,6 +102,8 @@ export default {
   },
 
   location: {
+    where: "Uherereye he?",
+    whereHint: "Akarere, umurenge, akagari n'umudugudu, kugira ngo abaturanyi bakubone mbere.",
     sector: "Umurenge",
     cell: "Akagari",
     village: "Umudugudu",

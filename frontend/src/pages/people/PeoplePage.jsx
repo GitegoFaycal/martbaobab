@@ -2,12 +2,13 @@ import { MapPin, Search, UserRound, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import PersonCard from "../../components/PersonCard";
-import { Button, Container, DistrictSelect, EmptyState, PageHeader, Pagination, Spinner } from "../../components/ui";
+import { Button, Container, EmptyState, PageHeader, Pagination, Spinner } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
-import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
+import LocationPicker from "../../components/LocationPicker";
+import { getSavedLocation, locationFromParams, locationLabel, saveLocation } from "../../lib/locations";
 
 export default function PeoplePage() {
   const t = useT();
@@ -16,7 +17,7 @@ export default function PeoplePage() {
 
   const filters = {
     search: params.get("search") || "",
-    district: params.get("district") ?? getSavedDistrict(),
+    ...(params.has("district") ? locationFromParams(params) : getSavedLocation()),
     kind: params.get("kind") || "",
     page: Number(params.get("page")) || 1,
   };
@@ -32,7 +33,7 @@ export default function PeoplePage() {
       if (!value || (key === "page" && value === 1)) next.delete(key); else next.set(key, value);
     });
     if ("district" in changes) {
-      saveDistrict(changes.district);
+      saveLocation(changes);
       if (!changes.district) next.set("district", "");
     }
     setParams(next);
@@ -54,16 +55,16 @@ export default function PeoplePage() {
           action={<Button as={Link} to={isAuthenticated ? "/profile/edit" : "/register"} variant="orange"><UserRound size={18} /> {t("people.join")}</Button>}
         />
 
-        <form onSubmit={(event) => { event.preventDefault(); update({ search: text.trim() }); }} className="grid gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_220px_auto]">
-          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
-            <Search size={18} className="text-loco-navy" />
+        <form onSubmit={(event) => { event.preventDefault(); update({ search: text.trim() }); }} className="flex flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 shadow-sm md:flex-row md:items-center">
+          <label className="flex min-w-0 items-center gap-2 rounded-xl bg-loco-ice px-3 md:flex-1">
+            <Search size={18} className="shrink-0 text-loco-navy" />
             <input type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder={t("people.searchPh")} aria-label={t("common.search")} className="w-full bg-transparent py-3 outline-none" />
           </label>
-          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
-            <MapPin size={18} className="text-loco-blue" />
-            <DistrictSelect aria-label={t("common.district")} value={filters.district} onChange={(e) => update({ district: e.target.value })} placeholder={t("common.allDistricts")} className="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
-          </label>
-          <Button type="submit" variant="orange">{t("common.search")}</Button>
+          <div className="flex items-center gap-2 rounded-xl bg-loco-ice px-3 py-1 md:shrink-0">
+            <MapPin size={18} className="shrink-0 text-loco-blue" />
+            <LocationPicker layout="inline" value={filters} onChange={(place) => update(place)} selectClassName="border-0! bg-transparent! px-1! py-2! text-sm focus:ring-0!" />
+          </div>
+          <Button type="submit" variant="orange" className="md:shrink-0">{t("common.search")}</Button>
         </form>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -73,7 +74,7 @@ export default function PeoplePage() {
             ))}
           </div>
           <p className="text-sm text-gray-600">
-            {loading ? t("common.searching") : t("people.count", { count: data?.pagination?.total ?? 0 })} {filters.district ? t("common.in", { district: filters.district }) : t("common.acrossRwanda")}
+            {loading ? t("common.searching") : t("people.count", { count: data?.pagination?.total ?? 0 })} {filters.district ? t("common.in", { district: locationLabel(filters) }) : t("common.acrossRwanda")}
           </p>
         </div>
 

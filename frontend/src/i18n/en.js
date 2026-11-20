@@ -102,6 +102,8 @@ export default {
   },
 
   location: {
+    where: "Where are you?",
+    whereHint: "District, then sector, cell and village, so neighbours find you first.",
     sector: "Sector",
     cell: "Cell",
     village: "Village",
