@@ -74,16 +74,16 @@ export default function ListingsPage({ mode = "shop" }) {
       <Container>
         <PageHeader eyebrow={t(`sections.${config.key}Eyebrow`)} title={t(`sections.${config.key}Title`)} description={t(`sections.${config.key}Text`)} />
 
-        <form onSubmit={(event) => { event.preventDefault(); update({ search: searchText.trim() }); }} className="grid gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm">
-          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
+        <form onSubmit={(event) => { event.preventDefault(); update({ search: searchText.trim() }); }} className="flex flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 shadow-sm md:flex-row md:items-center">
+          <label className="flex min-w-0 items-center gap-2 rounded-xl bg-loco-ice px-3 md:flex-1">
             <Search size={18} className="shrink-0 text-loco-navy" />
             <input type="search" value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder={t("sections.searchPh")} aria-label={t("common.search")} className="w-full bg-transparent py-3 outline-none" />
           </label>
-          <div className="flex items-start gap-2 rounded-xl bg-loco-ice px-3 py-1">
-            <MapPin size={18} className="mt-3 shrink-0 text-loco-blue" />
-            <LocationPicker value={filters} onChange={(place) => update(place)} className="w-full sm:grid-cols-2 md:grid-cols-4" selectClassName="border-0! bg-transparent! px-0! py-2! focus:ring-0!" />
+          <div className="flex items-center gap-2 rounded-xl bg-loco-ice px-3 py-1 md:shrink-0">
+            <MapPin size={18} className="shrink-0 text-loco-blue" />
+            <LocationPicker layout="inline" value={filters} onChange={(place) => update(place)} selectClassName="border-0! bg-transparent! px-1! py-2! text-sm focus:ring-0!" />
           </div>
-          <Button type="submit" variant="orange">{t("common.search")}</Button>
+          <Button type="submit" variant="orange" className="md:shrink-0">{t("common.search")}</Button>
         </form>
 
         <button type="button" onClick={() => setFiltersOpen((current) => !current)} aria-expanded={filtersOpen} className="mt-4 inline-flex w-full items-center justify-between rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm font-black text-loco-navy shadow-sm lg:hidden">

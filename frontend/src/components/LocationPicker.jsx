@@ -5,7 +5,7 @@ import { DistrictSelect, Select } from "./ui";
 
 // Cascading District > Sector > Cell > Village selects. Each level appears
 // once the one above it is chosen; every level is optional.
-export default function LocationPicker({ value, onChange, depth = "village", bare = false, className = "", selectClassName = "" }) {
+export default function LocationPicker({ value, onChange, depth = "village", layout = "grid", className = "", selectClassName = "" }) {
   const t = useT();
   const [data, setData] = useState(null);
   const location = value || {};
@@ -23,7 +23,8 @@ export default function LocationPicker({ value, onChange, depth = "village", bar
   const labels = { sector: t("location.sector"), cell: t("location.cell"), village: t("location.village") };
   const parents = { sector: "district", cell: "sector", village: "cell" };
 
-  const wrap = bare ? "contents" : `grid gap-2 sm:grid-cols-2 ${className}`;
+  const wrap = layout === "inline" ? `flex flex-wrap items-center gap-x-1 gap-y-1 ${className}` : `grid gap-2 sm:grid-cols-2 ${className}`;
+  const sel = layout === "inline" ? `w-auto! min-w-0 max-w-44 ${selectClassName}` : selectClassName;
 
   return (
     <div className={wrap}>
@@ -32,7 +33,7 @@ export default function LocationPicker({ value, onChange, depth = "village", bar
         value={location.district}
         onChange={(event) => onChange(withLevel(location, "district", event.target.value))}
         placeholder={t("common.allDistricts")}
-        className={selectClassName}
+        className={sel}
       />
       {levels.map((level) =>
         location[parents[level]] ? (
@@ -41,7 +42,7 @@ export default function LocationPicker({ value, onChange, depth = "village", bar
             aria-label={labels[level]}
             value={location[level]}
             onChange={(event) => onChange(withLevel(location, level, event.target.value))}
-            className={selectClassName}
+            className={sel}
           >
             <option value="">{t("location.all", { level: labels[level] })}</option>
             {options[level].map((name) => <option key={name} value={name}>{name}</option>)}

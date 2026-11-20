@@ -25,8 +25,8 @@ export default function Hero() {
   }
 
   return (
-    <form role="search" onSubmit={handleSearch} className="flex flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 shadow-lg shadow-blue-100/60 sm:flex-row">
-      <label className="flex flex-1 items-center gap-3 rounded-xl bg-loco-ice px-3">
+    <form role="search" onSubmit={handleSearch} className="flex flex-col gap-2 rounded-2xl border border-blue-100 bg-white p-2 shadow-lg shadow-blue-100/60 sm:flex-row sm:items-center">
+      <label className="flex min-w-0 flex-1 items-center gap-3 rounded-xl bg-loco-ice px-3">
         <Search className="shrink-0 text-loco-navy" size={20} />
         <input
           type="search"
@@ -39,9 +39,9 @@ export default function Hero() {
         />
       </label>
 
-      <div className="flex items-start gap-2 rounded-xl bg-loco-ice px-3">
-        <MapPin size={18} className="mt-3.5 shrink-0 text-loco-blue" />
-        <LocationPicker value={place} onChange={setPlace} className="min-w-44 sm:grid-cols-1" selectClassName="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
+      <div className="flex items-center gap-2 rounded-xl bg-loco-ice px-3 py-1 sm:shrink-0">
+        <MapPin size={18} className="shrink-0 text-loco-blue" />
+        <LocationPicker layout="inline" value={place} onChange={setPlace} selectClassName="border-0! bg-transparent! px-1! py-2! text-sm focus:ring-0!" />
       </div>
 
       <button type="submit" className="rounded-xl bg-loco-blue px-6 py-3 font-bold text-white hover:bg-loco-blue-dark">
