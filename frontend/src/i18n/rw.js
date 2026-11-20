@@ -101,6 +101,14 @@ export default {
     motto: "Turi kumwe. Gura iwacu, koresha abo iwacu, tere imbere twese.",
   },
 
+  location: {
+    sector: "Umurenge",
+    cell: "Akagari",
+    village: "Umudugudu",
+    all: "Byose ({level})",
+    near: "Hafi yawe",
+    anywhere: "Ahantu hose mu Rwanda",
+  },
   common: {
     search: "Shakisha",
     district: "Akarere",

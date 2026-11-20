@@ -4,13 +4,15 @@ import useFetch from "../hooks/useFetch";
 import { useT } from "../i18n";
 import { buildQuery } from "../api/api";
 import ShopTile from "./ShopTile";
+import { locationLabel } from "../lib/locations";
 
 // Shops matching the current district / search, scrolling sideways at the
 // top of "Shop nearby" so shops are visible even before they list items.
 // The list is rendered twice so the CSS marquee loops without a gap.
-export default function ShopsNearby({ district = "", search = "" }) {
+export default function ShopsNearby({ place = {}, search = "" }) {
+  const { district = "", sector = "", cell = "", village = "" } = place;
   const t = useT();
-  const { data, loading } = useFetch(`/shops${buildQuery({ district, search, perPage: 16 })}`);
+  const { data, loading } = useFetch(`/shops${buildQuery({ district, sector, cell, village, search, perPage: 16 })}`);
   const shops = data?.shops || [];
 
   if (loading || shops.length === 0) return null;
@@ -21,8 +23,8 @@ export default function ShopsNearby({ district = "", search = "" }) {
   return (
     <section className="mb-6">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-lg font-black text-loco-navy"><Store size={18} className="text-loco-blue" /> {t("shops.nearby")}{district ? ` · ${district}` : ""}</h2>
-        <Link to={`/shops${buildQuery({ district })}`} className="inline-flex items-center gap-1 text-sm font-bold text-loco-navy hover:gap-2">{t("listing.allShops")} <ArrowRight size={14} /></Link>
+        <h2 className="flex items-center gap-2 text-lg font-black text-loco-navy"><Store size={18} className="text-loco-blue" /> {t("shops.nearby")}{district ? ` · ${locationLabel(place)}` : ""}</h2>
+        <Link to={`/shops${buildQuery({ district, sector, cell, village })}`} className="inline-flex items-center gap-1 text-sm font-bold text-loco-navy hover:gap-2">{t("listing.allShops")} <ArrowRight size={14} /></Link>
       </div>
 
       <div className="-mx-4 max-w-[calc(100%+2rem)] overflow-hidden px-4 sm:mx-0 sm:max-w-full sm:px-0" style={{ maskImage: scrolls ? "linear-gradient(to right, transparent, black 4%, black 96%, transparent)" : undefined }}>

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiRequest, fieldErrorsFrom } from "../../api/api";
 import OwnerPicker from "../../components/admin/OwnerPicker";
+import LocationPicker from "../../components/LocationPicker";
 import { SingleImageUploader } from "../../components/ImageUploader";
 import {
   Button,
   Container,
-  DistrictSelect,
   Field,
   Input,
   Message,
@@ -40,6 +40,8 @@ export default function ShopFormPage({ admin = false }) {
     whatsapp: "",
     district: admin ? "" : user?.district || "",
     sector: "",
+    cell: "",
+    village: "",
     address: "",
     logoUrl: "",
     coverUrl: "",
@@ -58,6 +60,8 @@ export default function ShopFormPage({ admin = false }) {
         whatsapp: formatPhoneForDisplay(existing.whatsapp) || "",
         district: existing.district || "",
         sector: existing.sector || "",
+        cell: existing.cell || "",
+        village: existing.village || "",
         address: existing.address || "",
         logoUrl: existing.logoUrl || "",
         coverUrl: existing.coverUrl || "",
@@ -150,14 +154,9 @@ export default function ShopFormPage({ admin = false }) {
               </Field>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label={t("common.district")} htmlFor="district" error={errors.district}>
-                <DistrictSelect id="district" name="district" value={form.district} onChange={handleChange} error={errors.district} placeholder={t("common.chooseDistrict")} required />
-              </Field>
-              <Field label="Sector" htmlFor="sector" optional error={errors.sector}>
-                <Input id="sector" name="sector" value={form.sector} onChange={handleChange} placeholder="e.g. Kimironko" />
-              </Field>
-            </div>
+            <Field label="Where is the shop?" htmlFor="district" error={errors.district || errors.sector || errors.cell || errors.village} hint="District, then sector, cell and village, so buyers nearby find you.">
+              <LocationPicker value={form} onChange={(place) => { setForm((c) => ({ ...c, ...place })); setErrors((c) => ({ ...c, district: "" })); }} className="sm:grid-cols-2" />
+            </Field>
 
             <Field label="Address or landmark" htmlFor="address" optional error={errors.address}>
               <Input id="address" name="address" value={form.address} onChange={handleChange} placeholder="e.g. KG 11 Ave, opposite the bus stop" />

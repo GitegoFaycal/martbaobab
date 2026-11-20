@@ -2,8 +2,8 @@ import { MapPin, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useT } from "../i18n";
-import { getSavedDistrict, saveDistrict } from "../lib/rwanda";
-import { DistrictSelect } from "./ui";
+import { getSavedLocation, saveLocation } from "../lib/locations";
+import LocationPicker from "./LocationPicker";
 
 // One search bar for the market. Sections live in the header, so there are
 // no tabs or extra buttons here.
@@ -11,15 +11,15 @@ export default function Hero() {
   const t = useT();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [district, setDistrict] = useState(getSavedDistrict);
+  const [place, setPlace] = useState(getSavedLocation);
 
   function handleSearch(event) {
     event.preventDefault();
-    saveDistrict(district);
+    saveLocation(place);
 
     const params = new URLSearchParams();
     if (query.trim()) params.set("search", query.trim());
-    if (district) params.set("district", district);
+    for (const level of ["district", "sector", "cell", "village"]) if (place[level]) params.set(level, place[level]);
 
     navigate(`/shop${params.toString() ? `?${params}` : ""}`);
   }
@@ -39,17 +39,10 @@ export default function Hero() {
         />
       </label>
 
-      <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3 sm:w-52">
-        <MapPin size={18} className="shrink-0 text-loco-blue" />
-        <DistrictSelect
-          name="district"
-          aria-label={t("common.district")}
-          value={district}
-          onChange={(event) => setDistrict(event.target.value)}
-          placeholder={t("common.allDistricts")}
-          className="border-0! bg-transparent! px-0! py-3! focus:ring-0!"
-        />
-      </label>
+      <div className="flex items-start gap-2 rounded-xl bg-loco-ice px-3">
+        <MapPin size={18} className="mt-3.5 shrink-0 text-loco-blue" />
+        <LocationPicker value={place} onChange={setPlace} className="min-w-44 sm:grid-cols-1" selectClassName="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
+      </div>
 
       <button type="submit" className="rounded-xl bg-loco-blue px-6 py-3 font-bold text-white hover:bg-loco-blue-dark">
         {t("common.search")}

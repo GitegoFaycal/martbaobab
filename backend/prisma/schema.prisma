@@ -137,6 +137,8 @@ model Shop {
   city        String
   district    String?
   sector      String?
+  cell        String?
+  village     String?
   address     String?
   verified    Boolean  @default(false)
   ownerId     String
@@ -148,6 +150,7 @@ model Shop {
   orders   Order[]
 
   @@index([district])
+  @@index([district, sector])
 }
 
 model Category {

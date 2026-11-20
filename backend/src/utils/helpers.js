@@ -78,3 +78,13 @@ export function httpError(status, message) {
   error.status = status;
   return error;
 }
+
+// Builds the shop-location filter from ?district=&sector=&cell=&village=.
+export function placeWhere(q = {}) {
+  const where = {};
+  if (q.district) where.district = String(q.district);
+  for (const level of ["sector", "cell", "village"]) {
+    if (q[level]) where[level] = { equals: String(q[level]), mode: "insensitive" };
+  }
+  return where;
+}

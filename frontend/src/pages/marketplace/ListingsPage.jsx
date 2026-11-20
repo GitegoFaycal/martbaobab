@@ -6,7 +6,6 @@ import ShopsNearby from "../../components/ShopsNearby";
 import {
   Button,
   Container,
-  DistrictSelect,
   EmptyState,
   Input,
   Message,
@@ -18,7 +17,8 @@ import {
 import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { buildQuery } from "../../api/api";
-import { getSavedDistrict, saveDistrict } from "../../lib/rwanda";
+import LocationPicker from "../../components/LocationPicker";
+import { getSavedLocation, locationFromParams, locationLabel, saveLocation } from "../../lib/locations";
 
 const MODES = {
   shop: { key: "shop", fixed: { condition: "NEW", type: "PRODUCT" }, categoryKind: "GOODS" },
@@ -34,7 +34,7 @@ export default function ListingsPage({ mode = "shop" }) {
   const filters = {
     search: params.get("search") || "",
     category: params.get("category") || "",
-    district: params.get("district") ?? getSavedDistrict(),
+    ...(params.has("district") ? locationFromParams(params) : getSavedLocation()),
     sort: params.get("sort") || "newest",
     minPrice: params.get("minPrice") || "",
     maxPrice: params.get("maxPrice") || "",
@@ -46,7 +46,7 @@ export default function ListingsPage({ mode = "shop" }) {
 
   const query = useMemo(
     () => buildQuery({ ...config.fixed, ...filters, perPage: 24 }),
-    [config, filters.search, filters.category, filters.district, filters.sort, filters.minPrice, filters.maxPrice, filters.page]
+    [config, filters.search, filters.category, filters.district, filters.sector, filters.cell, filters.village, filters.sort, filters.minPrice, filters.maxPrice, filters.page]
   );
 
   const { data, loading, error } = useFetch(`/listings${query}`);
@@ -60,7 +60,7 @@ export default function ListingsPage({ mode = "shop" }) {
       else next.set(key, String(value));
     });
     if ("district" in changes) {
-      saveDistrict(changes.district);
+      saveLocation(changes);
       if (!changes.district) next.set("district", "");
     }
     setParams(next);
@@ -74,15 +74,15 @@ export default function ListingsPage({ mode = "shop" }) {
       <Container>
         <PageHeader eyebrow={t(`sections.${config.key}Eyebrow`)} title={t(`sections.${config.key}Title`)} description={t(`sections.${config.key}Text`)} />
 
-        <form onSubmit={(event) => { event.preventDefault(); update({ search: searchText.trim() }); }} className="grid gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm md:grid-cols-[1fr_220px_auto]">
+        <form onSubmit={(event) => { event.preventDefault(); update({ search: searchText.trim() }); }} className="grid gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm">
           <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
             <Search size={18} className="shrink-0 text-loco-navy" />
             <input type="search" value={searchText} onChange={(event) => setSearchText(event.target.value)} placeholder={t("sections.searchPh")} aria-label={t("common.search")} className="w-full bg-transparent py-3 outline-none" />
           </label>
-          <label className="flex items-center gap-2 rounded-xl bg-loco-ice px-3">
-            <MapPin size={18} className="shrink-0 text-loco-blue" />
-            <DistrictSelect aria-label={t("common.district")} value={filters.district} onChange={(event) => update({ district: event.target.value })} placeholder={t("common.allDistricts")} className="border-0! bg-transparent! px-0! py-3! focus:ring-0!" />
-          </label>
+          <div className="flex items-start gap-2 rounded-xl bg-loco-ice px-3 py-1">
+            <MapPin size={18} className="mt-3 shrink-0 text-loco-blue" />
+            <LocationPicker value={filters} onChange={(place) => update(place)} className="w-full sm:grid-cols-2 md:grid-cols-4" selectClassName="border-0! bg-transparent! px-0! py-2! focus:ring-0!" />
+          </div>
           <Button type="submit" variant="orange">{t("common.search")}</Button>
         </form>
 
@@ -119,10 +119,10 @@ export default function ListingsPage({ mode = "shop" }) {
           </aside>
 
           <section className="min-w-0">
-            {mode === "shop" && <ShopsNearby district={filters.district} search={filters.search} />}
+            {mode === "shop" && <ShopsNearby place={filters} search={filters.search} />}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-gray-600">
-                {loading ? t("common.searching") : t("common.results", { count: data?.pagination?.total ?? 0 })} {filters.district ? t("common.in", { district: filters.district }) : t("common.acrossRwanda")}
+                {loading ? t("common.searching") : t("common.results", { count: data?.pagination?.total ?? 0 })} {filters.district ? t("common.in", { district: locationLabel(filters) }) : t("common.acrossRwanda")}
               </p>
               <label className="flex items-center gap-2 text-sm">
                 <span className="text-gray-500">{t("common.sort")}</span>

@@ -101,6 +101,14 @@ export default {
     motto: "Turi kumwe. Acheter local, recruter local, grandir ensemble.",
   },
 
+  location: {
+    sector: "Secteur",
+    cell: "Cellule",
+    village: "Village",
+    all: "Tous ({level})",
+    near: "Près de vous",
+    anywhere: "Partout au Rwanda",
+  },
   common: {
     search: "Rechercher",
     district: "District",

@@ -8,6 +8,7 @@ import { useI18n } from "../../i18n";
 import { formatDate } from "../../lib/format";
 import { recordConnection } from "../../lib/connect";
 import { formatPhoneForDisplay, whatsappLink } from "../../lib/rwanda";
+import { placeLabel } from "../../lib/locations";
 
 export default function ShopPage() {
   const { t, lang } = useI18n();
@@ -46,7 +47,7 @@ export default function ShopPage() {
                 {shop.name}
                 {shop.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700"><BadgeCheck size={14} /> {t("common.verified")}</span>}
               </h1>
-              <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" />{shop.district}{shop.sector ? `, ${shop.sector}` : ""}{shop.address ? ` · ${shop.address}` : ""}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" />{placeLabel(shop)}{shop.address ? ` · ${shop.address}` : ""}</p>
               {shop.description && <p className="mt-3 max-w-2xl leading-7 text-gray-700">{shop.description}</p>}
               <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
                 <span className="inline-flex items-center gap-1 font-semibold text-loco-sky-dark"><Link2 size={13} /> {t("connections.connections", { count: shop.owner?._count?.connectionsAsSeller ?? 0 })}</span>

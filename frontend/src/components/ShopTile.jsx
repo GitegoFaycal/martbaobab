@@ -1,6 +1,7 @@
 import { BadgeCheck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n";
+import { placeLabel } from "../lib/locations";
 
 // A shop as a photo card: cover (or logo) as the background, name and
 // details laid over a navy gradient, like the people tiles.
@@ -19,7 +20,7 @@ export default function ShopTile({ shop, className = "" }) {
 
       <span className="relative p-3 text-white">
         <strong className="flex items-center gap-1 text-base leading-tight drop-shadow"><span className="truncate">{shop.name}</span>{shop.verified && <BadgeCheck size={15} className="shrink-0 text-loco-sky" />}</strong>
-        <span className="mt-0.5 flex items-center gap-1 truncate text-xs text-white/85"><MapPin size={11} className="shrink-0 text-loco-sky" /> {shop.district}{shop.sector ? `, ${shop.sector}` : ""}</span>
+        <span className="mt-0.5 flex items-center gap-1 truncate text-xs text-white/85"><MapPin size={11} className="shrink-0 text-loco-sky" /> {placeLabel(shop)}</span>
         <span className="mt-0.5 block text-[11px] font-semibold text-white/70">{t("listing.listings", { count: shop._count?.listings ?? 0 })}</span>
       </span>
     </Link>

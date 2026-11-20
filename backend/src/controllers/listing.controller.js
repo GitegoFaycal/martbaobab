@@ -7,6 +7,7 @@ import {
   serialize,
   slugify,
   uniqueSlug,
+  placeWhere,
 } from "../utils/helpers.js";
 
 const listingInclude = {
@@ -20,6 +21,8 @@ const listingInclude = {
       slug: true,
       district: true,
       sector: true,
+      cell: true,
+      village: true,
       phone: true,
       whatsapp: true,
       verified: true,
@@ -53,14 +56,7 @@ export const listListings = asyncHandler(async (req, res) => {
     ...(q.type ? { type: q.type } : {}),
     ...(q.category ? { category: { slug: q.category } } : {}),
     ...(q.shop ? { shop: { slug: q.shop } } : {}),
-    ...(q.district
-      ? {
-          OR: [
-            { district: q.district },
-            { district: null, shop: { district: q.district } },
-          ],
-        }
-      : {}),
+    ...(placeFilter(q)),
     ...(q.minPrice != null || q.maxPrice != null
       ? {
           price: {
@@ -81,14 +77,9 @@ export const listListings = asyncHandler(async (req, res) => {
   };
 
   // Two OR blocks cannot coexist on one level; merge district + search safely.
-  if (q.district && q.search) {
+  if (q.district && !finerPlace(q) && q.search) {
     where.AND = [
-      {
-        OR: [
-          { district: q.district },
-          { district: null, shop: { district: q.district } },
-        ],
-      },
+      placeFilter(q),
       {
         OR: [
           { name: { contains: q.search, mode: "insensitive" } },
@@ -112,6 +103,9 @@ export const listListings = asyncHandler(async (req, res) => {
             name: true,
             slug: true,
             district: true,
+            sector: true,
+            cell: true,
+            village: true,
             verified: true,
           },
         },
@@ -152,7 +146,7 @@ export const getListing = asyncHandler(async (req, res) => {
     },
     include: {
       images: { orderBy: { position: "asc" }, take: 1 },
-      shop: { select: { name: true, slug: true, district: true } },
+      shop: { select: { name: true, slug: true, district: true, sector: true, cell: true, village: true } },
     },
     orderBy: { createdAt: "desc" },
     take: 8,
@@ -168,6 +162,26 @@ export const getListing = asyncHandler(async (req, res) => {
     related: serialize(related),
   });
 });
+
+function finerPlace(q) {
+  return Boolean(q.sector || q.cell || q.village);
+}
+
+// District alone: listing's own district or its shop's. Sector/cell/village:
+// always the shop's place (listings do not carry those levels).
+function placeFilter(q) {
+  if (finerPlace(q)) {
+    const shopWhere = placeWhere(q);
+    return { shop: { ...shopWhere, ...(q.district ? { district: q.district } : {}) } };
+  }
+  if (!q.district) return {};
+  return {
+    OR: [
+      { district: q.district },
+      { district: null, shop: { district: q.district } },
+    ],
+  };
+}
 
 async function requireMyShop(userId) {
   const shop = await prisma.shop.findFirst({ where: { ownerId: userId } });

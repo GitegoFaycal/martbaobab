@@ -5,6 +5,7 @@ import {
   httpError,
   paginate,
   paginationMeta,
+  placeWhere,
   serialize,
   slugify,
   uniqueSlug,
@@ -22,6 +23,8 @@ const shopSelect = {
   city: true,
   district: true,
   sector: true,
+  cell: true,
+  village: true,
   address: true,
   verified: true,
   createdAt: true,
@@ -38,6 +41,8 @@ function shopData(body) {
     district: body.district,
     city: body.district,
     sector: body.sector || null,
+    cell: body.cell || null,
+    village: body.village || null,
     address: body.address || null,
     logoUrl: body.logoUrl || null,
     coverUrl: body.coverUrl || null,
@@ -45,11 +50,11 @@ function shopData(body) {
 }
 
 export const listShops = asyncHandler(async (req, res) => {
-  const { district, search } = req.query;
+  const { search } = req.query;
   const paging = paginate(req.query);
 
   const where = {
-    ...(district ? { district: String(district) } : {}),
+    ...placeWhere(req.query),
     ...(search
       ? { name: { contains: String(search), mode: "insensitive" } }
       : {}),

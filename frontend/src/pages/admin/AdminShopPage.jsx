@@ -8,6 +8,7 @@ import useFetch from "../../hooks/useFetch";
 import { useT } from "../../i18n";
 import { formatRWF } from "../../lib/format";
 import { formatPhoneForDisplay } from "../../lib/rwanda";
+import { placeLabel } from "../../lib/locations";
 
 // Administrator view of one shop: owner details, verification and the
 // product list, with the same add / edit / delete actions the owner has.
@@ -107,7 +108,7 @@ export default function AdminShopPage() {
                 {shop.name}
                 {shop.verified ? <Badge tone="green"><BadgeCheck size={12} /> Verified</Badge> : <Badge tone="amber">Pending</Badge>}
               </h1>
-              <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" /> {shop.district}{shop.sector ? `, ${shop.sector}` : ""}{shop.address ? ` · ${shop.address}` : ""}</p>
+              <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" /> {placeLabel(shop)}{shop.address ? ` · ${shop.address}` : ""}</p>
               <p className="mt-1 text-sm text-gray-500">{formatPhoneForDisplay(shop.phone)}{shop.whatsapp && shop.whatsapp !== shop.phone ? ` · WhatsApp ${formatPhoneForDisplay(shop.whatsapp)}` : ""}</p>
               {shop.description && <p className="mt-3 max-w-2xl text-sm text-gray-700">{shop.description}</p>}
 
