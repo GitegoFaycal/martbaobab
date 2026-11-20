@@ -20,67 +20,68 @@ export function listingWhatsapp(listing, t) {
   return whatsappLink(phone, `${message}\n${window.location.origin}/listings/${listing.slug}`);
 }
 
+// Photo tile: the picture fills the card, the details and the WhatsApp
+// button sit on a navy gradient in front of it.
 export default function ListingCard({ listing }) {
   const t = useT();
   const image = listing.images?.[0]?.url;
   const discount = discountPercent(listing.originalPrice, listing.price);
   const district = listing.district || listing.shop?.district;
   const whatsapp = listingWhatsapp(listing, t);
+  const connections = listing._count?.connections ?? 0;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-loco-blue hover:shadow-md">
-      <Link to={`/listings/${listing.slug}`} className="relative block">
-        <div className="aspect-4/3 w-full overflow-hidden bg-loco-ice">
-          {image ? (
-            <img src={image} alt={listing.name} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
-          ) : (
-            <div className="grid h-full w-full place-items-center text-loco-navy/40"><ImageOff size={36} /></div>
-          )}
-        </div>
-
-        <div className="absolute left-3 top-3 flex gap-2">
-          {listing.condition === "USED" && <span className="rounded-full bg-loco-navy px-2.5 py-1 text-xs font-bold text-white">{t("common.secondHand")}</span>}
-          {listing.type === "SERVICE" && <span className="rounded-full bg-loco-sky px-2.5 py-1 text-xs font-bold text-loco-navy-dark">{t("common.service")}</span>}
-          {discount > 0 && <span className="rounded-full bg-loco-blue px-2.5 py-1 text-xs font-bold text-white">-{discount}%</span>}
-        </div>
+    <article className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-2xl bg-loco-navy shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+      <Link to={`/listings/${listing.slug}`} className="absolute inset-0" aria-label={listing.name}>
+        {image ? (
+          <img src={image} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+        ) : (
+          <span className="grid h-full w-full place-items-center bg-loco-sky/30 text-loco-navy/40"><ImageOff size={48} /></span>
+        )}
+        <span className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/55 to-transparent" />
       </Link>
 
-      <div className="flex flex-1 flex-col p-4">
-        <Link to={`/listings/${listing.slug}`} className="line-clamp-2 font-bold leading-snug text-loco-ink hover:text-loco-navy">{listing.name}</Link>
+      <div className="pointer-events-none absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
+        {listing.condition === "USED" && <span className="rounded-full bg-loco-navy/90 px-2 py-0.5 text-[11px] font-bold text-white">{t("common.secondHand")}</span>}
+        {listing.type === "SERVICE" && <span className="rounded-full bg-loco-sky px-2 py-0.5 text-[11px] font-bold text-loco-navy-dark">{t("common.service")}</span>}
+        {discount > 0 && <span className="rounded-full bg-loco-blue px-2 py-0.5 text-[11px] font-bold text-white">-{discount}%</span>}
+      </div>
 
-        <div className="mt-2 flex items-baseline gap-2">
-          <strong className="whitespace-nowrap text-lg text-loco-navy">{formatRWF(listing.price)}</strong>
-          {listing.unit && <span className="text-xs text-gray-500">/ {listing.unit}</span>}
-          {listing.originalPrice && discount > 0 && <span className="text-xs text-gray-400 line-through">{formatRWF(listing.originalPrice)}</span>}
-        </div>
+      <div className="pointer-events-none relative p-3 text-white">
+        <Link to={`/listings/${listing.slug}`} className="pointer-events-auto line-clamp-2 text-[15px] font-black leading-snug drop-shadow">{listing.name}</Link>
 
-        {listing.negotiable && <span className="mt-1 text-xs font-semibold text-loco-blue">{t("common.negotiable")}</span>}
+        <p className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
+          <strong className="whitespace-nowrap text-lg text-loco-sky">{formatRWF(listing.price)}</strong>
+          {listing.unit && <span className="text-xs text-white/75">/ {listing.unit}</span>}
+          {listing.originalPrice && discount > 0 && <span className="text-xs text-white/60 line-through">{formatRWF(listing.originalPrice)}</span>}
+          {listing.negotiable && <span className="text-[11px] font-semibold text-white/80">· {t("common.negotiable")}</span>}
+        </p>
 
-        <div className="mt-3 flex items-center gap-1 text-xs text-gray-500">
-          <MapPin size={13} className="text-loco-blue" />
+        <p className="mt-1 flex items-center gap-1 text-xs text-white/85">
+          <MapPin size={12} className="shrink-0 text-loco-sky" />
           <span className="truncate">{listing.shop?.name}{district ? ` · ${district}` : ""}</span>
-          {listing.shop?.verified && <BadgeCheck size={14} className="shrink-0 text-loco-sky-dark" />}
-        </div>
-        {(listing._count?.connections ?? 0) > 0 && (
-          <p className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-loco-sky-dark">
-            <Link2 size={12} /> {t("connections.connectionsShort", { count: listing._count.connections })}
+          {listing.shop?.verified && <BadgeCheck size={13} className="shrink-0 text-loco-sky" />}
+        </p>
+        {connections > 0 && (
+          <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-loco-sky">
+            <Link2 size={11} /> {t("connections.connectionsShort", { count: connections })}
           </p>
         )}
 
-        <div className="mt-auto pt-4">
+        <div className="pointer-events-auto mt-2.5">
           {whatsapp ? (
             <a
               href={whatsapp}
               target="_blank"
               rel="noreferrer"
               onClick={() => recordConnection({ listingId: listing.id, channel: "WHATSAPP" })}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-bold text-white hover:bg-[#1ebe5d]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2 text-sm font-bold text-white hover:bg-[#1ebe5d]"
             >
-              <WhatsAppIcon size={18} />
+              <WhatsAppIcon size={17} />
               {t("listing.whatsappMe")}
             </a>
           ) : (
-            <Link to={`/listings/${listing.slug}`} className="flex w-full items-center justify-center rounded-xl border border-loco-sky py-2.5 text-sm font-bold text-loco-navy hover:bg-loco-sky/10">
+            <Link to={`/listings/${listing.slug}`} className="flex w-full items-center justify-center rounded-xl border border-white/70 bg-white/15 py-2 text-sm font-bold text-white backdrop-blur hover:bg-white/30">
               {t("listing.contactProvider")}
             </Link>
           )}

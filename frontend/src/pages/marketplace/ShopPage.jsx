@@ -32,36 +32,44 @@ export default function ShopPage() {
 
   return (
     <main className="min-h-[75vh] bg-loco-ice pb-12">
-      <div className="h-44 bg-linear-to-r from-loco-navy to-loco-blue sm:h-56">
-        {shop.coverUrl && <img src={shop.coverUrl} alt="" className="h-full w-full object-cover" />}
-      </div>
-
       <Container>
-        <div className="-mt-12 rounded-3xl border border-blue-100 bg-white p-6 shadow-lg sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-            <span className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl border-4 border-white bg-loco-navy text-3xl font-black text-white shadow">
-              {shop.logoUrl ? <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" /> : shop.name.charAt(0)}
-            </span>
-            <div className="min-w-0 flex-1">
-              <h1 className="flex flex-wrap items-center gap-2 text-2xl font-black text-loco-navy sm:text-3xl">
-                {shop.name}
-                {shop.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700"><BadgeCheck size={14} /> {t("common.verified")}</span>}
-              </h1>
-              <p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={14} className="text-loco-blue" />{placeLabel(shop)}{shop.address ? ` · ${shop.address}` : ""}</p>
-              {shop.description && <p className="mt-3 max-w-2xl leading-7 text-gray-700">{shop.description}</p>}
-              <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-                <span className="inline-flex items-center gap-1 font-semibold text-loco-sky-dark"><Link2 size={13} /> {t("connections.connections", { count: shop.owner?._count?.connectionsAsSeller ?? 0 })}</span>
-                <span className="inline-flex items-center gap-1"><Eye size={13} /> {t("connections.viewers", { count: shop.owner?.views ?? 0 })}</span>
-                <span>{t("listing.listings", { count: shop._count?.listings ?? listings.length })}</span>
-                <span>{t("listing.onLocoSince", { date: formatDate(shop.createdAt, { month: "long", year: "numeric" }, lang) })}</span>
-              </p>
+        <section className="relative mt-6 flex min-h-[22rem] flex-col justify-end overflow-hidden rounded-3xl bg-loco-navy shadow-lg sm:min-h-[26rem]">
+          {(shop.coverUrl || shop.logoUrl) && <img src={shop.coverUrl || shop.logoUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+          <div className="absolute inset-0 bg-linear-to-t from-loco-navy via-loco-navy/55 to-transparent" />
+
+          <div className="relative flex flex-col gap-5 p-6 text-white sm:flex-row sm:items-end sm:justify-between sm:p-8">
+            <div className="flex min-w-0 items-end gap-4">
+              {shop.logoUrl && shop.coverUrl && (
+                <span className="hidden h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-white/80 bg-white shadow sm:block">
+                  <img src={shop.logoUrl} alt="" className="h-full w-full object-cover" />
+                </span>
+              )}
+              <div className="min-w-0">
+                <h1 className="flex flex-wrap items-center gap-2 text-3xl font-black drop-shadow sm:text-4xl">
+                  {shop.name}
+                  {shop.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2.5 py-1 text-xs font-bold"><BadgeCheck size={14} /> {t("common.verified")}</span>}
+                </h1>
+                <p className="mt-1 flex items-center gap-1 text-sm text-white/85"><MapPin size={14} className="text-loco-sky" />{placeLabel(shop)}{shop.address ? ` · ${shop.address}` : ""}</p>
+                <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/80">
+                  <span className="inline-flex items-center gap-1 font-semibold text-loco-sky"><Link2 size={13} /> {t("connections.connections", { count: shop.owner?._count?.connectionsAsSeller ?? 0 })}</span>
+                  <span className="inline-flex items-center gap-1"><Eye size={13} /> {t("connections.viewers", { count: shop.owner?.views ?? 0 })}</span>
+                  <span>{t("listing.listings", { count: shop._count?.listings ?? listings.length })}</span>
+                </p>
+              </div>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:w-52">
-              {shop.phone && <Button as="a" href={`tel:${shop.phone}`} variant="outline" onClick={() => recordConnection({ personId: shop.owner?.id, channel: "CALL" })}><Phone size={17} /> {formatPhoneForDisplay(shop.phone)}</Button>}
               {whatsapp && <Button as="a" href={whatsapp} target="_blank" rel="noreferrer" variant="whatsapp" onClick={() => recordConnection({ personId: shop.owner?.id, channel: "WHATSAPP" })}><WhatsAppIcon size={18} /> WhatsApp</Button>}
+              {shop.phone && <a href={`tel:${shop.phone}`} onClick={() => recordConnection({ personId: shop.owner?.id, channel: "CALL" })} className="inline-flex items-center justify-center gap-2 rounded-full border border-white/70 bg-white/15 px-5 py-3 text-base font-bold text-white backdrop-blur hover:bg-white/30"><Phone size={17} /> {formatPhoneForDisplay(shop.phone)}</a>}
             </div>
           </div>
-        </div>
+        </section>
+
+        {shop.description && (
+          <div className="mt-6 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
+            <p className="max-w-3xl leading-7 text-gray-700">{shop.description}</p>
+            <p className="mt-3 text-xs text-gray-500">{t("listing.onLocoSince", { date: formatDate(shop.createdAt, { month: "long", year: "numeric" }, lang) })}</p>
+          </div>
+        )}
 
         <div className="mt-8">
           <Breadcrumbs items={[{ label: t("common.home"), to: "/" }, { label: t("footer.shops"), to: "/shops" }, { label: shop.name }]} />
