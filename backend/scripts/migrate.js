@@ -68,6 +68,15 @@ try {
     stdio: "inherit",
     env: process.env,
   });
+
+  // Nationwide showcase: a shop, people and jobs in every village.
+  // SEED_VILLAGES=false disables; `node prisma/villages.js --remove` cleans up.
+  if (process.env.SEED_VILLAGES !== "false") {
+    execFileSync(process.execPath, ["prisma/villages.js"], {
+      stdio: "inherit",
+      env: process.env,
+    });
+  }
 } catch (error) {
   console.error("");
   console.error("==================================================");

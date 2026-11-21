@@ -64,6 +64,10 @@ API health check: http://localhost:5000/api/health
 
 A connection is recorded each time a visitor taps **WhatsApp me** or the call button on a listing, a shop or a profile (`POST /api/connections`, deduplicated per person and listing within an hour; guests are tracked by an anonymous browser key). Every profile shows its viewers and connections, every listing shows how many people asked about it, sellers see who contacted them and buyers see the sellers they contacted on `/connections`, and the homepage shows the running totals from `GET /api/stats`.
 
+## Nationwide showcase data
+
+`backend/prisma/villages.js` (run by the build unless `SEED_VILLAGES=false`) fills every one of Rwanda's 14,837 villages with a shop and 3–4 products or services, a specialist in every second village and an open job in every fourth, all with coordinates near their cell centre. Accounts use the `@village.loco.rw` domain and the password `Village2026!`; `node prisma/villages.js --remove` deletes everything it created. Set `DEMO_WHATSAPP` to route every showcase WhatsApp button to one phone during demos.
+
 ## Demo data
 
 A fresh database is filled with demo content on the first deployment (or with `npm run db:demo`, and `SEED_DEMO=true` forces it): 8 shops across Rwanda, 41 listings (new, second-hand and services with photos), 12 jobs and applications. Set `SEED_DEMO=false` to disable. Every demo account uses the password `Demo1234`, for example:

@@ -6,7 +6,7 @@ import {
   paginationMeta,
   serialize,
 } from "../utils/helpers.js";
-import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, rankByDistance } from "../services/geo.service.js";
+import { nearestIds, pageByDistance, parseNear } from "../services/geo.service.js";
 
 const personSelect = {
   id: true,
@@ -112,19 +112,22 @@ export const listPeople = asyncHandler(async (req, res) => {
 
   const near = parseNear(req.query);
   if (near) {
-    const box = bboxWhere(near);
-    const rows = await prisma.user.findMany({
-      where: { AND: [where, { OR: [box, { shops: { some: box } }] }] },
-      select: personSelect,
-      take: NEAR_SCAN_LIMIT,
+    const userIds = await nearestIds(prisma, "User", near, 1500);
+    const candidates = userIds.length
+      ? await prisma.user.findMany({ where: { AND: [where, { id: { in: userIds } }] }, select: { id: true, lat: true, lng: true } })
+      : [];
+    const { rows: page, total } = await pageByDistance({
+      candidates,
+      near,
+      coordsOf: (user) => user,
+      paging,
+      loadFull: (pageIds) => prisma.user.findMany({ where: { id: { in: pageIds } }, select: personSelect }),
     });
-    const ranked = rankByDistance(rows, near, (user) => (Number.isFinite(user.lat) ? user : user.shops?.[0] || null));
-    const page = ranked.slice(paging.skip, paging.skip + paging.take);
     const connectedNear = await connectedSet(req.user?.id, page.map((person) => person.id));
     return res.status(200).json({
       success: true,
       people: serialize(page.map((person) => ({ ...shapePerson(person), distanceKm: person.distanceKm, connected: connectedNear.has(person.id) }))),
-      pagination: paginationMeta(ranked.length, paging),
+      pagination: paginationMeta(total, paging),
     });
   }
 
@@ -132,7 +135,7 @@ export const listPeople = asyncHandler(async (req, res) => {
     prisma.user.findMany({
       where,
       select: personSelect,
-      orderBy: [{ avatarUrl: { sort: "desc", nulls: "last" } }, { connectionsAsSeller: { _count: "desc" } }, { createdAt: "desc" }],
+      orderBy: [{ avatarUrl: { sort: "desc", nulls: "last" } }, { views: "desc" }, { createdAt: "desc" }],
       skip: paging.skip,
       take: paging.take,
     }),

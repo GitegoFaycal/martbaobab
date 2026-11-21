@@ -9,7 +9,7 @@ import {
   uniqueSlug,
   placeWhere,
 } from "../utils/helpers.js";
-import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, rankByDistance } from "../services/geo.service.js";
+import { nearestIds, pageByDistance, parseNear } from "../services/geo.service.js";
 
 const listingInclude = {
   _count: { select: { connections: true } },
@@ -117,14 +117,17 @@ export const listListings = asyncHandler(async (req, res) => {
   if (near) {
     // Nearest first: bounding box on the shop in SQL, exact distance after.
     const { is, ...shopRest } = where.shop || {};
-    const nearWhere = { ...where, shop: { ...shopRest, ...(is || {}), ...bboxWhere(near) } };
-    const rows = await prisma.listing.findMany({ where: nearWhere, include: listInclude, take: NEAR_SCAN_LIMIT });
-    const ranked = rankByDistance(rows, near, (row) => row.shop);
-    return res.status(200).json({
-      success: true,
-      listings: serialize(ranked.slice(paging.skip, paging.skip + paging.take)),
-      pagination: paginationMeta(ranked.length, paging),
+    const shopIds = await nearestIds(prisma, "Shop", near, 600);
+    const nearWhere = { ...where, shop: { ...shopRest, ...(is || {}), id: { in: shopIds } } };
+    const candidates = shopIds.length ? await prisma.listing.findMany({ where: nearWhere, select: { id: true, shop: { select: { lat: true, lng: true } } }, take: 3000 }) : [];
+    const { rows, total } = await pageByDistance({
+      candidates,
+      near,
+      coordsOf: (row) => row.shop,
+      paging,
+      loadFull: (pageIds) => prisma.listing.findMany({ where: { id: { in: pageIds } }, include: listInclude }),
     });
+    return res.status(200).json({ success: true, listings: serialize(rows), pagination: paginationMeta(total, paging) });
   }
 
   const [listings, total] = await Promise.all([

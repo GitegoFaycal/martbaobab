@@ -104,3 +104,30 @@ export function rankByDistance(rows, near, coordsOf) {
 }
 
 export const NEAR_SCAN_LIMIT = 400;
+
+// Ids of the rows closest to `near`, ordered by distance, from a bounding
+// box in SQL. Only whitelisted tables; the result feeds a Prisma `id in`.
+const NEAR_TABLES = { Shop: '"Shop"', User: '"User"', Job: '"Job"' };
+
+export async function nearestIds(prisma, table, near, limit = 3000) {
+  const t = NEAR_TABLES[table];
+  if (!t) throw new Error("nearestIds: unknown table " + table);
+  const box = bboxWhere(near);
+  const cosLat = Math.cos((near.lat * Math.PI) / 180);
+  const rows = await prisma.$queryRawUnsafe(
+    `SELECT id FROM ${t} WHERE lat BETWEEN $1 AND $2 AND lng BETWEEN $3 AND $4 ORDER BY ((lat - $5) * (lat - $5) + ((lng - $6) * $7) * ((lng - $6) * $7)) ASC LIMIT ${Math.max(1, Math.min(10000, limit))}`,
+    box.lat.gte, box.lat.lte, box.lng.gte, box.lng.lte, near.lat, near.lng, cosLat
+  );
+  return rows.map((r) => r.id);
+}
+
+// Ranks lightweight candidates by distance, then loads full records for the
+// requested page only. `candidates` need an id and coordinates (via coordsOf).
+export async function pageByDistance({ candidates, near, coordsOf, paging, loadFull }) {
+  const ranked = rankByDistance(candidates, near, coordsOf);
+  const page = ranked.slice(paging.skip, paging.skip + paging.take);
+  const full = page.length ? await loadFull(page.map((row) => row.id)) : [];
+  const byId = new Map(full.map((row) => [row.id, row]));
+  const rows = page.map((row) => (byId.has(row.id) ? { ...byId.get(row.id), distanceKm: row.distanceKm } : null)).filter(Boolean);
+  return { rows, total: ranked.length };
+}

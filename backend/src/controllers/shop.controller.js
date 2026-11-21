@@ -1,7 +1,7 @@
 import prisma from "../config/prisma.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { normalizePhone } from "../constants/rwanda.js";
-import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, placeCentre, rankByDistance } from "../services/geo.service.js";
+import { nearestIds, pageByDistance, parseNear, placeCentre } from "../services/geo.service.js";
 import {
   httpError,
   paginate,
@@ -73,13 +73,16 @@ export const listShops = asyncHandler(async (req, res) => {
 
   const near = parseNear(req.query);
   if (near) {
-    const rows = await prisma.shop.findMany({ where: { ...where, ...bboxWhere(near) }, select: shopSelect, take: NEAR_SCAN_LIMIT });
-    const ranked = rankByDistance(rows, near, (shop) => shop);
-    return res.status(200).json({
-      success: true,
-      shops: serialize(ranked.slice(paging.skip, paging.skip + paging.take)),
-      pagination: paginationMeta(ranked.length, paging),
+    const ids = await nearestIds(prisma, "Shop", near, 1500);
+    const candidates = ids.length ? await prisma.shop.findMany({ where: { ...where, id: { in: ids } }, select: { id: true, lat: true, lng: true } }) : [];
+    const { rows, total } = await pageByDistance({
+      candidates,
+      near,
+      coordsOf: (shop) => shop,
+      paging,
+      loadFull: (pageIds) => prisma.shop.findMany({ where: { id: { in: pageIds } }, select: shopSelect }),
     });
+    return res.status(200).json({ success: true, shops: serialize(rows), pagination: paginationMeta(total, paging) });
   }
 
   const [shops, total] = await Promise.all([

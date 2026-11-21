@@ -9,7 +9,7 @@ import {
   slugify,
   uniqueSlug,
 } from "../utils/helpers.js";
-import { NEAR_SCAN_LIMIT, bboxWhere, parseNear, placeCentre, rankByDistance } from "../services/geo.service.js";
+import { nearestIds, pageByDistance, parseNear, placeCentre } from "../services/geo.service.js";
 
 const jobCardInclude = {
   category: { select: { id: true, name: true, slug: true } },
@@ -39,13 +39,16 @@ export const listJobs = asyncHandler(async (req, res) => {
 
   const near = parseNear(q);
   if (near) {
-    const rows = await prisma.job.findMany({ where: { ...where, ...bboxWhere(near) }, include: jobCardInclude, take: NEAR_SCAN_LIMIT });
-    const ranked = rankByDistance(rows, near, (job) => job);
-    return res.status(200).json({
-      success: true,
-      jobs: serialize(ranked.slice(paging.skip, paging.skip + paging.take)),
-      pagination: paginationMeta(ranked.length, paging),
+    const ids = await nearestIds(prisma, "Job", near, 1500);
+    const candidates = ids.length ? await prisma.job.findMany({ where: { ...where, id: { in: ids } }, select: { id: true, lat: true, lng: true } }) : [];
+    const { rows, total } = await pageByDistance({
+      candidates,
+      near,
+      coordsOf: (job) => job,
+      paging,
+      loadFull: (pageIds) => prisma.job.findMany({ where: { id: { in: pageIds } }, include: jobCardInclude }),
     });
+    return res.status(200).json({ success: true, jobs: serialize(rows), pagination: paginationMeta(total, paging) });
   }
 
   const [jobs, total] = await Promise.all([

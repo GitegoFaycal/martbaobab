@@ -135,7 +135,16 @@ export const listMyConnections = asyncHandler(async (req, res) => {
 });
 
 // GET /api/stats  (public counters for the homepage)
+let statsCache = { at: 0, value: null };
+
 export const publicStats = asyncHandler(async (req, res) => {
+  if (statsCache.value && Date.now() - statsCache.at < 60_000) {
+    res.set("Cache-Control", "public, max-age=60");
+    return res.status(200).json(statsCache.value);
+  }
+  const originalJson = res.json.bind(res);
+  res.json = (body) => { if (res.statusCode === 200) statsCache = { at: Date.now(), value: body }; return originalJson(body); };
+
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
   const [connections, connectionsToday, people, shops, listings, jobs] = await Promise.all([
