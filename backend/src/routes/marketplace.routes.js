@@ -21,6 +21,7 @@ import {
 import authenticate from "../middleware/authenticate.js";
 import authorize from "../middleware/authorize.js";
 import validate from "../middleware/validate.js";
+import publicCache from "../middleware/publicCache.js";
 import {
   listingQuerySchema,
   listingSchema,
@@ -28,22 +29,22 @@ import {
 } from "../schemas/marketplace.schema.js";
 
 export const categoryRouter = Router();
-categoryRouter.get("/", listCategories);
+categoryRouter.get("/", publicCache(300), listCategories);
 
 export const locationRouter = Router();
-locationRouter.get("/", listLocations);
+locationRouter.get("/", publicCache(300), listLocations);
 
 const seller = [authenticate, authorize("SELLER", "ADMIN")];
 
 export const shopRouter = Router();
-shopRouter.get("/", listShops);
+shopRouter.get("/", publicCache(60), listShops);
 shopRouter.get("/me", ...seller, getMyShop);
 shopRouter.post("/", ...seller, validate(shopSchema), createShop);
 shopRouter.patch("/me", ...seller, validate(shopSchema), updateMyShop);
-shopRouter.get("/:slug", getShop);
+shopRouter.get("/:slug", publicCache(60), getShop);
 
 export const listingRouter = Router();
-listingRouter.get("/", validate(listingQuerySchema), listListings);
+listingRouter.get("/", publicCache(60), validate(listingQuerySchema), listListings);
 listingRouter.get("/mine", ...seller, listMyListings);
 listingRouter.post("/", ...seller, validate(listingSchema), createListing);
 listingRouter.patch("/:id", ...seller, validate(listingSchema), updateListing);

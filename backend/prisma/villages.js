@@ -19,7 +19,7 @@ const TREE = require("../src/data/rwanda-locations.json");
 
 const prisma = new PrismaClient({ datasourceUrl: applyDatabaseUrl() || undefined });
 const DOMAIN = "village.loco.rw";
-const WEB = (process.env.PUBLIC_WEB_URL || process.env.CLIENT_URL || "https://martbaobab-frontend.vercel.app").replace(/\/$/, "");
+const WEB = (process.env.PUBLIC_WEB_URL || "https://martbaobab-frontend.vercel.app").replace(/\/$/, "");
 const DEMO_WHATSAPP = normalizePhone(process.env.DEMO_WHATSAPP || "");
 const BATCH = 1500;
 
@@ -121,7 +121,21 @@ function daysAgo(r, max) {
 }
 
 // ---------- main ----------
+async function repairPhotoHosts() {
+  const prefix = `${WEB}/categories/`;
+  const shops = await prisma.$executeRawUnsafe(
+    `UPDATE "Shop" SET "coverUrl" = $1 || substring("coverUrl" from position('/categories/' in "coverUrl") + 12) WHERE "coverUrl" LIKE '%/categories/%' AND "coverUrl" NOT LIKE $2`,
+    prefix, `${prefix}%`
+  );
+  const images = await prisma.$executeRawUnsafe(
+    `UPDATE "ListingImage" SET url = $1 || substring(url from position('/categories/' in url) + 12) WHERE url LIKE '%/categories/%' AND url NOT LIKE $2`,
+    prefix, `${prefix}%`
+  );
+  if (shops || images) console.log(`Repaired photo links: ${shops} shop covers, ${images} product photos -> ${WEB}`);
+}
+
 export async function seedVillages() {
+  await repairPhotoHosts();
   const all = villages();
   const planned = all.length + Math.floor(all.length / 2); // owners + specialists
   const existing = await prisma.user.count({ where: { email: { endsWith: `@${DOMAIN}` } } });

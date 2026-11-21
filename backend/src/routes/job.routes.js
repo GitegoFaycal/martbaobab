@@ -14,6 +14,7 @@ import {
 import authenticate from "../middleware/authenticate.js";
 import optionalAuth from "../middleware/optionalAuth.js";
 import validate from "../middleware/validate.js";
+import publicCache from "../middleware/publicCache.js";
 import {
   applicationStatusSchema,
   applySchema,
@@ -23,7 +24,7 @@ import {
 
 export const jobRouter = Router();
 
-jobRouter.get("/", validate(jobQuerySchema), listJobs);
+jobRouter.get("/", publicCache(60), validate(jobQuerySchema), listJobs);
 jobRouter.get("/mine", authenticate, listMyJobs);
 jobRouter.post("/", authenticate, validate(jobSchema), createJob);
 jobRouter.patch("/:id", authenticate, validate(jobSchema), updateJob);

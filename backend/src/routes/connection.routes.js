@@ -7,6 +7,7 @@ import {
 } from "../controllers/connection.controller.js";
 import authenticate from "../middleware/authenticate.js";
 import optionalAuth from "../middleware/optionalAuth.js";
+import publicCache from "../middleware/publicCache.js";
 
 const connectRateLimit = rateLimit({
   windowMs: 10 * 60 * 1000,
@@ -21,4 +22,4 @@ connectionRouter.post("/", connectRateLimit, optionalAuth, recordConnection);
 connectionRouter.get("/mine", authenticate, listMyConnections);
 
 export const statsRouter = Router();
-statsRouter.get("/", publicStats);
+statsRouter.get("/", publicCache(60), publicStats);
